@@ -1,6 +1,6 @@
 # Total Outflow Breakdown: overlay and cumulative graphs for a selected subcatchment.
 # Run from ICM UI with one subcatchment selected and results loaded.
-
+require 'date'
 catch(:stop) do
 
 net = WSApplication.current_network

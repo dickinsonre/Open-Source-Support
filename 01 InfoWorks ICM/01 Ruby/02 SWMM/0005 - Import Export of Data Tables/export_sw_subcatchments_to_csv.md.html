@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>export_sw_subcatchments_to_csv.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0005 - Import Export of Data Tables</div>
+    <h1>export_sw_subcatchments_to_csv.md</h1>
+    <div class="meta">Markdown document &middot; 0005 - Import Export of Data Tables</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">254 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="swmm-subcatchment-export-script-documentation">SWMM Subcatchment Export Script Documentation</h1>
+<h2 id="overview">Overview</h2>
+<p>This Ruby script automates the export of SWMM subcatchment data from InfoWorks ICM/InfoSWMM to CSV format. It provides comprehensive field selection for watershed modeling parameters, statistical analysis capabilities, and user-friendly prompts for customizing subcatchment data exports.</p>
+<h2 id="key-features">Key Features</h2>
+<h3 id="data-export-capabilities"><strong>Data Export Capabilities</strong></h3>
+<ul>
+<li>Exports selected SWMM subcatchment objects to timestamped CSV files</li>
+<li>Supports 80+ configurable subcatchment parameters</li>
+<li>Handles complex data types (arrays, land use coverages, pollutant loadings)</li>
+<li>User-selectable field configuration with individual toggles</li>
+</ul>
+<h3 id="statistical-analysis"><strong>Statistical Analysis</strong></h3>
+<ul>
+<li>Optional statistical calculations for numeric fields</li>
+<li>Generates formatted tables showing:</li>
+<li>Count, Min, Max, Mean, Standard Deviation</li>
+<li>Automatically excludes non-numeric fields (IDs, patterns, arrays)</li>
+<li>Uses sample standard deviation formula (n-1 denominator)</li>
+</ul>
+<h3 id="user-interface"><strong>User Interface</strong></h3>
+<ul>
+<li>Interactive prompts for field selection</li>
+<li>"Select/Deselect All" toggle option</li>
+<li>Export folder selection with validation</li>
+<li>Summary dialog upon completion</li>
+<li>Progress tracking and comprehensive error reporting</li>
+</ul>
+<h2 id="supported-swmm-subcatchment-fields">Supported SWMM Subcatchment Fields</h2>
+<h3 id="core-properties-default-enabled"><strong>Core Properties (Default: Enabled)</strong></h3>
+<ul>
+<li><strong>Subcatchment ID</strong>: Unique identifier</li>
+<li><strong>Raingauge ID</strong>: Associated precipitation gauge</li>
+<li><strong>Outlet ID</strong>: Discharge destination (node or subcatchment)</li>
+<li><strong>Area</strong>: Total subcatchment area</li>
+<li><strong>Width</strong>: Characteristic width for flow routing</li>
+<li><strong>Slope</strong>: Average surface slope (%)</li>
+<li><strong>Percent Impervious</strong>: Impervious area percentage</li>
+</ul>
+<h3 id="runoff-parameters"><strong>Runoff Parameters</strong></h3>
+<ul>
+<li><strong>Roughness Coefficients</strong>: Manning's N for impervious and pervious surfaces</li>
+<li><strong>Storage Depths</strong>: Depression storage for impervious and pervious areas</li>
+<li><strong>Percent Zero Storage</strong>: Areas with no depression storage</li>
+<li><strong>Routing Options</strong>: Flow routing to outlet or pervious areas</li>
+<li><strong>Percent Routed</strong>: Fraction of runoff routed to specific destination</li>
+</ul>
+<h3 id="infiltration-models"><strong>Infiltration Models</strong></h3>
+<h4 id="horton-infiltration"><strong>Horton Infiltration</strong></h4>
+<ul>
+<li>Maximum infiltration rate</li>
+<li>Minimum infiltration rate  </li>
+<li>Decay constant</li>
+<li>Drying time</li>
+<li>Maximum infiltration volume (Modified Horton)</li>
+</ul>
+<h4 id="green-ampt-infiltration"><strong>Green-Ampt Infiltration</strong></h4>
+<ul>
+<li>Suction head</li>
+<li>Saturated hydraulic conductivity</li>
+<li>Initial moisture deficit</li>
+</ul>
+<h4 id="scs-curve-number"><strong>SCS Curve Number</strong></h4>
+<ul>
+<li>Curve number</li>
+<li>Initial abstraction depth</li>
+<li>Initial abstraction factor</li>
+<li>Initial abstraction type</li>
+</ul>
+<h3 id="groundwater-parameters"><strong>Groundwater Parameters</strong></h3>
+<ul>
+<li><strong>Aquifer Properties</strong>: ID, node connections, elevations</li>
+<li><strong>Initial Conditions</strong>: Groundwater elevation, moisture content</li>
+<li><strong>Flow Coefficients</strong>: Groundwater flow equations and parameters</li>
+<li><strong>Lateral/Deep Flow</strong>: Groundwater interaction equations</li>
+<li><strong>Surface Groundwater</strong>: Upper zone coefficients and depths</li>
+</ul>
+<h3 id="complex-data-arrays"><strong>Complex Data Arrays</strong></h3>
+<h4 id="land-use-coverages"><strong>Land Use Coverages</strong></h4>
+<ul>
+<li>Land use type and area assignments</li>
+<li>Serialized as <code>LandUse:Area</code> pairs</li>
+</ul>
+<h4 id="pollutant-loadings"><strong>Pollutant Loadings</strong></h4>
+<ul>
+<li>Pollutant type and buildup rates</li>
+<li>Serialized as <code>Pollutant:BuildUp</code> pairs</li>
+</ul>
+<h4 id="soil-composition"><strong>Soil Composition</strong></h4>
+<ul>
+<li>Soil type and area distributions</li>
+<li>Serialized as <code>SoilID:Area</code> pairs</li>
+</ul>
+<h4 id="suds-controls"><strong>SUDS Controls</strong></h4>
+<ul>
+<li>Sustainable Urban Drainage Systems</li>
+<li>Control ID, structure type, and area</li>
+<li>Serialized as <code>ID:Structure:Area</code> format</li>
+</ul>
+<h4 id="boundary-geometry"><strong>Boundary Geometry</strong></h4>
+<ul>
+<li>Subcatchment boundary coordinates</li>
+<li>Vertex arrays as X,Y coordinate pairs</li>
+</ul>
+<h3 id="advanced-parameters"><strong>Advanced Parameters</strong></h3>
+<ul>
+<li><strong>Snow Pack ID</strong>: Winter runoff modeling</li>
+<li><strong>Time Patterns</strong>: Temporal variation patterns for parameters</li>
+<li><strong>Hydraulic Length</strong>: Flow path characteristics</li>
+<li><strong>Curb Length</strong>: Street infrastructure</li>
+<li><strong>Time of Concentration</strong>: Runoff timing parameters</li>
+<li><strong>Shape Factor</strong>: Nonlinear reservoir routing</li>
+</ul>
+<h3 id="user-defined-fields"><strong>User-Defined Fields</strong></h3>
+<ul>
+<li><strong>10 User Number Fields</strong>: Custom numeric parameters</li>
+<li><strong>10 User Text Fields</strong>: Custom text annotations</li>
+<li><strong>Notes</strong>: Detailed descriptions</li>
+<li><strong>Hyperlinks</strong>: External references and documentation</li>
+</ul>
+<h2 id="technical-implementation">Technical Implementation</h2>
+<h3 id="swmm-specific-features"><strong>SWMM-Specific Features</strong></h3>
+<ul>
+<li>Targets <code>sw_subcatchment</code> objects specifically</li>
+<li>Compatible with SWMM5 watershed modeling structure</li>
+<li>Handles multiple infiltration model parameters</li>
+<li>Processes complex land use and pollutant data structures</li>
+</ul>
+<h3 id="data-processing"><strong>Data Processing</strong></h3>
+<ul>
+<li>Processes only selected subcatchment objects</li>
+<li>Handles complex array serialization with custom delimiters</li>
+<li>Sanitizes CSV data (removes problematic characters)</li>
+<li>Flexible ID field detection (subcatchment_id or id)</li>
+</ul>
+<h3 id="array-data-serialization"><strong>Array Data Serialization</strong></h3>
+<ul>
+<li><strong>Coverages</strong>: <code>LandUse1:Area1;LandUse2:Area2</code></li>
+<li><strong>Loadings</strong>: <code>Pollutant1:BuildUp1;Pollutant2:BuildUp2</code></li>
+<li><strong>SUDS Controls</strong>: <code>ID1:Structure1:Area1||ID2:Structure2:Area2</code></li>
+<li><strong>Boundaries</strong>: <code>X1,Y1;X2,Y2;X3,Y3</code></li>
+</ul>
+<h3 id="error-handling"><strong>Error Handling</strong></h3>
+<ul>
+<li>Network validation and connection checks</li>
+<li>Subcatchment object existence verification</li>
+<li>File permission and disk space validation</li>
+<li>Graceful handling of missing attributes</li>
+<li>Comprehensive logging with subcatchment IDs</li>
+</ul>
+<h3 id="performance-features"><strong>Performance Features</strong></h3>
+<ul>
+<li>Iterator-based processing for memory efficiency</li>
+<li>Progress tracking with object counts</li>
+<li>Execution timing reports</li>
+<li>Automatic cleanup of empty files</li>
+</ul>
+<h2 id="usage-instructions">Usage Instructions</h2>
+<h3 id="prerequisites"><strong>Prerequisites</strong></h3>
+<ul>
+<li>InfoSWMM or InfoWorks ICM environment</li>
+<li>Network with SWMM subcatchment objects loaded</li>
+<li>Write permissions to export directory</li>
+</ul>
+<h3 id="execution-steps"><strong>Execution Steps</strong></h3>
+<ol>
+<li><strong>Select Subcatchments</strong>: Use the GUI to select subcatchment objects for export</li>
+<li><strong>Run Script</strong>: Execute within the application environment</li>
+<li><strong>Configure Export</strong>:
+   - Choose export folder
+   - Select desired fields (core fields enabled by default)
+   - Enable statistics calculation if needed</li>
+<li><strong>Review Results</strong>: Check console output and summary dialog</li>
+</ol>
+<h3 id="output-files"><strong>Output Files</strong></h3>
+<ul>
+<li>CSV format: <code>selected_swmm_subcatchments_export_YYYYMMDD_HHMMSS.csv</code></li>
+<li>Automatic cleanup of empty files</li>
+<li>Timestamped for version control</li>
+</ul>
+<h2 id="statistical-output-example">Statistical Output Example</h2>
+<pre><code>| Parameter (Header)                | Count  | Min      | Max      | Mean         | Std Dev      |
+|-----------------------------------|--------|----------|----------|--------------|--------------|
+| Area                              | 125    | 0.500    | 45.800   | 12.350       | 8.450        |
+| Width                             | 125    | 25.000   | 500.000  | 185.200      | 125.600      |
+| Slope_pct                         | 125    | 0.500    | 8.500    | 2.150        | 1.750        |
+| PctImperv                         | 125    | 15.000   | 95.000   | 65.500       | 22.300       |
+| N_Imperv                          | 125    | 0.010    | 0.020    | 0.013        | 0.003        |
+| N_Perv                            | 125    | 0.100    | 0.400    | 0.180        | 0.085        |
+</code></pre>
+<h2 id="swmm-integration-notes">SWMM Integration Notes</h2>
+<h3 id="watershed-modeling-compatibility"><strong>Watershed Modeling Compatibility</strong></h3>
+<ul>
+<li><strong>Runoff Generation</strong>: Complete surface runoff parameter set</li>
+<li><strong>Infiltration Models</strong>: Support for all SWMM infiltration methods</li>
+<li><strong>Groundwater</strong>: Comprehensive aquifer interaction parameters</li>
+<li><strong>Land Use</strong>: Detailed coverage and pollutant loading capabilities</li>
+</ul>
+<h3 id="model-setup-support"><strong>Model Setup Support</strong></h3>
+<ul>
+<li><strong>Precipitation</strong>: Raingauge assignments for meteorological input</li>
+<li><strong>Routing</strong>: Flow routing options and outlet connections</li>
+<li><strong>Time Patterns</strong>: Temporal variation support for dynamic parameters</li>
+<li><strong>Quality Modeling</strong>: Pollutant buildup and washoff parameters</li>
+</ul>
+<h3 id="field-verification"><strong>Field Verification</strong></h3>
+<ul>
+<li>Field symbols must match actual SWMM API method names</li>
+<li>Debugging block available for method inspection</li>
+<li>SWMM version-specific field availability may vary</li>
+</ul>
+<h3 id="statistics-exclusions"><strong>Statistics Exclusions</strong></h3>
+<ul>
+<li>Text fields (IDs, notes, pattern names)</li>
+<li>Complex arrays (coverages, loadings, boundaries)</li>
+<li>Model type fields (infiltration, runoff models)</li>
+<li>Equation references and pattern IDs</li>
+</ul>
+<h2 id="error-messages-and-troubleshooting">Error Messages and Troubleshooting</h2>
+<h3 id="common-issues"><strong>Common Issues</strong></h3>
+<ul>
+<li><strong>"No network loaded"</strong>: Ensure a SWMM network is open before running</li>
+<li><strong>"No 'sw_subcatchment' objects found"</strong>: Verify subcatchments exist in the model</li>
+<li><strong>"Permission denied"</strong>: Check folder write permissions</li>
+<li><strong>"AttributeMissing"</strong>: Field not available in current SWMM API version</li>
+<li><strong>"No subcatchments selected"</strong>: Select subcatchment objects in GUI before export</li>
+</ul>
+<h3 id="debug-mode"><strong>Debug Mode</strong></h3>
+<p>Uncomment the debugging block to inspect available methods:</p>
+<pre><code class="language-ruby"># subcatchment_example = cn.row_objects('sw_subcatchment').first 
+# puts subcatchment_example.methods.sort.inspect
+</code></pre>
+<h2 id="configuration-notes">Configuration Notes</h2>
+<h3 id="field-selection-strategy"><strong>Field Selection Strategy</strong></h3>
+<ul>
+<li>Core watershed parameters enabled by default</li>
+<li>Advanced groundwater and infiltration fields disabled by default</li>
+<li>Complex array fields require careful interpretation</li>
+<li>User fields available for custom model extensions</li>
+</ul>
+<h3 id="infiltration-model-considerations"><strong>Infiltration Model Considerations</strong></h3>
+<ul>
+<li>Different infiltration models use different parameter sets</li>
+<li>Only relevant parameters will have values for each subcatchment</li>
+<li>Model type field indicates which parameters are active</li>
+</ul>
+<h3 id="land-use-and-pollutant-data"><strong>Land Use and Pollutant Data</strong></h3>
+<ul>
+<li>Complex arrays serialized with custom delimiters</li>
+<li>May require post-processing for detailed analysis</li>
+<li>Useful for model validation and parameter comparison</li>
+</ul>
+<h2 id="integration-with-swmm-workflow">Integration with SWMM Workflow</h2>
+<h3 id="model-development-applications"><strong>Model Development Applications</strong></h3>
+<ul>
+<li>Parameter validation across subcatchments</li>
+<li>Watershed characterization analysis</li>
+<li>Model calibration support through statistical analysis</li>
+<li>Quality assurance for large watershed models</li>
+</ul>
+<h3 id="comparative-analysis"><strong>Comparative Analysis</strong></h3>
+<ul>
+<li>Compare subcatchment parameters between scenarios</li>
+<li>Validate design assumptions across watershed areas</li>
+<li>Export for external watershed analysis tools</li>
+<li>Generate reports for environmental impact studies</li>
+</ul>
+<h3 id="data-management"><strong>Data Management</strong></h3>
+<ul>
+<li>Bulk parameter review and validation</li>
+<li>Model documentation and archiving</li>
+<li>Integration with GIS and other modeling tools</li>
+<li>Support for peer review and quality control</li>
+</ul>
+<p>This script forms part of the larger InfoWorks automation suite, specifically designed for comprehensive SWMM watershed analysis and comparison tasks as outlined in Edition 41-44 of the series, enabling detailed subcatchment parameter analysis for urban stormwater modeling.</p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

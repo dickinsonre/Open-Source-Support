@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>README.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0008 - Database Field Tools for Elements and Results</div>
+    <h1>README.md</h1>
+    <div class="meta">Markdown document &middot; 0008 - Database Field Tools for Elements and Results</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">102 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><p>markdown</p>
+<h1 id="folder-structure">Folder Structure</h1>
+<h2 id="open-source-support">OPEN-SOURCE-SUPPORT</h2>
+<ul>
+<li><strong>01 InfoWorks ICM</strong></li>
+<li><strong>01 Ruby</strong></li>
+<li><strong>01 InfoWorks</strong></li>
+<li><strong>02 SWMM</strong><ul>
+<li><strong>0001 - Element and Field Statistics</strong></li>
+<li><em>(Content omitted for brevity)</em></li>
+<li><strong>0002 - Tracing Tools</strong></li>
+<li><em>(Content omitted for brevity)</em></li>
+<li><strong>0003 - Scenario Tools</strong></li>
+<li><em>(Content omitted for brevity)</em></li>
+<li><strong>0004 - Scenario Sensitivity - InfoWorks</strong></li>
+<li><em>(Content omitted for brevity)</em></li>
+<li><strong>0005 - Import Export of Data Tables</strong></li>
+<li><em>(Content omitted for brevity)</em></li>
+<li><strong>0006 - ICM SWMM vs ICM InfoWorks All Tables</strong></li>
+<li><em>(Content omitted for brevity)</em></li>
+<li><strong>0007 - Hydraulic Comparison Tools for ICM InfoWorks and SWMM</strong></li>
+<li><em>(Content omitted for brevity)</em></li>
+<li><strong>0008 - Database Field Tools for Elements and Results</strong></li>
+<li><code>All Input Variables.rb</code></li>
+<li><code>All_Results.rb</code></li>
+<li><code>All_Variables.rb</code></li>
+<li><code>Area-Methods-UIOnly-Working.rb</code></li>
+<li><code>Change All Node and Link IDs.rb</code></li>
+<li><code>count_objects_in_db.rb</code></li>
+<li><code>Find All Network Elements.rb</code></li>
+<li><code>Flow_Survey.rb</code></li>
+<li><code>hash_sw_hw_tables.rb</code></li>
+<li><code>hw_UI_Script Find All Network Elements.rb</code></li>
+<li><code>hw_UI_Script Stats for ICM Network Tables.rb</code></li>
+<li><code>image.png</code></li>
+<li><code>Make an Overview of All Network Elements.rb</code></li>
+<li><code>png001.png</code></li>
+<li><code>README.md</code></li>
+<li><code>sw_UI_Script Find All Network Elements.rb</code></li>
+<li><code>sw_UI_Script Make a Table of the Run Parameters in ICM.rb</code></li>
+<li><code>UI_script Find Root Model Group.rb</code></li>
+<li><code>UI_script List all results fields in a simulation (SWMM or ICM).rb</code></li>
+<li><code>UI_script List all results fields in a Simulation.rb</code></li>
+<li><code>UI-script.rb</code></li>
+<li><code>UI-CountConnections.rb</code></li>
+<li><code>UI-CountRepairs.rb</code></li>
+<li><code>UI-DeleteRowsFromAttachmentsBlob.rb</code></li>
+<li><code>UI-ListCurrentNetworkFields_No_User_OR_Flags.rb</code></li>
+<li><code>UI-ListCurrentNetworkFields.rb</code></li>
+<li><code>UI-ListCurrentNetworkFieldStructure.rb</code></li>
+<li><code>UI-UpdateBlockagePropertyID.rb</code></li>
+<li><code>UI-UpdateObjectFromObject_ByPrompt_3.rb</code></li>
+<li><code>UIE-DatabaseContents.rb</code></li>
+<li><code>UIE-DatabaseSummary.rb</code></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="description">Description</h3>
+<p>This section focuses on the <strong>0008 - Database Field Tools for Elements and Results</strong> directory under the <code>02 SWMM</code> folder, which contains Ruby scripts for managing and analyzing database fields related to elements and results in SWMM and ICM:</p>
+<ul>
+<li><strong>Variable Management:</strong> </li>
+<li><code>All Input Variables.rb</code>, <code>All_Results.rb</code>, and <code>All_Variables.rb</code> handle listing or managing all input variables, results, and general variables within the models.</li>
+<li><strong>Area Methods:</strong> <code>Area-Methods-UIOnly-Working.rb</code> might deal with area-related methods or calculations, possibly for user interface purposes.</li>
+<li><strong>ID Management:</strong> <code>Change All Node and Link IDs.rb</code> allows for changing the IDs of nodes and links in the network.</li>
+<li><strong>Object Counting:</strong> <code>count_objects_in_db.rb</code> counts objects within the database.</li>
+<li><strong>Network Element Finding:</strong> <code>Find All Network Elements.rb</code>, <code>hw_UI_Script Find All Network Elements.rb</code>, and <code>sw_UI_Script Find All Network Elements.rb</code> are scripts to find all network elements, tailored for different contexts or models.</li>
+<li><strong>Flow Survey:</strong> <code>Flow_Survey.rb</code> likely deals with surveying or analyzing flow data.</li>
+<li><strong>Table Hashing:</strong> <code>hash_sw_hw_tables.rb</code> might be used for creating or managing hash tables for SWMM and HW (HydroWorks).</li>
+<li><strong>Network Stats:</strong> <code>hw_UI_Script Stats for ICM Network Tables.rb</code> provides statistics on ICM network tables.</li>
+<li><strong>Network Overview:</strong> <code>Make an Overview of All Network Elements.rb</code> creates an overview of all network elements.</li>
+<li><strong>Run Parameters:</strong> <code>sw_UI_Script Make a Table of the Run Parameters in ICM.rb</code> makes a table of run parameters specifically for ICM.</li>
+<li><strong>Model Group Finding:</strong> <code>UI_script Find Root Model Group.rb</code> finds the root model group.</li>
+<li><strong>Result Fields Listing:</strong> <code>UI_script List all results fields in a simulation (SWMM or ICM).rb</code> and <code>UI_script List all results fields in a Simulation.rb</code> list all result fields in simulations.</li>
+<li><strong>Connection and Repair Counting:</strong> <code>UI-CountConnections.rb</code> and <code>UI-CountRepairs.rb</code> count connections and repairs respectively.</li>
+<li><strong>Attachment Management:</strong> <code>UI-DeleteRowsFromAttachmentsBlob.rb</code> manages deletion of rows from attachment blobs.</li>
+<li><strong>Field Listing:</strong> Scripts like <code>UI-ListCurrentNetworkFields_No_User_OR_Flags.rb</code>, <code>UI-ListCurrentNetworkFields.rb</code>, and <code>UI-ListCurrentNetworkFieldStructure.rb</code> list current network fields with various criteria.</li>
+<li><strong>Property Update:</strong> <code>UI-UpdateBlockagePropertyID.rb</code> updates blockage property IDs.</li>
+<li><strong>Object Update:</strong> <code>UI-UpdateObjectFromObject_ByPrompt_3.rb</code> updates objects from other objects by prompt.</li>
+<li><strong>Database Overview:</strong> <code>UIE-DatabaseContents.rb</code> and <code>UIE-DatabaseSummary.rb</code> provide contents and summary of the database.</li>
+</ul>
+<h3 id="usage">Usage</h3>
+<p>To use the scripts within the <code>0008 - Database Field Tools for Elements and Results</code> directory:</p>
+<ol>
+<li><strong>Environment Setup:</strong> Ensure Ruby is installed on your system.</li>
+<li><strong>Navigation:</strong> Navigate to the <code>0008 - Database Field Tools for Elements and Results</code> subdirectory under <code>02 SWMM</code>.</li>
+<li><strong>Execution:</strong> Run the Ruby scripts from the command line or integrate them into your workflow for managing and analyzing database fields.</li>
+</ol>
+<p>For example, to count objects in the database:
+```sh
+ruby count_objects_in_db.rb</p>
+<p>Note
+Always check for permissions before running scripts that might access or modify database fields.
+Backup your data before executing scripts that could alter or process datasets extensively.
+The README.md file within this directory might contain specific instructions, notes, or prerequisites for running these database management scripts.</p>
+<p>This README now focuses exclusively on the <code>0008 - Database Field Tools for Elements and Results</code> folder, detailing its contents and usage.  </p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

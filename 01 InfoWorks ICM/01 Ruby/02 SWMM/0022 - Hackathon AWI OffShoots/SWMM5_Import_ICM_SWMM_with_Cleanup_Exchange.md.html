@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SWMM5_Import_ICM_SWMM_with_Cleanup_Exchange.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0022 - Hackathon AWI OffShoots</div>
+    <h1>SWMM5_Import_ICM_SWMM_with_Cleanup_Exchange.md</h1>
+    <div class="meta">Markdown document &middot; 0022 - Hackathon AWI OffShoots</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">397 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="swmm5-import-to-icm-exchange-script-documentation">SWMM5 Import to ICM - Exchange Script Documentation</h1>
+<p><strong>Version:</strong> 2.0<br>
+<strong>Purpose:</strong> Backend processing script that executes the actual SWMM5 import operations via ICMExchange</p>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>This Ruby script is the <strong>worker component</strong> of the SWMM5 Import system. It runs within the ICMExchange environment (headless/command-line mode) and performs the actual import of SWMM5 <code>.inp</code> files into ICM model groups.</p>
+<p>The script is designed to be launched automatically by the companion UI script (<code>SWMM5_Import_ICM_SWMM_with_Cleanup_UI.rb</code>) and reads its configuration from a YAML file.</p>
+<hr>
+<h2 id="key-features">Key Features</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Single &amp; Batch Import</strong></td>
+<td>Processes one or many files from configuration</td>
+</tr>
+<tr>
+<td><strong>Two-Phase Processing</strong></td>
+<td>Import phase followed by validation phase</td>
+</tr>
+<tr>
+<td><strong>Empty Label Cleanup</strong></td>
+<td>Removes empty visualization label lists created during import</td>
+</tr>
+<tr>
+<td><strong>Connectivity Validation</strong></td>
+<td>Checks for disconnected nodes and subcatchments</td>
+</tr>
+<tr>
+<td><strong>Fault Tolerance</strong></td>
+<td>Continues processing remaining files after individual failures</td>
+</tr>
+<tr>
+<td><strong>Comprehensive Logging</strong></td>
+<td>Detailed log files plus machine-readable summary</td>
+</tr>
+<tr>
+<td><strong>Partial Import Cleanup</strong></td>
+<td>Automatically removes model groups from failed imports</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="how-it-works">How It Works</h2>
+<p>The script is <strong>not run directly</strong> by users. Instead:</p>
+<ol>
+<li>User runs the <strong>UI script</strong> in ICM</li>
+<li>UI script generates a YAML configuration file</li>
+<li>UI script launches <strong>ICMExchange.exe</strong> with this Exchange script</li>
+<li>Exchange script reads configuration and performs imports</li>
+<li>Exchange script writes summary file for UI script to display</li>
+</ol>
+<pre><code>┌─────────────────┐     YAML Config      ┌─────────────────┐
+│   UI Script     │ ──────────────────── │ Exchange Script │
+│  (ICM Ruby)     │                      │  (ICMExchange)  │
+└─────────────────┘                      └─────────────────┘
+        │                                        │
+        │  Launches via command line             │
+        └────────────────────────────────────────┘
+                                                 │
+                                                 ▼
+                                    ┌─────────────────────┐
+                                    │  batch_summary.txt  │
+                                    │  (Results for UI)   │
+                                    └─────────────────────┘
+</code></pre>
+<hr>
+<h2 id="processing-workflow">Processing Workflow</h2>
+<p>For <strong>each file</strong> in the configuration, the script executes:</p>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│  PRE-VALIDATION                                                 │
+│  - Verify file exists                                           │
+│  - Verify .inp extension                                        │
+├─────────────────────────────────────────────────────────────────┤
+│  PHASE 1: IMPORT                                                │
+│                                                                 │
+│  Step 1: Create Model Group                                     │
+│    - Create new model group with specified name                 │
+│    - Handle duplicate name errors                               │
+│                                                                 │
+│  Step 2: Import Network                                         │
+│    - Call import_all_sw_model_objects()                         │
+│    - Generate per-file import log                               │
+│    - Count imported objects                                     │
+│                                                                 │
+│  Step 3: Gather Statistics                                      │
+│    - Open imported SWMM network                                 │
+│    - Count nodes, links, subcatchments                          │
+│    - Commit network with import message                         │
+│                                                                 │
+│  Step 4: Cleanup (if enabled)                                   │
+│    - Find all Label List objects from import                    │
+│    - Check each for empty 'labels' blob                         │
+│    - Delete empty label lists                                   │
+├─────────────────────────────────────────────────────────────────┤
+│  PHASE 2: VALIDATION (if enabled)                               │
+│                                                                 │
+│  Check 1: Empty Network                                         │
+│    - Warn if no nodes or links                                  │
+│                                                                 │
+│  Check 2: Disconnected Subcatchments                            │
+│    - Find subcatchments with no outlet_id                       │
+│                                                                 │
+│  Check 3: Unconnected Nodes                                     │
+│    - Find nodes not referenced by any link                      │
+├─────────────────────────────────────────────────────────────────┤
+│  ERROR HANDLING                                                 │
+│  - On failure: delete partial model group                       │
+│  - Record failure reason                                        │
+│  - Continue to next file                                        │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr>
+<h2 id="configuration-file-format">Configuration File Format</h2>
+<p>The script reads a YAML configuration file (generated by UI script):</p>
+<pre><code class="language-yaml">import_mode: &quot;Batch - Include Subdirectories&quot;
+base_directory: &quot;C:/SWMM_Models&quot;
+file_type: &quot;SWMM network&quot;
+cleanup_empty_label_lists: true
+validate_after_import: true
+
+file_configs:
+  - file_path: &quot;C:/SWMM_Models/site1.inp&quot;
+    model_group_name: &quot;SWMM_Import_site1_20241205_1430&quot;
+    file_basename: &quot;site1.inp&quot;
+
+  - file_path: &quot;C:/SWMM_Models/sub/site2.inp&quot;
+    model_group_name: &quot;SWMM_Import_sub_site2_20241205_1430&quot;
+    file_basename: &quot;site2.inp&quot;
+</code></pre>
+<h3 id="required-configuration-keys">Required Configuration Keys</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>import_mode</code></td>
+<td>String</td>
+<td>Display label for logging</td>
+</tr>
+<tr>
+<td><code>file_configs</code></td>
+<td>Array</td>
+<td>List of file configurations</td>
+</tr>
+<tr>
+<td><code>file_type</code></td>
+<td>String</td>
+<td>Target network type</td>
+</tr>
+<tr>
+<td><code>cleanup_empty_label_lists</code></td>
+<td>Boolean</td>
+<td>Enable label cleanup</td>
+</tr>
+</tbody>
+</table>
+<h3 id="file-configuration-fields">File Configuration Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>file_path</code></td>
+<td>Full path to the <code>.inp</code> file</td>
+</tr>
+<tr>
+<td><code>model_group_name</code></td>
+<td>Name for the new model group</td>
+</tr>
+<tr>
+<td><code>file_basename</code></td>
+<td>Filename for display purposes</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="configuration-file-discovery">Configuration File Discovery</h2>
+<p>The script locates the configuration file using this priority:</p>
+<ol>
+<li><strong>Environment variable:</strong> <code>ICM_IMPORT_CONFIG</code> (set by UI script)</li>
+<li><strong>Search paths:</strong> Looks for <code>import_config.yaml</code> in:
+   - Script directory
+   - Parent directory
+   - Grandparent directory
+   - Any <code>ICM Import Log Files</code> subfolder</li>
+</ol>
+<p>When multiple config files are found, the <strong>most recently modified</strong> is selected.</p>
+<hr>
+<h2 id="output-files">Output Files</h2>
+<p>All outputs are written to the <code>ICM Import Log Files</code> folder:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Format</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SWMM5_Batch_Import_YYYYMMDD_HHMMSS.log</code></td>
+<td>Text</td>
+<td>Detailed processing log</td>
+</tr>
+<tr>
+<td><code>batch_summary.txt</code></td>
+<td>Key=Value</td>
+<td>Machine-readable statistics for UI</td>
+</tr>
+<tr>
+<td><code>{filename}_YYYYMMDD_HHMMSS.txt</code></td>
+<td>Text</td>
+<td>Per-file ICM import log</td>
+</tr>
+</tbody>
+</table>
+<h3 id="summary-file-format">Summary File Format</h3>
+<pre><code>BATCH_IMPORT_SUMMARY
+files_processed=5
+files_successful=4
+files_failed=1
+total_nodes=2847
+total_links=3156
+total_subcatchments=892
+total_label_lists_deleted=8
+</code></pre>
+<hr>
+<h2 id="aggregate-statistics-tracked">Aggregate Statistics Tracked</h2>
+<table>
+<thead>
+<tr>
+<th>Statistic</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>files_processed</code></td>
+<td>Total files attempted</td>
+</tr>
+<tr>
+<td><code>files_successful</code></td>
+<td>Files imported without errors</td>
+</tr>
+<tr>
+<td><code>files_failed</code></td>
+<td>Files that failed to import</td>
+</tr>
+<tr>
+<td><code>total_nodes</code></td>
+<td>Sum of all nodes across networks</td>
+</tr>
+<tr>
+<td><code>total_links</code></td>
+<td>Sum of all links across networks</td>
+</tr>
+<tr>
+<td><code>total_subcatchments</code></td>
+<td>Sum of all subcatchments</td>
+</tr>
+<tr>
+<td><code>total_label_lists_deleted</code></td>
+<td>Empty label lists removed</td>
+</tr>
+<tr>
+<td><code>failed_files</code></td>
+<td>Array of failure details</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="validation-checks">Validation Checks</h2>
+<p>When <code>validate_after_import</code> is enabled:</p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Condition</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Empty Network</strong></td>
+<td>No nodes AND no links</td>
+<td>Warning</td>
+</tr>
+<tr>
+<td><strong>Disconnected Subcatchments</strong></td>
+<td><code>outlet_id</code> is nil or empty</td>
+<td>Warning</td>
+</tr>
+<tr>
+<td><strong>Unconnected Nodes</strong></td>
+<td>Node not in any link's <code>us_node_id</code> or <code>ds_node_id</code></td>
+<td>Warning</td>
+</tr>
+</tbody>
+</table>
+<p>Validation warnings are logged but do <strong>not</strong> cause the import to fail.</p>
+<hr>
+<h2 id="empty-label-list-cleanup">Empty Label List Cleanup</h2>
+<p>During SWMM5 import, ICM may create empty <code>Label List</code> objects that serve no purpose. The cleanup process:</p>
+<ol>
+<li>Iterates through all imported objects</li>
+<li>Identifies objects of type <code>'Label List'</code></li>
+<li>Checks if the <code>'labels'</code> blob is nil or empty</li>
+<li>Deletes empty label lists</li>
+<li>Preserves label lists that contain data</li>
+</ol>
+<pre><code class="language-ruby">def is_label_list_empty?(label_list, log_file = nil)
+  begin
+    labels_blob = label_list['labels']
+    return labels_blob.nil? || labels_blob.empty?
+  rescue =&gt; e
+    log &quot;  WARNING: Error checking label list: #{e.message}&quot;, log_file
+    false  # Preserve on error (safe default)
+  end
+end
+</code></pre>
+<hr>
+<h2 id="error-handling">Error Handling</h2>
+<p>The script implements robust error handling at multiple levels:</p>
+<h3 id="file-level-errors">File-Level Errors</h3>
+<table>
+<thead>
+<tr>
+<th>Error</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File not found</td>
+<td>Skip file, log error, continue</td>
+</tr>
+<tr>
+<td>Invalid extension</td>
+<td>Skip file, log error, continue</td>
+</tr>
+<tr>
+<td>Duplicate model group</td>
+<td>Skip file, log error, continue</td>
+</tr>
+<tr>
+<td>No objects imported</td>
+<td>Delete empty model group, continue</td>
+</tr>
+<tr>
+<td>Import exception</td>
+<td>Delete partial model group, log backtrace, continue</td>
+</tr>
+</tbody>
+</table>
+<h3 id="partial-import-cleanup">Partial Import Cleanup</h3>
+<p>When an import fails mid-process, the script attempts to clean up:</p>
+<pre><code class="language-ruby">rescue =&gt; e
+  # Clean up partial import
+  if defined?(model_group) &amp;&amp; model_group
+    begin
+      model_group.delete
+      log &quot;  Cleaned up partial import&quot;, log_file
+    rescue =&gt; cleanup_error
+      log &quot;  Could not clean up: #{cleanup_error.message}&quot;, log_file
+    end
+  end
+
+  aggregate_stats[:files_failed] += 1
+  aggregate_stats[:failed_files] &lt;&lt; { file: file_basename, reason: e.message }
+end
+</code></pre>
+<hr>
+<h2 id="exit-codes">Exit Codes</h2>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td>All files imported successfully</td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td>One or more files failed (or configuration error)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="console-output">Console Output</h2>
+<p>The script provides formatted console output for live monitoring:</p>
+<pre><code>+======================================================================+
+|                       BATCH IMPORT PROCESSING                        |
++======================================================================+
+
+----------------------------------------------------------------------
+[1/5] Processing: model_site1.inp
+----------------------------------------------------------------------
+  Step 1: Creating model group...
+          Model group created
+  Step 2: Importing network...
+          Import successful: 847 objects
+          Nodes: 234, Links: 312, Subs: 89
+  Step 3: Cleaning up artifacts...
+          Removing 2 empty label list(s)
+          Cleanup complete
+  Step 4: Validating...
+          Validation passed
+  SUCCESS: Import complete
+
+----------------------------------------------------------------------
+[2/5] Processing: model_site2.inp
+----------------------------------------------------------------------
+  ...
+</code></pre>
+<hr>
+<h2 id="version-20-features">Version 2.0 Features</h2>
+<p>This version introduced several enhancements over the original:</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Single File Support</strong></td>
+<td>Works with one file, not just batches</td>
+</tr>
+<tr>
+<td><strong>Batch Directory Import</strong></td>
+<td>Process all <code>.inp</code> files in a folder</td>
+</tr>
+<tr>
+<td><strong>Recursive Scanning</strong></td>
+<td>Include files from subdirectories</td>
+</tr>
+<tr>
+<td><strong>Progress Tracking</strong></td>
+<td><code>[N/Total]</code> progress indicators</td>
+</tr>
+<tr>
+<td><strong>Aggregate Statistics</strong></td>
+<td>Combined totals across all files</td>
+</tr>
+<tr>
+<td><strong>Fault Tolerance</strong></td>
+<td>Continue processing after failures</td>
+</tr>
+<tr>
+<td><strong>Summary File</strong></td>
+<td>Machine-readable output for UI integration</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="dependencies">Dependencies</h2>
+<pre><code class="language-ruby">require 'yaml'  # Configuration file parsing
+</code></pre>
+<p>The script also relies on ICMExchange-specific APIs:
+- <code>WSApplication.open</code> - Open the database
+- <code>db.new_model_object()</code> - Create model groups
+- <code>model_group.import_all_sw_model_objects()</code> - Import SWMM files
+- <code>imported_network.open</code> - Access network data
+- <code>net.row_objects()</code> - Query network elements</p>
+<hr>
+<h2 id="related-files">Related Files</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SWMM5_Import_ICM_SWMM_with_Cleanup_UI.rb</code></td>
+<td>User interface script that launches this</td>
+</tr>
+<tr>
+<td><code>import_config.yaml</code></td>
+<td>Configuration file (input)</td>
+</tr>
+<tr>
+<td><code>batch_summary.txt</code></td>
+<td>Statistics file (output)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="technical-notes">Technical Notes</h2>
+<ul>
+<li><strong>Network Type:</strong> Creates <code>'SWMM network'</code> objects (not InfoWorks networks)</li>
+<li><strong>Import Method:</strong> Uses <code>import_all_sw_model_objects()</code> with <code>"inp"</code> format</li>
+<li><strong>Commit Message:</strong> Each network is committed with <code>"Imported from SWMM5 - {filename}"</code></li>
+<li><strong>Label Check:</strong> Accesses the <code>'labels'</code> blob attribute directly</li>
+</ul>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Configuration file not found"</td>
+<td>Run UI script first to generate config</td>
+</tr>
+<tr>
+<td>"Missing required keys"</td>
+<td>Regenerate config with UI script</td>
+</tr>
+<tr>
+<td>"Model group already exists"</td>
+<td>Use timestamp option in UI script</td>
+</tr>
+<tr>
+<td>"No objects imported"</td>
+<td>Check import log for SWMM parsing errors</td>
+</tr>
+<tr>
+<td>Empty network after import</td>
+<td>Verify <code>.inp</code> file format and content</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="author-notes">Author Notes</h2>
+<p>This script is designed to run unattended as part of an automated workflow. Key design principles:</p>
+<ul>
+<li><strong>Never fail silently</strong> - All errors are logged with context</li>
+<li><strong>Clean up after failures</strong> - No orphaned model groups left behind</li>
+<li><strong>Provide actionable feedback</strong> - Summary statistics help identify issues</li>
+<li><strong>Support large batches</strong> - Memory-efficient sequential processing</li>
+</ul>
+<p>For debugging, check the detailed log file in the <code>ICM Import Log Files</code> folder.</p>
+<p>Nano Banana Diagrams of the UI and EX Ruby Code</p>
+<p><img alt="alt text" src="Gemini_Generated_Image_yugmv8yugmv8yugm (1)-1.jpeg"></p>
+<p><img alt="alt text" src="Gemini_Generated_Image_gpznzggpznzggpzn.jpeg"></p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

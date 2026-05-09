@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ex;port_hw_weir_to_csv.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0005 - Import Export of Data Tables</div>
+    <h1>ex;port_hw_weir_to_csv.md</h1>
+    <div class="meta">Markdown document &middot; 0005 - Import Export of Data Tables</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">195 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="hw_weir-csv-export-script-summary">HW_Weir CSV Export Script Summary</h1>
+<h2 id="overview">Overview</h2>
+<p>This Ruby script exports selected <code>hw_weir</code> objects from an InfoWorks ICM network to a CSV file. It provides a user-friendly interface for selecting which weir attributes to export and handles various data types and error conditions.</p>
+<h2 id="key-features">Key Features</h2>
+<h3 id="1-interactive-field-selection">1. <strong>Interactive Field Selection</strong></h3>
+<ul>
+<li>Presents a dialog box allowing users to select which weir attributes to export</li>
+<li>Includes a "SELECT/DESELECT ALL FIELDS" option for convenience</li>
+<li>Pre-configured with sensible defaults for commonly needed fields</li>
+</ul>
+<h3 id="2-comprehensive-field-coverage">2. <strong>Comprehensive Field Coverage</strong></h3>
+<p>The script supports exporting 50+ weir attributes organized into categories:</p>
+<h4 id="key-identifiers">Key Identifiers</h4>
+<ul>
+<li>Upstream/Downstream Node IDs</li>
+<li>Link Suffix</li>
+<li>Asset ID/UID</li>
+<li>Infonet ID</li>
+</ul>
+<h4 id="physical-characteristics">Physical Characteristics</h4>
+<ul>
+<li>Crest Level</li>
+<li>Width/Height</li>
+<li>Gate Height</li>
+<li>Length</li>
+<li>Orientation</li>
+</ul>
+<h4 id="hydraulic-parameters">Hydraulic Parameters</h4>
+<ul>
+<li>Discharge Coefficients (primary, reverse, secondary)</li>
+<li>Modular Limit</li>
+<li>Notch parameters (height, angle, width, count)</li>
+</ul>
+<h4 id="control-parameters-for-gated-weirs">Control Parameters (for gated weirs)</h4>
+<ul>
+<li>Min/Max values and crest levels</li>
+<li>Opening ranges (min, max, initial)</li>
+<li>Gate movement speeds</li>
+<li>Control thresholds</li>
+</ul>
+<h4 id="additional-data">Additional Data</h4>
+<ul>
+<li>Settlement efficiencies</li>
+<li>Geometry (point arrays)</li>
+<li>User-defined fields (10 numeric, 10 text)</li>
+<li>Notes and hyperlinks</li>
+</ul>
+<h3 id="3-data-processing-features">3. <strong>Data Processing Features</strong></h3>
+<h4 id="selection-filtering">Selection Filtering</h4>
+<ul>
+<li>Only exports weirs that are currently selected in the network</li>
+<li>Provides count of total weirs vs. selected weirs</li>
+</ul>
+<h4 id="special-data-handling">Special Data Handling</h4>
+<ul>
+<li><strong>Point Arrays</strong>: Converted to <code>X1,Y1;X2,Y2;...</code> format</li>
+<li><strong>Hyperlinks</strong>: Formatted as <code>Description,URL;...</code></li>
+<li><strong>Arrays</strong>: General arrays joined with commas</li>
+<li><strong>Null Values</strong>: Exported as empty strings</li>
+</ul>
+<h4 id="error-handling">Error Handling</h4>
+<ul>
+<li>Gracefully handles missing attributes</li>
+<li>Logs warnings for inaccessible fields</li>
+<li>Continues processing despite individual field errors</li>
+</ul>
+<h3 id="4-file-management">4. <strong>File Management</strong></h3>
+<h4 id="output-format">Output Format</h4>
+<ul>
+<li>CSV file with timestamp: <code>selected_hw_weirs_export_YYYYMMDD_HHMMSS.csv</code></li>
+<li>User-specified export folder</li>
+<li>Creates folder if it doesn't exist</li>
+</ul>
+<h4 id="cleanup-logic">Cleanup Logic</h4>
+<ul>
+<li>Automatically deletes empty CSV files (header-only)</li>
+<li>Validates file creation and permissions</li>
+</ul>
+<h3 id="5-user-feedback">5. <strong>User Feedback</strong></h3>
+<h4 id="progress-reporting">Progress Reporting</h4>
+<ul>
+<li>Console output during processing</li>
+<li>Shows current weir being processed</li>
+<li>Time tracking (start, end, duration)</li>
+</ul>
+<h4 id="summary-dialog">Summary Dialog</h4>
+<ul>
+<li>Final dialog showing:</li>
+<li>Export file path</li>
+<li>Number of weirs exported</li>
+<li>Number of fields per weir</li>
+</ul>
+<h4 id="error-messages">Error Messages</h4>
+<ul>
+<li>Clear error reporting for:</li>
+<li>No network loaded</li>
+<li>Permission issues</li>
+<li>Missing attributes</li>
+<li>File write failures</li>
+</ul>
+<h2 id="technical-implementation">Technical Implementation</h2>
+<h3 id="dependencies">Dependencies</h3>
+<pre><code class="language-ruby">require 'csv'
+require 'fileutils'
+</code></pre>
+<h3 id="key-methods-used">Key Methods Used</h3>
+<ul>
+<li><code>WSApplication.current_network</code> - Access current network</li>
+<li><code>network.row_objects('hw_weir')</code> - Get weir objects</li>
+<li><code>weir.selected</code> - Check selection status</li>
+<li><code>WSApplication.prompt</code> - User interface dialogs</li>
+</ul>
+<h3 id="error-categories-handled">Error Categories Handled</h3>
+<ol>
+<li><strong>Environment Errors</strong>: WSApplication not found</li>
+<li><strong>Network Errors</strong>: No network loaded</li>
+<li><strong>File System Errors</strong>: Permission denied, disk full</li>
+<li><strong>Data Access Errors</strong>: Missing methods/attributes</li>
+<li><strong>CSV Format Errors</strong>: Malformed data</li>
+</ol>
+<h2 id="usage-workflow">Usage Workflow</h2>
+<ol>
+<li>
+<p><strong>Prerequisites</strong>
+   - Open a network in InfoWorks ICM
+   - Select the weir objects you want to export</p>
+</li>
+<li>
+<p><strong>Run Script</strong>
+   - Execute the script within the application
+   - Choose export folder
+   - Select desired fields (or use SELECT ALL)</p>
+</li>
+<li>
+<p><strong>Output</strong>
+   - CSV file created in specified folder
+   - Summary dialog confirms export details
+   - Console shows detailed processing log</p>
+</li>
+</ol>
+<h2 id="debugging-features">Debugging Features</h2>
+<h3 id="optional-debug-block-commented">Optional Debug Block (Commented)</h3>
+<pre><code class="language-ruby"># Uncomment to inspect available methods on weir objects
+# Helps verify field names match actual object methods
+</code></pre>
+<h3 id="logging">Logging</h3>
+<ul>
+<li>Detailed console output for troubleshooting</li>
+<li>Warning messages for missing attributes</li>
+<li>Error stack traces (first 5 lines)</li>
+</ul>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<ul>
+<li>Processes weirs one at a time to avoid memory issues</li>
+<li>Writes directly to CSV without intermediate storage</li>
+<li>Time tracking to measure performance</li>
+</ul>
+<h2 id="customization-options">Customization Options</h2>
+<h3 id="adding-new-fields">Adding New Fields</h3>
+<ol>
+<li>
+<p>Add to <code>FIELDS_TO_EXPORT</code> array:
+   <code>ruby
+   ['Display Name', :method_name, default_selected, 'CSV Header']</code></p>
+</li>
+<li>
+<p>Add special handling if needed in the data processing section</p>
+</li>
+</ol>
+<h3 id="modifying-export-format">Modifying Export Format</h3>
+<ul>
+<li>Change delimiter in CSV options</li>
+<li>Adjust array/point formatting logic</li>
+<li>Customize null value representation</li>
+</ul>
+<h2 id="best-practices-implemented">Best Practices Implemented</h2>
+<ol>
+<li>
+<p><strong>Defensive Programming</strong>
+   - Checks for method existence before calling
+   - Handles nil values gracefully
+   - Validates file operations</p>
+</li>
+<li>
+<p><strong>User Experience</strong>
+   - Clear error messages
+   - Progress feedback
+   - Summary of results</p>
+</li>
+<li>
+<p><strong>Data Integrity</strong>
+   - Preserves data types where possible
+   - Consistent formatting for complex types
+   - No data loss from special characters</p>
+</li>
+</ol>
+<h2 id="limitations">Limitations</h2>
+<ol>
+<li>Only exports selected weirs (by design)</li>
+<li>Requires InfoWorks ICM environment</li>
+<li>CSV format limitations for complex nested data</li>
+<li>Single-threaded processing</li>
+</ol>
+<h2 id="potential-enhancements">Potential Enhancements</h2>
+<ol>
+<li><strong>Batch Processing</strong>: Support for multiple object types</li>
+<li><strong>Format Options</strong>: Excel, JSON, or XML export</li>
+<li><strong>Filtering</strong>: Additional criteria beyond selection</li>
+<li><strong>Performance</strong>: Parallel processing for large networks</li>
+<li><strong>Validation</strong>: Data quality checks before export</li>
+</ol></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

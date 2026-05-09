@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0017 - Subcatchment Grid and Tabs Tools</title>
+<style>
+:root {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-2: #0b1220;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-2: #f472b6;
+  --good: #22c55e;
+  --border: #334155;
+  --code-bg: #0b1220;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: linear-gradient(180deg, #0a1226 0%, #0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+header.hero {
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(244,114,182,0.06));
+  padding: 28px 28px 24px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+header.hero .crumbs {
+  font-size: 12px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+header.hero h1 {
+  font-size: 26px; margin: 0 0 6px 0; color: #fff;
+}
+header.hero p.lede {
+  margin: 0 0 14px 0; color: var(--muted);
+}
+.stats {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 13px;
+  background: rgba(56,189,248,0.10);
+  border: 1px solid rgba(56,189,248,0.35);
+  color: var(--accent);
+}
+.chip.alt { background: rgba(34,197,94,0.10); border-color: rgba(34,197,94,0.35); color: var(--good); }
+.chip.pink { background: rgba(244,114,182,0.10); border-color: rgba(244,114,182,0.35); color: var(--accent-2); }
+.content {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 6px 28px 24px;
+}
+.content h2 {
+  margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border);
+  font-size: 18px; color: #fff;
+}
+.content h2:first-of-type { border-top: none; padding-top: 6px; }
+.content h3 { font-size: 15px; color: var(--accent); margin: 16px 0 6px; }
+.content p, .content li { color: var(--text); }
+.content code {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 4px; font-size: 13px;
+  color: #fbbf24;
+}
+.content pre {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 14px; border-radius: 8px; overflow-x: auto;
+  font-size: 13px; line-height: 1.5;
+}
+.content pre code { background: transparent; border: 0; padding: 0; color: var(--text); }
+.content ul { padding-left: 22px; }
+.content li { margin: 4px 0; }
+.content a { color: var(--accent); text-decoration: none; }
+.content a:hover { text-decoration: underline; }
+.content blockquote {
+  margin: 12px 0; padding: 8px 16px;
+  border-left: 3px solid var(--accent); background: rgba(56,189,248,0.06);
+  color: var(--muted);
+}
+.content table {
+  width: 100%; border-collapse: collapse; margin: 12px 0;
+  font-size: 14px;
+}
+.content th, .content td {
+  border: 1px solid var(--border); padding: 8px 12px; text-align: left;
+}
+.content th { background: var(--panel-2); }
+footer {
+  margin-top: 28px; color: var(--muted); font-size: 12px; text-align: center;
+}
+.toc {
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--panel-2); padding: 14px 18px; margin-bottom: 16px;
+}
+.toc strong { color: var(--accent); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.toc ol { columns: 2; margin: 6px 0 0; padding-left: 22px; }
+.toc a { color: var(--text); text-decoration: none; font-size: 13px; }
+.toc a:hover { color: var(--accent); }
+@media (max-width: 720px) {
+  .toc ol { columns: 1; }
+  header.hero h1 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">SWMM &rsaquo; Ruby Fixes</div>
+    <h1>0017 - Subcatchment Grid and Tabs Tools</h1>
+    <p class="lede">Subcatchment grid/tabs: land-use, runoff surfaces, copy/move pumps, nearest-node connections, multi-load copies.</p>
+    <div class="stats">
+      <span class="chip">19 originals</span>
+      <span class="chip alt">19 fix_ versions</span>
+      <span class="chip pink">Robustness pass</span>
+    </div>
+  </header>
+
+<style>
+  .file-table-wrap { background:#0b1220; border:1px solid #334155; border-radius:12px; padding:14px 18px; margin:18px 0; }
+  .file-table-wrap h2 { color:#fff; font-size:16px; margin:0 0 10px; }
+  .file-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .file-table th, .file-table td { border-bottom:1px solid #1f2937; padding:6px 10px; text-align:left; vertical-align:top; }
+  .file-table th { color:#94a3b8; font-weight:500; font-size:12px; letter-spacing:0.04em; text-transform:uppercase; }
+  .file-table a { color:#38bdf8; text-decoration:none; }
+  .file-table a:hover { text-decoration:underline; }
+  .file-table .pair { font-family:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace; }
+  .file-table tr:last-child td { border-bottom:0; }
+  .file-table .miss { color:#64748b; font-style:italic; }
+  .md-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .md-list a { padding:4px 10px; border:1px solid #334155; border-radius:8px; background:#0b1220; color:#38bdf8; text-decoration:none; font-size:13px; }
+  .md-list a:hover { border-color:#38bdf8; }
+</style>
+<div class="file-table-wrap"><h2>Files in this folder</h2><table class="file-table"><thead><tr><th>Original (.rb)</th><th>Hardened (fix_*.rb)</th></tr></thead><tbody><tr><td class="pair"><a href="change_the_runoff_surface_grid.rb.html">change_the_runoff_surface_grid.rb</a></td><td class="pair"><a href="fix_change_the_runoff_surface_grid.rb.html">fix_change_the_runoff_surface_grid.rb</a></td></tr><tr><td class="pair"><a href="hw_UI_script%20Connect%20subcatchment%20to%20nearest%20node.rb.html">hw_UI_script Connect subcatchment to nearest node.rb</a></td><td class="pair"><a href="fix_hw_UI_script%20Connect%20subcatchment%20to%20nearest%20node.rb.html">fix_hw_UI_script Connect subcatchment to nearest node.rb</a></td></tr><tr><td class="pair"><a href="hw_UI_Script_%20Land%20Use%20with%20Runoff%20Surfaces%20Table.rb.html">hw_UI_Script_ Land Use with Runoff Surfaces Table.rb</a></td><td class="pair"><a href="fix_hw_UI_Script_%20Land%20Use%20with%20Runoff%20Surfaces%20Table.rb.html">fix_hw_UI_Script_ Land Use with Runoff Surfaces Table.rb</a></td></tr><tr><td class="pair"><a href="hw_UI_script_Copy%20selected%20subcatchments%20User%20Defined%20Times.rb.html">hw_UI_script_Copy selected subcatchments User Defined Times.rb</a></td><td class="pair"><a href="fix_hw_UI_script_Copy%20selected%20subcatchments%20User%20Defined%20Times.rb.html">fix_hw_UI_script_Copy selected subcatchments User Defined Times.rb</a></td></tr><tr><td class="pair"><a href="hw_UI_script_Copy%20selected%20subcatchments%20with%20user%20suffix.rb.html">hw_UI_script_Copy selected subcatchments with user suffix.rb</a></td><td class="pair"><a href="fix_hw_UI_script_Copy%20selected%20subcatchments%20with%20user%20suffix.rb.html">fix_hw_UI_script_Copy selected subcatchments with user suffix.rb</a></td></tr><tr><td class="pair"><a href="hw_UI_Script_InfoWorks%20Land%20Use%20Tables.rb.html">hw_UI_Script_InfoWorks Land Use Tables.rb</a></td><td class="pair"><a href="fix_hw_UI_Script_InfoWorks%20Land%20Use%20Tables.rb.html">fix_hw_UI_Script_InfoWorks Land Use Tables.rb</a></td></tr><tr><td class="pair"><a href="hw_UI_Script_Runoff%20Surface%20Tables.rb.html">hw_UI_Script_Runoff Surface Tables.rb</a></td><td class="pair"><a href="fix_hw_UI_Script_Runoff%20Surface%20Tables.rb.html">fix_hw_UI_Script_Runoff Surface Tables.rb</a></td></tr><tr><td class="pair"><a href="hw_UI_Script_Sub%2C%20Land%20Use%20with%20Runoff%20Surfaces%20Table.rb.html">hw_UI_Script_Sub, Land Use with Runoff Surfaces Table.rb</a></td><td class="pair"><a href="fix_hw_UI_Script_Sub%2C%20Land%20Use%20with%20Runoff%20Surfaces%20Table.rb.html">fix_hw_UI_Script_Sub, Land Use with Runoff Surfaces Table.rb</a></td></tr><tr><td class="pair"><a href="hw_UI_Script_Subcatchment%20Grid%20Area%20Table.rb.html">hw_UI_Script_Subcatchment Grid Area Table.rb</a></td><td class="pair"><a href="fix_hw_UI_Script_Subcatchment%20Grid%20Area%20Table.rb.html">fix_hw_UI_Script_Subcatchment Grid Area Table.rb</a></td></tr><tr><td class="pair"><a href="ICM%20InfoWorks%20vs%20ICM%20SWMM%20Subcatchment.rb.html">ICM InfoWorks vs ICM SWMM Subcatchment.rb</a></td><td class="pair"><a href="fix_ICM%20InfoWorks%20vs%20ICM%20SWMM%20Subcatchment.rb.html">fix_ICM InfoWorks vs ICM SWMM Subcatchment.rb</a></td></tr><tr><td class="pair"><a href="Model_Evaluation_Logic.rb.html">Model_Evaluation_Logic.rb</a></td><td class="pair"><a href="fix_Model_Evaluation_Logic.rb.html">fix_Model_Evaluation_Logic.rb</a></td></tr><tr><td class="pair"><a href="Move_Copy_Impored_Pumps.rb.html">Move_Copy_Impored_Pumps.rb</a></td><td class="pair"><a href="fix_Move_Copy_Impored_Pumps.rb.html">fix_Move_Copy_Impored_Pumps.rb</a></td></tr><tr><td class="pair"><a href="Nearest%20Storage%20Node.rb.html">Nearest Storage Node.rb</a></td><td class="pair"><a href="fix_Nearest%20Storage%20Node.rb.html">fix_Nearest Storage Node.rb</a></td></tr><tr><td class="pair"><a href="Step1a_Create_Subcatchments.rb.html">Step1a_Create_Subcatchments.rb</a></td><td class="pair"><a href="fix_Step1a_Create_Subcatchments.rb.html">fix_Step1a_Create_Subcatchments.rb</a></td></tr><tr><td class="pair"><a href="Step7a_InfoSewer_subcatchment_copy_for_ten_loads.rb.html">Step7a_InfoSewer_subcatchment_copy_for_ten_loads.rb</a></td><td class="pair"><a href="fix_Step7a_InfoSewer_subcatchment_copy_for_ten_loads.rb.html">fix_Step7a_InfoSewer_subcatchment_copy_for_ten_loads.rb</a></td></tr><tr><td class="pair"><a href="sw_UI_script%20Connect%20subcatchment%20to%20nearest%20node.rb.html">sw_UI_script Connect subcatchment to nearest node.rb</a></td><td class="pair"><a href="fix_sw_UI_script%20Connect%20subcatchment%20to%20nearest%20node.rb.html">fix_sw_UI_script Connect subcatchment to nearest node.rb</a></td></tr><tr><td class="pair"><a href="sw_UI_script_Copy%20selected%20subcatchments%20User%20Defined%20Times.rb.html">sw_UI_script_Copy selected subcatchments User Defined Times.rb</a></td><td class="pair"><a href="fix_sw_UI_script_Copy%20selected%20subcatchments%20User%20Defined%20Times.rb.html">fix_sw_UI_script_Copy selected subcatchments User Defined Times.rb</a></td></tr><tr><td class="pair"><a href="sw_UI_script_Copy%20selected%20subcatchments%20with%20user%20suffix.rb.html">sw_UI_script_Copy selected subcatchments with user suffix.rb</a></td><td class="pair"><a href="fix_sw_UI_script_Copy%20selected%20subcatchments%20with%20user%20suffix.rb.html">fix_sw_UI_script_Copy selected subcatchments with user suffix.rb</a></td></tr><tr><td class="pair"><a href="UI_script_Runoff%20surfaces%20from%20selected%20subcatchments.rb.html">UI_script_Runoff surfaces from selected subcatchments.rb</a></td><td class="pair"><a href="fix_UI_script_Runoff%20surfaces%20from%20selected%20subcatchments.rb.html">fix_UI_script_Runoff surfaces from selected subcatchments.rb</a></td></tr></tbody></table><h2 style="margin-top:14px;">Markdown</h2><div class="md-list"><a href="_Fixes.md.html">_Fixes.md</a><a href="readme.md.html">readme.md</a></div></div>
+  <nav class="toc"><strong>Scripts in this folder</strong><ol><li><a href="#fix-change-the-runoff-surface-gridrb">fix_change_the_runoff_surface_grid.rb</a></li><li><a href="#fix-icm-infoworks-vs-icm-swmm-subcatchmentrb">fix_ICM InfoWorks vs ICM SWMM Subcatchment.rb</a></li><li><a href="#fix-model-evaluation-logicrb">fix_Model_Evaluation_Logic.rb</a></li><li><a href="#fix-move-copy-impored-pumpsrb">fix_Move_Copy_Impored_Pumps.rb</a></li><li><a href="#fix-nearest-storage-noderb">fix_Nearest Storage Node.rb</a></li><li><a href="#fix-step1a-create-subcatchmentsrb">fix_Step1a_Create_Subcatchments.rb</a></li><li><a href="#fix-step7a-infosewer-subcatchment-copy-for-ten-loadsrb">fix_Step7a_InfoSewer_subcatchment_copy_for_ten_loads.rb</a></li><li><a href="#fix-ui-script-runoff-surfaces-from-selected-subcatchmentsrb">fix_UI_script_Runoff surfaces from selected subcatchments.rb</a></li><li><a href="#fix-hw-ui-script-land-use-with-runoff-surfaces-tablerb">fix_hw_UI_Script_ Land Use with Runoff Surfaces Table.rb</a></li><li><a href="#fix-hw-ui-script-infoworks-land-use-tablesrb">fix_hw_UI_Script_InfoWorks Land Use Tables.rb</a></li><li><a href="#fix-hw-ui-script-runoff-surface-tablesrb">fix_hw_UI_Script_Runoff Surface Tables.rb</a></li><li><a href="#fix-hw-ui-script-connect-subcatchment-to-nearest-noderb">fix_hw_UI_script Connect subcatchment to nearest node.rb</a></li><li><a href="#fix-hw-ui-script-sub-land-use-with-runoff-surfaces-tablerb">fix_hw_UI_Script_Sub, Land Use with Runoff Surfaces Table.rb</a></li><li><a href="#fix-hw-ui-script-subcatchment-grid-area-tablerb">fix_hw_UI_Script_Subcatchment Grid Area Table.rb</a></li><li><a href="#fix-hw-ui-script-copy-selected-subcatchments-user-defined-timesrb">fix_hw_UI_script_Copy selected subcatchments User Defined Times.rb</a></li><li><a href="#fix-hw-ui-script-copy-selected-subcatchments-with-user-suffixrb">fix_hw_UI_script_Copy selected subcatchments with user suffix.rb</a></li><li><a href="#fix-sw-ui-script-connect-subcatchment-to-nearest-noderb">fix_sw_UI_script Connect subcatchment to nearest node.rb</a></li><li><a href="#fix-sw-ui-script-copy-selected-subcatchments-user-defined-timesrb">fix_sw_UI_script_Copy selected subcatchments User Defined Times.rb</a></li><li><a href="#fix-sw-ui-script-copy-selected-subcatchments-with-user-suffixrb">fix_sw_UI_script_Copy selected subcatchments with user suffix.rb</a></li></ol></nav>
+  <section class="content">
+    <h1 id="0017-subcatchment-grid-and-tabs-tools-fixed-scripts">0017 - Subcatchment Grid and Tabs Tools - Fixed Scripts</h1>
+<p>19 fix_ scripts covering subcatchment creation, copy/clone, nearest-node connection, runoff-surface/land-use reporting, and ICM InfoWorks vs ICM SWMM diagnostics.</p>
+<p>Hardening applied to every fix_: <code>frozen_string_literal</code>, top-level <code>begin/rescue/ensure</code>, timestamped <code>[HH:MM:SS]</code> progress logging, network/selection validation, nil-safe field access (<code>&amp;.</code>), per-row rescue, single-transaction batches with rollback on raise, and <code>File.open</code> block form for any file output.</p>
+<hr>
+<h2 id="fix_change_the_runoff_surface_gridrb">fix_change_the_runoff_surface_grid.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Modify hw_runoff_surface fields in bulk based on filter criteria.</li>
+<li><strong>Hardening:</strong> kept from prior pass; consistent with the conventions above.</li>
+<li><strong>How to run:</strong> open network in edit mode and run.</li>
+</ul>
+<h2 id="fix_icm-infoworks-vs-icm-swmm-subcatchmentrb">fix_ICM InfoWorks vs ICM SWMM Subcatchment.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Diagnostic that lists tables in current vs background networks and counts hw_subcatchment / sw_subcatchment rows.</li>
+<li><strong>Hardening:</strong> nil-safe network checks, per-iteration rescue, helper <code>list_tables</code> method.</li>
+<li><strong>How to run:</strong> open both InfoWorks (current) and SWMM (background) networks, run.</li>
+</ul>
+<h2 id="fix_model_evaluation_logicrb">fix_Model_Evaluation_Logic.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Master report comparing InfoWorks vs SWMM subcatchments across area, slope, roughness, depression storage and impervious % using <code>surface_type</code> to match Pervious/Impervious surfaces. Optional CSV export.</li>
+<li><strong>Hardening:</strong> safe_rows/safe_get/try_fields helpers, per-row rescue, CSV via <code>File.open</code> with rescue.</li>
+<li><strong>How to run:</strong> open both networks, set CSV_PATH constant, run.</li>
+</ul>
+<h2 id="fix_move_copy_impored_pumpsrb">fix_Move_Copy_Impored_Pumps.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Find links tagged <code>user_text_10 == 'Pump'</code> and create a hw_pump row for each.</li>
+<li><strong>Bug fix:</strong> original called <code>new_pump_ro()</code> which is undefined; fixed to <code>net.new_row_object('hw_pump')</code>.</li>
+<li><strong>Hardening:</strong> transaction rollback on raise; per-link rescue.</li>
+<li><strong>How to run:</strong> import pumps as links with user_text_10='Pump', then run.</li>
+</ul>
+<h2 id="fix_nearest-storage-noderb">fix_Nearest Storage Node.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> For each subcatchment with empty node_id, set node_id to the nearest hw_node where node_type='storage'.</li>
+<li><strong>Hardening:</strong> pre-build storage-node array (O(N+M)), per-row rescue, nil-safe x/y, transaction rollback.</li>
+<li><strong>How to run:</strong> open network in edit mode and run.</li>
+</ul>
+<h2 id="fix_step1a_create_subcatchmentsrb">fix_Step1a_Create_Subcatchments.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Create one hw_subcatchment per unique node coordinate (default total_area=0.10).</li>
+<li><strong>Hardening:</strong> transaction rollback on raise, per-row rescue, nil-safe x/y.</li>
+<li><strong>How to run:</strong> open network in edit mode and run.</li>
+</ul>
+<h2 id="fix_step7a_infosewer_subcatchment_copy_for_ten_loadsrb">fix_Step7a_InfoSewer_subcatchment_copy_for_ten_loads.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Copy each selected hw_subcatchment with <code>_copy</code> suffix.</li>
+<li><strong>Hardening:</strong> wrapped whole batch in one transaction (was per-copy), per-row rescue.</li>
+<li><strong>How to run:</strong> select subcatchments and run.</li>
+</ul>
+<h2 id="fix_ui_script_runoff-surfaces-from-selected-subcatchmentsrb">fix_UI_script_Runoff surfaces from selected subcatchments.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Starting from selected hw_runoff_surface rows, select every hw_land_use referencing them and every hw_subcatchment whose land_use_id matches.</li>
+<li><strong>Hardening:</strong> per-row rescue, nil-safe runoff_index lookups, breaks early once a slot match is found per land_use.</li>
+<li><strong>How to run:</strong> select runoff_surface rows in grid, run.</li>
+</ul>
+<h2 id="fix_hw_ui_script_-land-use-with-runoff-surfaces-tablerb">fix_hw_UI_Script_ Land Use with Runoff Surfaces Table.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Print hw_land_use rows interleaved with their slot-by-slot hw_runoff_surface details.</li>
+<li><strong>Hardening:</strong> per-row rescue.</li>
+<li><strong>How to run:</strong> open network and run.</li>
+</ul>
+<h2 id="fix_hw_ui_script_infoworks-land-use-tablesrb">fix_hw_UI_Script_InfoWorks Land Use Tables.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Print all hw_land_use rows with their slot 1..12 runoff_index_N and p_area_N values.</li>
+<li><strong>Hardening:</strong> per-row rescue.</li>
+</ul>
+<h2 id="fix_hw_ui_script_runoff-surface-tablesrb">fix_hw_UI_Script_Runoff Surface Tables.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Print hw_runoff_surface full parameter set and show a configuration prompt.</li>
+<li><strong>Hardening:</strong> per-row rescue; prompt failure (e.g. running headless) is logged but does not abort the report.</li>
+</ul>
+<h2 id="fix_hw_ui_script-connect-subcatchment-to-nearest-noderb">fix_hw_UI_script Connect subcatchment to nearest node.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> For each selected hw_subcatchment, find the nearest selected hw_node and write its id.</li>
+<li><strong>Hardening:</strong> uses <code>Float::INFINITY</code> (was 999999999.9), per-row rescue, transaction rollback.</li>
+</ul>
+<h2 id="fix_hw_ui_script_sub-land-use-with-runoff-surfaces-tablerb">fix_hw_UI_Script_Sub, Land Use with Runoff Surfaces Table.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Combined Land Use + Runoff Surfaces + Subcatchment Grid report.</li>
+<li><strong>Hardening:</strong> per-row rescue, nil-safe field iteration.</li>
+</ul>
+<h2 id="fix_hw_ui_script_subcatchment-grid-area-tablerb">fix_hw_UI_Script_Subcatchment Grid Area Table.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Print hw_subcatchment grid (ID, Land Use, Total Area, contributing area, measurement type) plus area_absolute_N and area_percent_N for slots 1..12.</li>
+<li><strong>Hardening:</strong> per-row rescue.</li>
+</ul>
+<h2 id="fix_hw_ui_script_copy-selected-subcatchments-user-defined-timesrb">fix_hw_UI_script_Copy selected subcatchments User Defined Times.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Copy each selected hw_subcatchment N times (default 5) with <code>_c_&lt;n&gt;</code> suffix.</li>
+<li><strong>Hardening:</strong> single transaction (was per-copy), per-row rescue.</li>
+</ul>
+<h2 id="fix_hw_ui_script_copy-selected-subcatchments-with-user-suffixrb">fix_hw_UI_script_Copy selected subcatchments with user suffix.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Copy each selected hw_subcatchment once per suffix in the list (default Horton/GreenAmpt/Constant) using <code>_&lt;suffix&gt;</code> naming.</li>
+<li><strong>Hardening:</strong> single transaction, per-row rescue.</li>
+</ul>
+<h2 id="fix_sw_ui_script-connect-subcatchment-to-nearest-noderb">fix_sw_UI_script Connect subcatchment to nearest node.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> SWMM-side: for each selected sw_subcatchment, find nearest selected sw_node and write to outlet_id.</li>
+<li><strong>Hardening:</strong> Float::INFINITY, per-row rescue, transaction rollback.</li>
+</ul>
+<h2 id="fix_sw_ui_script_copy-selected-subcatchments-user-defined-timesrb">fix_sw_UI_script_Copy selected subcatchments User Defined Times.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> SWMM-side copy x N (default 5) with <code>_c_&lt;n&gt;</code> suffix.</li>
+<li><strong>Hardening:</strong> single transaction, per-row rescue.</li>
+</ul>
+<h2 id="fix_sw_ui_script_copy-selected-subcatchments-with-user-suffixrb">fix_sw_UI_script_Copy selected subcatchments with user suffix.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> SWMM-side copy with custom suffix list (default Horton/GreenAmpt/Constant).</li>
+<li><strong>Hardening:</strong> single transaction, per-row rescue.</li>
+</ul>
+<hr>
+<p><strong>How to run any of these:</strong> open the appropriate ICM (InfoWorks or SWMM) network in edit mode, make any required selection (per script), and run from the Network -&gt; Run Ruby Script menu.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     </p>
+  </section>
+  <footer>
+    Auto-generated from _Fixes.md &middot; InfoWorks ICM Ruby scripts hardened with begin/rescue/ensure, input validation, block-form file I/O, progress logging.
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>README.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0000 - PCSWMM Import to ICM SWMM</div>
+    <h1>README.md</h1>
+    <div class="meta">Markdown document &middot; 0000 - PCSWMM Import to ICM SWMM</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">98 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="pcswmm-to-infoworks-icm-import-tool">PCSWMM to InfoWorks ICM Import Tool</h1>
+<p><strong>Imports PCSWMM model (.pcz file) into InfoWorks ICM as a SWMM network</strong></p>
+<p><strong>⚠️ IMPORTANT: An InfoWorks ICM Ultimate license is required to run this script.</strong></p>
+<hr>
+<h2 id="quick-start">Quick Start</h2>
+<ol>
+<li><strong>Download both scripts</strong> (<code>PCSWMM_Import_UI.rb</code> and <code>PCSWMM_Import_Exchange.rb</code>) and save them to the same folder</li>
+<li><strong>Open InfoWorks ICM</strong></li>
+<li><strong>Create a new model group</strong></li>
+<li><strong>Create a new SWMM network</strong></li>
+<li><strong>Open the SWMM network</strong></li>
+<li><strong>Network → Run Ruby Script</strong></li>
+<li><strong>Select:</strong> <code>PCSWMM_Import_UI.rb</code></li>
+<li><strong>Follow the dialogs:</strong>
+   - Choose your <code>.pcz</code> file
+   - Enter a model group name
+   - Confirm import</li>
+<li><strong>Wait for completion</strong> - Check console output for results</li>
+</ol>
+<hr>
+<h2 id="what-it-does">What It Does</h2>
+<ul>
+<li>Extracts .pcz file (ZIP format)</li>
+<li>Locates INP file in extracted contents</li>
+<li>Truncates overly long field values (ICM 100-character limit)</li>
+<li>Creates model group and imports SWMM network</li>
+<li>Cleans up URL-encoded names (%20 → spaces)</li>
+<li>Removes empty label lists</li>
+<li>Commits network to database</li>
+</ul>
+<hr>
+<h2 id="results">Results</h2>
+<p><strong>Model Group</strong> - Contains imported SWMM network with all objects</p>
+<p><strong>Log Files</strong> - Created in subfolder named after your .pcz file:
+- <code>PCSWMM_Import_YYYYMMDD_HHMMSS.log</code> - Main import log
+- <code>INP_Import_YYYYMMDD_HHMMSS.txt</code> - ICM's INP import log</p>
+<p><strong>Imported Objects:</strong>
+- SWMM Network
+- Nodes (junctions, outfalls, storage, dividers)
+- Links (conduits, pumps, orifices, weirs, outlets)
+- Subcatchments
+- Rainfall Events
+- Climatology
+- Time Patterns</p>
+<hr>
+<h2 id="files">Files</h2>
+<ul>
+<li><code>PCSWMM_Import_UI.rb</code> - <strong>Run this</strong> (user interface)</li>
+<li><code>PCSWMM_Import_Exchange.rb</code> - Core logic (launched automatically)</li>
+<li><code>README.md</code> - This guide</li>
+</ul>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"No database is currently open"</td>
+<td>Open an ICM database before running the script</td>
+</tr>
+<tr>
+<td>"Model group already exists"</td>
+<td>Delete or rename existing group, or choose a different name</td>
+</tr>
+<tr>
+<td>"Connected to Wrong Database" error</td>
+<td>Script automatically detects and reports database mismatches - follow on-screen instructions</td>
+</tr>
+<tr>
+<td>"Cannot find ICMExchange.exe"</td>
+<td>Install InfoWorks ICM 2024+ or contact support</td>
+</tr>
+<tr>
+<td>No objects imported</td>
+<td>Check logs for field value errors - truncation may have failed</td>
+</tr>
+<tr>
+<td>Where are my log files?</td>
+<td><code>[PCZfileLocation]\[PCZfilename]\PCSWMM_Import_*.log</code></td>
+</tr>
+<tr>
+<td>Temporary screen resize during import</td>
+<td>Normal behavior - ICMExchange process temporarily takes focus</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="known-limitations">Known Limitations</h2>
+<ol>
+<li><strong>PCSWMM Extensions</strong> - Custom plugins and extensions don't transfer</li>
+<li><strong>Field Length</strong> - Values over 100 characters are automatically truncated</li>
+<li><strong>Scenarios</strong> - Each .pcz represents one model state; export multiple .pcz files for different scenarios</li>
+<li><strong>PCZ Encryption</strong> - Password-protected .pcz files are not supported</li>
+</ol>
+<hr>
+<h2 id="tips">Tips</h2>
+<ul>
+<li><strong>Before Export:</strong> Validate your PCSWMM model to catch geometry errors</li>
+<li><strong>Naming:</strong> Use descriptive model group names (e.g., "Project - Scenario Name")</li>
+<li><strong>Multiple Models:</strong> Import each .pcz separately with unique names</li>
+<li><strong>Validation:</strong> Always run ICM's network validation after import</li>
+<li><strong>Log Files:</strong> Keep logs with your project documentation</li>
+</ul>
+<hr>
+<p><em>Note: This documentation was AI-generated and reviewed by the script author.</em></p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

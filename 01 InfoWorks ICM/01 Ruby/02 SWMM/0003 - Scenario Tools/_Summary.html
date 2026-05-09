@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0003 - Scenario Tools</title>
+<style>
+:root {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-2: #0b1220;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-2: #f472b6;
+  --good: #22c55e;
+  --border: #334155;
+  --code-bg: #0b1220;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: linear-gradient(180deg, #0a1226 0%, #0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+header.hero {
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(244,114,182,0.06));
+  padding: 28px 28px 24px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+header.hero .crumbs {
+  font-size: 12px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+header.hero h1 {
+  font-size: 26px; margin: 0 0 6px 0; color: #fff;
+}
+header.hero p.lede {
+  margin: 0 0 14px 0; color: var(--muted);
+}
+.stats {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 13px;
+  background: rgba(56,189,248,0.10);
+  border: 1px solid rgba(56,189,248,0.35);
+  color: var(--accent);
+}
+.chip.alt { background: rgba(34,197,94,0.10); border-color: rgba(34,197,94,0.35); color: var(--good); }
+.chip.pink { background: rgba(244,114,182,0.10); border-color: rgba(244,114,182,0.35); color: var(--accent-2); }
+.content {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 6px 28px 24px;
+}
+.content h2 {
+  margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border);
+  font-size: 18px; color: #fff;
+}
+.content h2:first-of-type { border-top: none; padding-top: 6px; }
+.content h3 { font-size: 15px; color: var(--accent); margin: 16px 0 6px; }
+.content p, .content li { color: var(--text); }
+.content code {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 4px; font-size: 13px;
+  color: #fbbf24;
+}
+.content pre {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 14px; border-radius: 8px; overflow-x: auto;
+  font-size: 13px; line-height: 1.5;
+}
+.content pre code { background: transparent; border: 0; padding: 0; color: var(--text); }
+.content ul { padding-left: 22px; }
+.content li { margin: 4px 0; }
+.content a { color: var(--accent); text-decoration: none; }
+.content a:hover { text-decoration: underline; }
+.content blockquote {
+  margin: 12px 0; padding: 8px 16px;
+  border-left: 3px solid var(--accent); background: rgba(56,189,248,0.06);
+  color: var(--muted);
+}
+.content table {
+  width: 100%; border-collapse: collapse; margin: 12px 0;
+  font-size: 14px;
+}
+.content th, .content td {
+  border: 1px solid var(--border); padding: 8px 12px; text-align: left;
+}
+.content th { background: var(--panel-2); }
+footer {
+  margin-top: 28px; color: var(--muted); font-size: 12px; text-align: center;
+}
+.toc {
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--panel-2); padding: 14px 18px; margin-bottom: 16px;
+}
+.toc strong { color: var(--accent); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.toc ol { columns: 2; margin: 6px 0 0; padding-left: 22px; }
+.toc a { color: var(--text); text-decoration: none; font-size: 13px; }
+.toc a:hover { color: var(--accent); }
+@media (max-width: 720px) {
+  .toc ol { columns: 1; }
+  header.hero h1 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">SWMM &rsaquo; Ruby Fixes</div>
+    <h1>0003 - Scenario Tools</h1>
+    <p class="lede">Scenario generators (alphabetic, numbered, parametric) and DWF/scenario importers from CSV.</p>
+    <div class="stats">
+      <span class="chip">10 originals</span>
+      <span class="chip alt">10 fix_ versions</span>
+      <span class="chip pink">Robustness pass</span>
+    </div>
+  </header>
+
+<style>
+  .file-table-wrap { background:#0b1220; border:1px solid #334155; border-radius:12px; padding:14px 18px; margin:18px 0; }
+  .file-table-wrap h2 { color:#fff; font-size:16px; margin:0 0 10px; }
+  .file-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .file-table th, .file-table td { border-bottom:1px solid #1f2937; padding:6px 10px; text-align:left; vertical-align:top; }
+  .file-table th { color:#94a3b8; font-weight:500; font-size:12px; letter-spacing:0.04em; text-transform:uppercase; }
+  .file-table a { color:#38bdf8; text-decoration:none; }
+  .file-table a:hover { text-decoration:underline; }
+  .file-table .pair { font-family:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace; }
+  .file-table tr:last-child td { border-bottom:0; }
+  .file-table .miss { color:#64748b; font-style:italic; }
+  .md-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .md-list a { padding:4px 10px; border:1px solid #334155; border-radius:8px; background:#0b1220; color:#38bdf8; text-decoration:none; font-size:13px; }
+  .md-list a:hover { border-color:#38bdf8; }
+</style>
+<div class="file-table-wrap"><h2>Files in this folder</h2><table class="file-table"><thead><tr><th>Original (.rb)</th><th>Hardened (fix_*.rb)</th></tr></thead><tbody><tr><td class="pair"><a href="Create%20Scenarios%20from%20InfoSWMM.rb.html">Create Scenarios from InfoSWMM.rb</a></td><td class="pair"><a href="fix_Create%20Scenarios%20from%20InfoSWMM.rb.html">fix_Create Scenarios from InfoSWMM.rb</a></td></tr><tr><td class="pair"><a href="hw_sw_Scenario_Generator.rb.html">hw_sw_Scenario_Generator.rb</a></td><td class="pair"><a href="fix_hw_sw_Scenario_Generator.rb.html">fix_hw_sw_Scenario_Generator.rb</a></td></tr><tr><td class="pair"><a href="InfoSWMM_DWF.rb.html">InfoSWMM_DWF.rb</a></td><td class="pair"><a href="fix_InfoSWMM_DWF.rb.html">fix_InfoSWMM_DWF.rb</a></td></tr><tr><td class="pair"><a href="Scenario_Generator.rb.html">Scenario_Generator.rb</a></td><td class="pair"><a href="fix_Scenario_Generator.rb.html">fix_Scenario_Generator.rb</a></td></tr><tr><td class="pair"><a href="Scenario_Generator_specific.rb.html">Scenario_Generator_specific.rb</a></td><td class="pair"><a href="fix_Scenario_Generator_specific.rb.html">fix_Scenario_Generator_specific.rb</a></td></tr><tr><td class="pair"><a href="Scenario_GeneratorAtoZ.rb.html">Scenario_GeneratorAtoZ.rb</a></td><td class="pair"><a href="fix_Scenario_GeneratorAtoZ.rb.html">fix_Scenario_GeneratorAtoZ.rb</a></td></tr><tr><td class="pair"><a href="Scenario_maker.rb.html">Scenario_maker.rb</a></td><td class="pair"><a href="fix_Scenario_maker.rb.html">fix_Scenario_maker.rb</a></td></tr><tr><td class="pair"><a href="SWMM%20Network%20Selection%20Lists%20from%20Scenarios%20or%20Selection%20Sets.rb.html">SWMM Network Selection Lists from Scenarios or Selection Sets.rb</a></td><td class="pair"><a href="fix_SWMM%20Network%20Selection%20Lists%20from%20Scenarios%20or%20Selection%20Sets.rb.html">fix_SWMM Network Selection Lists from Scenarios or Selection Sets.rb</a></td></tr><tr><td class="pair"><a href="UI_script%20Percentage%20change%20in%20runoff%20surfaces%20upstream%20node%20into%20new%20scenario.rb.html">UI_script Percentage change in runoff surfaces upstream node into new scenario.rb</a></td><td class="pair"><a href="fix_UI_script%20Percentage%20change%20in%20runoff%20surfaces%20upstream%20node%20into%20new%20scenario.rb.html">fix_UI_script Percentage change in runoff surfaces upstream node into new scenario.rb</a></td></tr><tr><td class="pair"><a href="UI_Script_delete_all_non_base_scenarios.rb.html">UI_Script_delete_all_non_base_scenarios.rb</a></td><td class="pair"><a href="fix_UI_Script_delete_all_non_base_scenarios.rb.html">fix_UI_Script_delete_all_non_base_scenarios.rb</a></td></tr></tbody></table><h2 style="margin-top:14px;">Markdown</h2><div class="md-list"><a href="_Fixes.md.html">_Fixes.md</a><a href="readme.md.html">readme.md</a></div></div>
+  <nav class="toc"><strong>Scripts in this folder</strong><ol><li><a href="#folder-purpose">Folder Purpose</a></li><li><a href="#fixes-applied">Fixes Applied</a></li><li><a href="#common-hardening-patterns">Common Hardening Patterns</a></li><li><a href="#scenarios-created">Scenarios Created</a></li></ol></nav>
+  <section class="content">
+    <h1 id="0003-scenario-tools-fixes-summary">0003 - Scenario Tools - Fixes Summary</h1>
+<h2 id="folder-purpose">Folder Purpose</h2>
+<p>Scenario creation and management tools. Includes scenario generators (alphabetic, specific-named, parametric variation), DWF (dry weather flow) import, selection list creation from scenario data, and scenario deletion utilities.</p>
+<h2 id="fixes-applied">Fixes Applied</h2>
+<h3 id="fix_create-scenarios-from-infoswmmrb">fix_Create Scenarios from InfoSWMM.rb</h3>
+<p><strong>Original:</strong> Create Scenarios from InfoSWMM.rb<br>
+<strong>Purpose:</strong> Import scenarios from InfoSWMM Scenario.csv with optional custom ordering.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- File existence check (Scenario.csv)
+- User prompt validation and cancellation handling
+- File.open block form for safe CSV reading
+- Custom order validation (handles nil gracefully)</p>
+<p><strong>How to Run:</strong> UI script; prompts for ISDB folder; deletes non-Base scenarios; creates scenarios in custom order if provided.</p>
+<hr>
+<h3 id="fix_infoswmm_dwfrb">fix_InfoSWMM_DWF.rb</h3>
+<p><strong>Original:</strong> InfoSWMM_DWF.rb<br>
+<strong>Purpose:</strong> Import dry weather flow (DWF) data from dwf.csv, update node base_flow and additional_dwf fields.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure with transaction rollback on error
+- File existence check (dwf.csv)
+- Hash-based node ID mapping for O(1) lookup
+- Nil checks on id_to_node lookup
+- Flow stats tracking and reporting</p>
+<p><strong>How to Run:</strong> UI script; prompts for ISDB folder; reads dwf.csv; updates node base_flow fields in transaction.</p>
+<hr>
+<h3 id="fix_scenario_generatorrb">fix_Scenario_Generator.rb</h3>
+<p><strong>Original:</strong> Scenario_Generator.rb<br>
+<strong>Purpose:</strong> Generate scenarios by parametric variation of up to 8 variables with configurable ranges.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure with transaction rollback on error
+- Per-scenario transaction control
+- Row object nil checks
+- Variable validation within loop
+- Scenario validation after creation</p>
+<p><strong>How to Run:</strong> UI script; varies 8 parameters across defined ranges; creates Cartesian-product scenarios; validates each.</p>
+<hr>
+<h3 id="fix_swmm-network-selection-lists-from-scenarios-or-selection-setsrb">fix_SWMM Network Selection Lists from Scenarios or Selection Sets.rb</h3>
+<p><strong>Original:</strong> SWMM Network Selection Lists from Scenarios or Selection Sets.rb<br>
+<strong>Purpose:</strong> Create selection lists from active node/link CSV files in scenario/selection set folder structure.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure with transaction rollback on error
+- File existence checks (anode.csv, alink.csv)
+- File.open block form for safe reading
+- Nil checks on parent object, id mappings
+- Transaction control with explicit commit/rollback</p>
+<p><strong>How to Run:</strong> UI script; prompts for scenario folder; reads anode.csv/alink.csv from subdirs; creates selection lists in Asset Group.</p>
+<hr>
+<h3 id="fix_scenario_generatoratozrb">fix_Scenario_GeneratorAtoZ.rb</h3>
+<p><strong>Original:</strong> Scenario_GeneratorAtoZ.rb<br>
+<strong>Purpose:</strong> Create 26 scenarios named A through Z.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- Network validation
+- Informative user messages with thank-you notes</p>
+<p><strong>How to Run:</strong> UI script; deletes non-Base scenarios; creates A-Z scenarios; displays confirmations.</p>
+<hr>
+<h3 id="fix_scenario_generator_specificrb">fix_Scenario_Generator_specific.rb</h3>
+<p><strong>Original:</strong> Scenario_Generator_specific.rb<br>
+<strong>Purpose:</strong> Create specific-named scenarios (Future II variants).<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- Network validation
+- Hardcoded scenario list (extensible)</p>
+<p><strong>How to Run:</strong> UI script; deletes non-Base scenarios; creates predefined specific scenarios.</p>
+<hr>
+<h3 id="fix_scenario_makerrb">fix_Scenario_maker.rb</h3>
+<p><strong>Original:</strong> Scenario_maker.rb<br>
+<strong>Purpose:</strong> Delete all non-Base scenarios.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- Network validation
+- Confirmation message</p>
+<p><strong>How to Run:</strong> UI script; deletes all scenarios except Base; prints confirmation.</p>
+<hr>
+<h3 id="fix_ui_script_delete_all_non_base_scenariosrb">fix_UI_Script_delete_all_non_base_scenarios.rb</h3>
+<p><strong>Original:</strong> UI_Script_delete_all_non_base_scenarios.rb<br>
+<strong>Purpose:</strong> Delete all non-Base scenarios (duplicate of Scenario_maker).<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- Network validation
+- Confirmation message</p>
+<p><strong>How to Run:</strong> UI script; deletes all scenarios except Base; prints confirmation.</p>
+<hr>
+<h3 id="fix_hw_sw_scenario_generatorrb">fix_hw_sw_Scenario_Generator.rb</h3>
+<p><strong>Original:</strong> hw_sw_Scenario_Generator.rb<br>
+<strong>Purpose:</strong> Create 10 Phase scenarios (Phase1 through Phase10).<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- Network validation
+- Hardcoded scenario array (extensible)</p>
+<p><strong>How to Run:</strong> UI script; deletes non-Base scenarios; creates Phase1-Phase10 scenarios.</p>
+<hr>
+<h3 id="fix_ui_script-percentage-change-in-runoff-surfaces-upstream-node-into-new-scenariorb">fix_UI_script Percentage change in runoff surfaces upstream node into new scenario.rb</h3>
+<p><strong>Original:</strong> UI_script Percentage change in runoff surfaces upstream node into new scenario.rb<br>
+<strong>Purpose:</strong> Create scenario with percentage changes applied to runoff areas in upstream subcatchments.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure with transaction rollback on error
+- User input validation (12 runoff percentages + type)
+- Nil checks on node and subcatchments navigation
+- Visited tracking with _seen flag
+- Per-area conditional updates (skip if 0%)
+- Timestamped scenario naming</p>
+<p><strong>How to Run:</strong> UI script; prompts for 12 runoff area percentages and subcatchment type; select node(s); creates scenario with modified areas.</p>
+<hr>
+<h2 id="common-hardening-patterns">Common Hardening Patterns</h2>
+<p>All scripts include:
+- <strong>frozen_string_literal:</strong> true
+- <strong>Begin/rescue/ensure:</strong> Transaction rollback on error, cleanup of temporary state
+- <strong>Input validation:</strong> Network exists, user prompts validated, file existence checked
+- <strong>Nil-safe navigation:</strong> Explicit nil checks and <code>&amp;.</code> operator use
+- <strong>File I/O:</strong> File.open block form for safe resource management
+- <strong>Transaction control:</strong> Explicit transaction_begin/commit/rollback
+- <strong>Progress logging:</strong> Console puts for user feedback
+- <strong>Visited tracking:</strong> _seen flag for cycle prevention (in parametric scripts)</p>
+<h2 id="scenarios-created">Scenarios Created</h2>
+<ul>
+<li><strong>A-Z:</strong> Single character (26 scenarios)</li>
+<li><strong>Phases:</strong> Phase1 through Phase10 (10 scenarios)</li>
+<li><strong>Specific:</strong> FUTURE_II, FUTURE_II_2023, FUT_II_I25, FU_II_ALT1_I25_LS, U_II_ALT1_I25_LS (5 scenarios)</li>
+<li><strong>Parametric:</strong> Cartesian product of variable ranges (typically dozens to hundreds)</li>
+<li><strong>Timestamped:</strong> Auto-generated with format YYYYMMDD_HHMMSS</li>
+</ul>
+  </section>
+  <footer>
+    Auto-generated from _Fixes.md &middot; InfoWorks ICM Ruby scripts hardened with begin/rescue/ensure, input validation, block-form file I/O, progress logging.
+  </footer>
+</div>
+</body>
+</html>

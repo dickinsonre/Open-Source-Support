@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0018 - Create Selection list using a SQL query</title>
+<style>
+:root {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-2: #0b1220;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-2: #f472b6;
+  --good: #22c55e;
+  --border: #334155;
+  --code-bg: #0b1220;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: linear-gradient(180deg, #0a1226 0%, #0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+header.hero {
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(244,114,182,0.06));
+  padding: 28px 28px 24px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+header.hero .crumbs {
+  font-size: 12px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+header.hero h1 {
+  font-size: 26px; margin: 0 0 6px 0; color: #fff;
+}
+header.hero p.lede {
+  margin: 0 0 14px 0; color: var(--muted);
+}
+.stats {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 13px;
+  background: rgba(56,189,248,0.10);
+  border: 1px solid rgba(56,189,248,0.35);
+  color: var(--accent);
+}
+.chip.alt { background: rgba(34,197,94,0.10); border-color: rgba(34,197,94,0.35); color: var(--good); }
+.chip.pink { background: rgba(244,114,182,0.10); border-color: rgba(244,114,182,0.35); color: var(--accent-2); }
+.content {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 6px 28px 24px;
+}
+.content h2 {
+  margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border);
+  font-size: 18px; color: #fff;
+}
+.content h2:first-of-type { border-top: none; padding-top: 6px; }
+.content h3 { font-size: 15px; color: var(--accent); margin: 16px 0 6px; }
+.content p, .content li { color: var(--text); }
+.content code {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 4px; font-size: 13px;
+  color: #fbbf24;
+}
+.content pre {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 14px; border-radius: 8px; overflow-x: auto;
+  font-size: 13px; line-height: 1.5;
+}
+.content pre code { background: transparent; border: 0; padding: 0; color: var(--text); }
+.content ul { padding-left: 22px; }
+.content li { margin: 4px 0; }
+.content a { color: var(--accent); text-decoration: none; }
+.content a:hover { text-decoration: underline; }
+.content blockquote {
+  margin: 12px 0; padding: 8px 16px;
+  border-left: 3px solid var(--accent); background: rgba(56,189,248,0.06);
+  color: var(--muted);
+}
+.content table {
+  width: 100%; border-collapse: collapse; margin: 12px 0;
+  font-size: 14px;
+}
+.content th, .content td {
+  border: 1px solid var(--border); padding: 8px 12px; text-align: left;
+}
+.content th { background: var(--panel-2); }
+footer {
+  margin-top: 28px; color: var(--muted); font-size: 12px; text-align: center;
+}
+.toc {
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--panel-2); padding: 14px 18px; margin-bottom: 16px;
+}
+.toc strong { color: var(--accent); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.toc ol { columns: 2; margin: 6px 0 0; padding-left: 22px; }
+.toc a { color: var(--text); text-decoration: none; font-size: 13px; }
+.toc a:hover { color: var(--accent); }
+@media (max-width: 720px) {
+  .toc ol { columns: 1; }
+  header.hero h1 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">SWMM &rsaquo; Ruby Fixes</div>
+    <h1>0018 - Create Selection list using a SQL query</h1>
+    <p class="lede">Build selection lists from SQL, generate per-row reports, find isolated nodes, detect duplicate links.</p>
+    <div class="stats">
+      <span class="chip">6 originals</span>
+      <span class="chip alt">6 fix_ versions</span>
+      <span class="chip pink">Robustness pass</span>
+    </div>
+  </header>
+
+<style>
+  .file-table-wrap { background:#0b1220; border:1px solid #334155; border-radius:12px; padding:14px 18px; margin:18px 0; }
+  .file-table-wrap h2 { color:#fff; font-size:16px; margin:0 0 10px; }
+  .file-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .file-table th, .file-table td { border-bottom:1px solid #1f2937; padding:6px 10px; text-align:left; vertical-align:top; }
+  .file-table th { color:#94a3b8; font-weight:500; font-size:12px; letter-spacing:0.04em; text-transform:uppercase; }
+  .file-table a { color:#38bdf8; text-decoration:none; }
+  .file-table a:hover { text-decoration:underline; }
+  .file-table .pair { font-family:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace; }
+  .file-table tr:last-child td { border-bottom:0; }
+  .file-table .miss { color:#64748b; font-style:italic; }
+  .md-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .md-list a { padding:4px 10px; border:1px solid #334155; border-radius:8px; background:#0b1220; color:#38bdf8; text-decoration:none; font-size:13px; }
+  .md-list a:hover { border-color:#38bdf8; }
+</style>
+<div class="file-table-wrap"><h2>Files in this folder</h2><table class="file-table"><thead><tr><th>Original (.rb)</th><th>Hardened (fix_*.rb)</th></tr></thead><tbody><tr><td class="pair"><a href="UI-CreateSelectionList.rb.html">UI-CreateSelectionList.rb</a></td><td class="pair"><a href="fix_UI-CreateSelectionList.rb.html">fix_UI-CreateSelectionList.rb</a></td></tr><tr><td class="pair"><a href="UI-Reports-CreateIndividualForSelection.rb.html">UI-Reports-CreateIndividualForSelection.rb</a></td><td class="pair"><a href="fix_UI-Reports-CreateIndividualForSelection.rb.html">fix_UI-Reports-CreateIndividualForSelection.rb</a></td></tr><tr><td class="pair"><a href="UI-Reports-CreateIndividualForSelection_folder.rb.html">UI-Reports-CreateIndividualForSelection_folder.rb</a></td><td class="pair"><a href="fix_UI-Reports-CreateIndividualForSelection_folder.rb.html">fix_UI-Reports-CreateIndividualForSelection_folder.rb</a></td></tr><tr><td class="pair"><a href="UI-SelectIsolatedNodes.rb.html">UI-SelectIsolatedNodes.rb</a></td><td class="pair"><a href="fix_UI-SelectIsolatedNodes.rb.html">fix_UI-SelectIsolatedNodes.rb</a></td></tr><tr><td class="pair"><a href="UI_Script%20%20Select%20links%20sharing%20the%20same%20us%20and%20ds%20node%20ids.rb.html">UI_Script  Select links sharing the same us and ds node ids.rb</a></td><td class="pair"><a href="fix_UI_Script%20%20Select%20links%20sharing%20the%20same%20us%20and%20ds%20node%20ids.rb.html">fix_UI_Script  Select links sharing the same us and ds node ids.rb</a></td></tr><tr><td class="pair"><a href="UI_Script.rb.html">UI_Script.rb</a></td><td class="pair"><a href="fix_UI_Script.rb.html">fix_UI_Script.rb</a></td></tr></tbody></table><h2 style="margin-top:14px;">Markdown</h2><div class="md-list"><a href="_Fixes.md.html">_Fixes.md</a><a href="Readme.md.html">Readme.md</a></div></div>
+  <nav class="toc"><strong>Scripts in this folder</strong><ol><li><a href="#fix-ui-createselectionlistrb">fix_UI-CreateSelectionList.rb</a></li><li><a href="#fix-ui-reports-createindividualforselectionrb">fix_UI-Reports-CreateIndividualForSelection.rb</a></li><li><a href="#fix-ui-reports-createindividualforselection-folderrb">fix_UI-Reports-CreateIndividualForSelection_folder.rb</a></li><li><a href="#fix-ui-selectisolatednodesrb">fix_UI-SelectIsolatedNodes.rb</a></li><li><a href="#fix-ui-script-select-links-sharing-the-same-us-and-ds-node-idsrb">fix_UI_Script  Select links sharing the same us and ds node ids.rb</a></li><li><a href="#fix-ui-scriptrb">fix_UI_Script.rb</a></li></ol></nav>
+  <section class="content">
+    <h1 id="folder-0018-create-selection-list-using-a-sql-query">Folder 0018 - Create Selection list using a SQL query</h1>
+<p>This folder contains hardened <code>fix_*.rb</code> versions of each original Ruby script.
+All scripts add: <code># frozen_string_literal: true</code>, header block, begin/rescue/ensure,
+nil-safety, timestamped progress logging, and preserve original behaviour.</p>
+<h2 id="fix_ui-createselectionlistrb">fix_UI-CreateSelectionList.rb</h2>
+<p>Save current network selection (nodes + links) as Selection List(s) under the
+configured Model Group.</p>
+<p>Hardening:
+- Validates current database and network not nil
+- Falls back from <code>model_object_from_type_and_id</code> to <code>find_root_model_object</code>
+- Counts selected items and warns if selection is empty
+- Wraps the workflow in begin/rescue/ensure with timestamped log lines</p>
+<p>How to run: open the network in ICM UI, ensure something is selected, edit the
+<code>MODEL_GROUP_NAME</code> constant, then Network -&gt; Run Ruby Script.</p>
+<h2 id="fix_ui-reports-createindividualforselectionrb">fix_UI-Reports-CreateIndividualForSelection.rb</h2>
+<p>Generate an individual Word report per row in the configured CAMS table to
+<code>c:\temp</code>.</p>
+<p>Hardening:
+- Validates network not nil
+- <code>FileUtils.mkdir_p</code> to ensure output dir exists
+- Per-row <code>rescue</code> so a single failure does not abort the run
+- Timestamped progress logging and per-table count
+- Suppresses message_box failures in headless contexts</p>
+<p>How to run: select rows in the CAMS table, edit <code>TABLES</code>/<code>OUTPUT_DIR</code>, then run.</p>
+<h2 id="fix_ui-reports-createindividualforselection_folderrb">fix_UI-Reports-CreateIndividualForSelection_folder.rb</h2>
+<p>Same as above but prompts the user for the output folder.</p>
+<p>Hardening:
+- Validates network not nil and folder dialog not cancelled
+- <code>FileUtils.mkdir_p</code> and per-row rescue
+- Timestamped progress logging</p>
+<p>How to run: select rows in the CAMS table and execute - pick an export folder.</p>
+<h2 id="fix_ui-selectisolatednodesrb">fix_UI-SelectIsolatedNodes.rb</h2>
+<p>Select all nodes that have no upstream link, no downstream link, and no
+lateral pipes (truly isolated).</p>
+<p>Hardening:
+- Validates network and node collection
+- Nil-safe access to <code>navigate('lateral_pipe')</code>
+- Reports total inspected vs selected counts</p>
+<p>How to run: open the network and execute as a UI script.</p>
+<h2 id="fix_ui_script-select-links-sharing-the-same-us-and-ds-node-idsrb">fix_UI_Script  Select links sharing the same us and ds node ids.rb</h2>
+<p>Select duplicate / parallel links sharing the same upstream and downstream
+node-id pair.</p>
+<p>Hardening:
+- Validates network and link collection
+- Skips links whose us/ds id is nil
+- Reports total scanned, duplicate-pair groups and selected count</p>
+<p>How to run: open the network and execute as a UI script.</p>
+<h2 id="fix_ui_scriptrb">fix_UI_Script.rb</h2>
+<p>Run <code>flags.value='ISAC'</code> SQL across <code>_links</code>, <code>_nodes</code>, <code>_subcatchments</code> and
+save the resulting selection as a Selection List under a named Model Group.</p>
+<p>Hardening:
+- Validates database, network and group lookup not nil
+- Each <code>run_SQL</code> wrapped in its own rescue
+- Fixes the original syntax bug (extra trailing quote) in the SQL
+- Timestamped log lines and final confirmation</p>
+<p>How to run: edit <code>MODEL_GROUP_NAME</code> and execute as a UI script.</p>
+  </section>
+  <footer>
+    Auto-generated from _Fixes.md &middot; InfoWorks ICM Ruby scripts hardened with begin/rescue/ensure, input validation, block-form file I/O, progress logging.
+  </footer>
+</div>
+</body>
+</html>

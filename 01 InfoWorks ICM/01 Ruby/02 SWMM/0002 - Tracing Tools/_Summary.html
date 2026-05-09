@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0002 - Tracing Tools</title>
+<style>
+:root {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-2: #0b1220;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-2: #f472b6;
+  --good: #22c55e;
+  --border: #334155;
+  --code-bg: #0b1220;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: linear-gradient(180deg, #0a1226 0%, #0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+header.hero {
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(244,114,182,0.06));
+  padding: 28px 28px 24px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+header.hero .crumbs {
+  font-size: 12px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+header.hero h1 {
+  font-size: 26px; margin: 0 0 6px 0; color: #fff;
+}
+header.hero p.lede {
+  margin: 0 0 14px 0; color: var(--muted);
+}
+.stats {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 13px;
+  background: rgba(56,189,248,0.10);
+  border: 1px solid rgba(56,189,248,0.35);
+  color: var(--accent);
+}
+.chip.alt { background: rgba(34,197,94,0.10); border-color: rgba(34,197,94,0.35); color: var(--good); }
+.chip.pink { background: rgba(244,114,182,0.10); border-color: rgba(244,114,182,0.35); color: var(--accent-2); }
+.content {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 6px 28px 24px;
+}
+.content h2 {
+  margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border);
+  font-size: 18px; color: #fff;
+}
+.content h2:first-of-type { border-top: none; padding-top: 6px; }
+.content h3 { font-size: 15px; color: var(--accent); margin: 16px 0 6px; }
+.content p, .content li { color: var(--text); }
+.content code {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 4px; font-size: 13px;
+  color: #fbbf24;
+}
+.content pre {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 14px; border-radius: 8px; overflow-x: auto;
+  font-size: 13px; line-height: 1.5;
+}
+.content pre code { background: transparent; border: 0; padding: 0; color: var(--text); }
+.content ul { padding-left: 22px; }
+.content li { margin: 4px 0; }
+.content a { color: var(--accent); text-decoration: none; }
+.content a:hover { text-decoration: underline; }
+.content blockquote {
+  margin: 12px 0; padding: 8px 16px;
+  border-left: 3px solid var(--accent); background: rgba(56,189,248,0.06);
+  color: var(--muted);
+}
+.content table {
+  width: 100%; border-collapse: collapse; margin: 12px 0;
+  font-size: 14px;
+}
+.content th, .content td {
+  border: 1px solid var(--border); padding: 8px 12px; text-align: left;
+}
+.content th { background: var(--panel-2); }
+footer {
+  margin-top: 28px; color: var(--muted); font-size: 12px; text-align: center;
+}
+.toc {
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--panel-2); padding: 14px 18px; margin-bottom: 16px;
+}
+.toc strong { color: var(--accent); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.toc ol { columns: 2; margin: 6px 0 0; padding-left: 22px; }
+.toc a { color: var(--text); text-decoration: none; font-size: 13px; }
+.toc a:hover { color: var(--accent); }
+@media (max-width: 720px) {
+  .toc ol { columns: 1; }
+  header.hero h1 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">SWMM &rsaquo; Ruby Fixes</div>
+    <h1>0002 - Tracing Tools</h1>
+    <p class="lede">Network traversal: upstream/downstream traces, Dijkstra shortest path, boundary trace, area accumulators.</p>
+    <div class="stats">
+      <span class="chip">22 originals</span>
+      <span class="chip alt">22 fix_ versions</span>
+      <span class="chip pink">Robustness pass</span>
+    </div>
+  </header>
+
+<style>
+  .file-table-wrap { background:#0b1220; border:1px solid #334155; border-radius:12px; padding:14px 18px; margin:18px 0; }
+  .file-table-wrap h2 { color:#fff; font-size:16px; margin:0 0 10px; }
+  .file-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .file-table th, .file-table td { border-bottom:1px solid #1f2937; padding:6px 10px; text-align:left; vertical-align:top; }
+  .file-table th { color:#94a3b8; font-weight:500; font-size:12px; letter-spacing:0.04em; text-transform:uppercase; }
+  .file-table a { color:#38bdf8; text-decoration:none; }
+  .file-table a:hover { text-decoration:underline; }
+  .file-table .pair { font-family:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace; }
+  .file-table tr:last-child td { border-bottom:0; }
+  .file-table .miss { color:#64748b; font-style:italic; }
+  .md-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .md-list a { padding:4px 10px; border:1px solid #334155; border-radius:8px; background:#0b1220; color:#38bdf8; text-decoration:none; font-size:13px; }
+  .md-list a:hover { border-color:#38bdf8; }
+</style>
+<div class="file-table-wrap"><h2>Files in this folder</h2><table class="file-table"><thead><tr><th>Original (.rb)</th><th>Hardened (fix_*.rb)</th></tr></thead><tbody><tr><td class="pair"><a href="1_shortest_path_dijkstra.rb.html">1_shortest_path_dijkstra.rb</a></td><td class="pair"><a href="fix_1_shortest_path_dijkstra.rb.html">fix_1_shortest_path_dijkstra.rb</a></td></tr><tr><td class="pair"><a href="2_boundary_trace.rb.html">2_boundary_trace.rb</a></td><td class="pair"><a href="fix_2_boundary_trace.rb.html">fix_2_boundary_trace.rb</a></td></tr><tr><td class="pair"><a href="hw_QuickTrace.rb.html">hw_QuickTrace.rb</a></td><td class="pair"><a href="fix_hw_QuickTrace.rb.html">fix_hw_QuickTrace.rb</a></td></tr><tr><td class="pair"><a href="hw_QuickTrace_NG.rb.html">hw_QuickTrace_NG.rb</a></td><td class="pair"><a href="fix_hw_QuickTrace_NG.rb.html">fix_hw_QuickTrace_NG.rb</a></td></tr><tr><td class="pair"><a href="hw_Sum_Selected_Total_Area.rb.html">hw_Sum_Selected_Total_Area.rb</a></td><td class="pair"><a href="fix_hw_Sum_Selected_Total_Area.rb.html">fix_hw_Sum_Selected_Total_Area.rb</a></td></tr><tr><td class="pair"><a href="hw_Upstream%20Subcatchments%20from%20an%20Outfall.rb.html">hw_Upstream Subcatchments from an Outfall.rb</a></td><td class="pair"><a href="fix_hw_Upstream%20Subcatchments%20from%20an%20Outfall.rb.html">fix_hw_Upstream Subcatchments from an Outfall.rb</a></td></tr><tr><td class="pair"><a href="Select%20Upstream%20Subcatchments%20from%20a%20Node%20with%20Multilinks.rb.html">Select Upstream Subcatchments from a Node with Multilinks.rb</a></td><td class="pair"><a href="fix_Select%20Upstream%20Subcatchments%20from%20a%20Node%20with%20Multilinks.rb.html">fix_Select Upstream Subcatchments from a Node with Multilinks.rb</a></td></tr><tr><td class="pair"><a href="Sum_Selected_Total_Area%20SWMM.rb.html">Sum_Selected_Total_Area SWMM.rb</a></td><td class="pair"><a href="fix_Sum_Selected_Total_Area%20SWMM.rb.html">fix_Sum_Selected_Total_Area SWMM.rb</a></td></tr><tr><td class="pair"><a href="Sum_Selected_Total_Area.rb.html">Sum_Selected_Total_Area.rb</a></td><td class="pair"><a href="fix_Sum_Selected_Total_Area.rb.html">fix_Sum_Selected_Total_Area.rb</a></td></tr><tr><td class="pair"><a href="sw_QuickTrace.rb.html">sw_QuickTrace.rb</a></td><td class="pair"><a href="fix_sw_QuickTrace.rb.html">fix_sw_QuickTrace.rb</a></td></tr><tr><td class="pair"><a href="sw_QuickTrace_SWMM..rb.html">sw_QuickTrace_SWMM..rb</a></td><td class="pair"><a href="fix_sw_QuickTrace_SWMM..rb.html">fix_sw_QuickTrace_SWMM..rb</a></td></tr><tr><td class="pair"><a href="sw_Sum_Selected_Total_Area.rb.html">sw_Sum_Selected_Total_Area.rb</a></td><td class="pair"><a href="fix_sw_Sum_Selected_Total_Area.rb.html">fix_sw_Sum_Selected_Total_Area.rb</a></td></tr><tr><td class="pair"><a href="sw_Upstream%20Subcatchments%20from%20an%20Outfall.rb.html">sw_Upstream Subcatchments from an Outfall.rb</a></td><td class="pair"><a href="fix_sw_Upstream%20Subcatchments%20from%20an%20Outfall.rb.html">fix_sw_Upstream Subcatchments from an Outfall.rb</a></td></tr><tr><td class="pair"><a href="UI-IncidentTraceUpstream-Incident.rb.html">UI-IncidentTraceUpstream-Incident.rb</a></td><td class="pair"><a href="fix_UI-IncidentTraceUpstream-Incident.rb.html">fix_UI-IncidentTraceUpstream-Incident.rb</a></td></tr><tr><td class="pair"><a href="UI-NodeTraceUpDownstream_ExcludeBy_InvertLevel.rb.html">UI-NodeTraceUpDownstream_ExcludeBy_InvertLevel.rb</a></td><td class="pair"><a href="fix_UI-NodeTraceUpDownstream_ExcludeBy_InvertLevel.rb.html">fix_UI-NodeTraceUpDownstream_ExcludeBy_InvertLevel.rb</a></td></tr><tr><td class="pair"><a href="UI-NodeTraceUpDownstream_ExcludeBy_PipeStatus.rb.html">UI-NodeTraceUpDownstream_ExcludeBy_PipeStatus.rb</a></td><td class="pair"><a href="fix_UI-NodeTraceUpDownstream_ExcludeBy_PipeStatus.rb.html">fix_UI-NodeTraceUpDownstream_ExcludeBy_PipeStatus.rb</a></td></tr><tr><td class="pair"><a href="UI-NodeTraceUpDownstream_ExcludeBy_SumPipeLength.rb.html">UI-NodeTraceUpDownstream_ExcludeBy_SumPipeLength.rb</a></td><td class="pair"><a href="fix_UI-NodeTraceUpDownstream_ExcludeBy_SumPipeLength.rb.html">fix_UI-NodeTraceUpDownstream_ExcludeBy_SumPipeLength.rb</a></td></tr><tr><td class="pair"><a href="UI-NodeTraceUpstream.rb.html">UI-NodeTraceUpstream.rb</a></td><td class="pair"><a href="fix_UI-NodeTraceUpstream.rb.html">fix_UI-NodeTraceUpstream.rb</a></td></tr><tr><td class="pair"><a href="UI-PipesTraceUpstream_SumPipeLengths.rb.html">UI-PipesTraceUpstream_SumPipeLengths.rb</a></td><td class="pair"><a href="fix_UI-PipesTraceUpstream_SumPipeLengths.rb.html">fix_UI-PipesTraceUpstream_SumPipeLengths.rb</a></td></tr><tr><td class="pair"><a href="UI-PipesTraceUpstream_SumPipeLengths_WriteToField.rb.html">UI-PipesTraceUpstream_SumPipeLengths_WriteToField.rb</a></td><td class="pair"><a href="fix_UI-PipesTraceUpstream_SumPipeLengths_WriteToField.rb.html">fix_UI-PipesTraceUpstream_SumPipeLengths_WriteToField.rb</a></td></tr><tr><td class="pair"><a href="UI-PipeTraceUpstream_SaveToSelectionList.rb.html">UI-PipeTraceUpstream_SaveToSelectionList.rb</a></td><td class="pair"><a href="fix_UI-PipeTraceUpstream_SaveToSelectionList.rb.html">fix_UI-PipeTraceUpstream_SaveToSelectionList.rb</a></td></tr><tr><td class="pair"><a href="UI_Script_%20Calculate%20subcatchment%20areas%20in%20all%20nodes%20upstream%20a%20node.rb.html">UI_Script_ Calculate subcatchment areas in all nodes upstream a node.rb</a></td><td class="pair"><a href="fix_UI_Script_%20Calculate%20subcatchment%20areas%20in%20all%20nodes%20upstream%20a%20node.rb.html">fix_UI_Script_ Calculate subcatchment areas in all nodes upstream a node.rb</a></td></tr></tbody></table><h2 style="margin-top:14px;">Markdown</h2><div class="md-list"><a href="_Fixes.md.html">_Fixes.md</a><a href="readme.md.html">readme.md</a></div></div>
+  <nav class="toc"><strong>Scripts in this folder</strong><ol><li><a href="#folder-purpose">Folder Purpose</a></li><li><a href="#fixes-applied">Fixes Applied</a></li><li><a href="#common-hardening-patterns">Common Hardening Patterns</a></li></ol></nav>
+  <section class="content">
+    <h1 id="0002-tracing-tools-fixes-summary">0002 - Tracing Tools - Fixes Summary</h1>
+<h2 id="folder-purpose">Folder Purpose</h2>
+<p>Network tracing tools for upstream/downstream path analysis, subcatchment area calculations, and boundary condition traces. Includes Dijkstra shortest-path algorithms, incident-based traces, and various filtering criteria (invert level, pipe status, length accumulation).</p>
+<h2 id="fixes-applied">Fixes Applied</h2>
+<h3 id="fix_1_shortest_path_dijkstrarb">fix_1_shortest_path_dijkstra.rb</h3>
+<p><strong>Original:</strong> 1_shortest_path_dijkstra.rb<br>
+<strong>Purpose:</strong> Dijkstra shortest path algorithm between 2 selected nodes.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- Input validation: network exists, exactly 2 nodes selected
+- Nil-safe navigation with <code>&amp;.</code> operator
+- Progress logging to console</p>
+<p><strong>How to Run:</strong> UI script; select 2 nodes, run script; selected path shows in red.</p>
+<hr>
+<h3 id="fix_2_boundary_tracerb">fix_2_boundary_trace.rb</h3>
+<p><strong>Original:</strong> 2_boundary_trace.rb<br>
+<strong>Purpose:</strong> Trace flow boundaries with exclusion logic (area, status, type).<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- Input validation: 1 link selected
+- Compact nil-safe node arrays
+- Link count tracking in output</p>
+<p><strong>How to Run:</strong> UI script; select 1 link, run; trace highlights boundary-matching path.</p>
+<hr>
+<h3 id="fix_select-upstream-subcatchments-from-a-node-with-multilinksrb">fix_Select Upstream Subcatchments from a Node with Multilinks.rb</h3>
+<p><strong>Original:</strong> Select Upstream Subcatchments from a Node with Multilinks.rb<br>
+<strong>Purpose:</strong> Select upstream subcatchments with hash-accelerated lookup.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- Hash-based node-&gt;subcatchment mapping (O(1) lookup)
+- Visited tracking with _seen flag
+- Cleanup of _seen markers in ensure block
+- Area and count accumulation</p>
+<p><strong>How to Run:</strong> UI script; select node(s), run; outputs upstream subcatchment total area.</p>
+<hr>
+<h3 id="fix_sum_selected_total_area-swmmrb">fix_Sum_Selected_Total_Area SWMM.rb</h3>
+<p><strong>Original:</strong> Sum_Selected_Total_Area SWMM.rb<br>
+<strong>Purpose:</strong> Sum total area of selected SWMM subcatchments.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- Refactored function with return value
+- Fixed missing nil check on network
+- Message box confirmation with area</p>
+<p><strong>How to Run:</strong> UI script; select SWMM subcatchments, run; displays total area.</p>
+<hr>
+<h3 id="fix_sum_selected_total_arearb">fix_Sum_Selected_Total_Area.rb</h3>
+<p><strong>Original:</strong> Sum_Selected_Total_Area.rb<br>
+<strong>Purpose:</strong> Sum total area of selected InfoWorks subcatchments.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- Fixed syntax error in row_objects call (was row   objects)
+- Refactored function for clarity
+- Network validation</p>
+<p><strong>How to Run:</strong> UI script; select InfoWorks subcatchments, run; displays total area.</p>
+<hr>
+<h3 id="fix_ui-incidenttraceupstream-incidentrb">fix_UI-IncidentTraceUpstream-Incident.rb</h3>
+<p><strong>Original:</strong> UI-IncidentTraceUpstream-Incident.rb<br>
+<strong>Purpose:</strong> Trace upstream from incident flooding node.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- Visited tracking with _seen flag
+- Nil-safe node navigation
+- Count accumulation for nodes/links</p>
+<p><strong>How to Run:</strong> UI script; select incident, run; selects upstream path from manhole.</p>
+<hr>
+<h3 id="fix_ui-nodetraceupdownstream_excludeby_invertlevelrb">fix_UI-NodeTraceUpDownstream_ExcludeBy_InvertLevel.rb</h3>
+<p><strong>Original:</strong> UI-NodeTraceUpDownstream_ExcludeBy_InvertLevel.rb<br>
+<strong>Purpose:</strong> Trace with invert level &gt; 15 exclusion filter.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- User choice validation (direction)
+- Visited tracking with _seen flag
+- Nil-safe node navigation</p>
+<p><strong>How to Run:</strong> UI script; select 1 manhole, run; choose up/downstream; traces excluding low invert pipes.</p>
+<hr>
+<h3 id="fix_ui-nodetraceupdownstream_excludeby_pipestatusrb">fix_UI-NodeTraceUpDownstream_ExcludeBy_PipeStatus.rb</h3>
+<p><strong>Original:</strong> UI-NodeTraceUpDownstream_ExcludeBy_PipeStatus.rb<br>
+<strong>Purpose:</strong> Trace excluding pipes with status 'AB'.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- User choice validation (direction)
+- Visited tracking with _seen flag
+- Status filter check</p>
+<p><strong>How to Run:</strong> UI script; select 1 manhole, run; choose up/downstream; excludes pipes with status AB.</p>
+<hr>
+<h3 id="fix_ui-nodetraceupdownstream_excludeby_sumpipelengthrb">fix_UI-NodeTraceUpDownstream_ExcludeBy_SumPipeLength.rb</h3>
+<p><strong>Original:</strong> UI-NodeTraceUpDownstream_ExcludeBy_SumPipeLength.rb<br>
+<strong>Purpose:</strong> Trace up/downstream, accumulating pipe length.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- User choice validation (direction)
+- Visited tracking with _seen flag
+- Length accumulation and rounding</p>
+<p><strong>How to Run:</strong> UI script; select 1 manhole, run; choose up/downstream; reports nodes, links, total length.</p>
+<hr>
+<h3 id="fix_ui-nodetraceupstreamrb">fix_UI-NodeTraceUpstream.rb</h3>
+<p><strong>Original:</strong> UI-NodeTraceUpstream.rb<br>
+<strong>Purpose:</strong> Simple upstream trace from node.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- Visited tracking with _seen flag
+- Nil-safe node navigation
+- Count accumulation</p>
+<p><strong>How to Run:</strong> UI script; select 1 manhole, run; selects all upstream nodes/links.</p>
+<hr>
+<h3 id="fix_ui-pipestraceupstream_sumpipelengthsrb">fix_UI-PipesTraceUpstream_SumPipeLengths.rb</h3>
+<p><strong>Original:</strong> UI-PipesTraceUpstream_SumPipeLengths.rb<br>
+<strong>Purpose:</strong> Trace upstream from pipe(s), sum lengths.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- Per-pipe _seen reset
+- Nil validation on starting node
+- Length accumulation per pipe</p>
+<p><strong>How to Run:</strong> UI script; select pipe(s), run; for each pipe outputs upstream node/link counts and total length.</p>
+<hr>
+<h3 id="fix_ui-pipetraceupstream_savetoselectionlistrb">fix_UI-PipeTraceUpstream_SaveToSelectionList.rb</h3>
+<p><strong>Original:</strong> UI-PipeTraceUpstream_SaveToSelectionList.rb<br>
+<strong>Purpose:</strong> Trace upstream from pipe(s), save to selection list.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- Nil checks on asset group and selection list
+- Per-pipe _seen reset
+- Transaction implicit (save_selection handles it)</p>
+<p><strong>How to Run:</strong> UI script; select pipe(s), run; creates selection list in Asset Group 3 for each pipe's upstream path.</p>
+<hr>
+<h3 id="fix_hw_quicktracerb">fix_hw_QuickTrace.rb</h3>
+<p><strong>Original:</strong> hw_QuickTrace.rb<br>
+<strong>Purpose:</strong> Dijkstra quicktrace for InfoWorks networks.<br>
+<strong>Hardening:</strong>
+- Refactored into class with robustness
+- Added begin/rescue/ensure error handling
+- Input validation: 2 nodes selected
+- Reachability check (target found or nil)
+- Link type detection for length vs. fixed cost</p>
+<p><strong>How to Run:</strong> UI script; select 2 nodes, run; outputs shortest path with link lengths.</p>
+<hr>
+<h3 id="fix_hw_quicktrace_ngrb">fix_hw_QuickTrace_NG.rb</h3>
+<p><strong>Original:</strong> hw_QuickTrace_NG.rb<br>
+<strong>Purpose:</strong> Next-gen quicktrace (identical to hw_QuickTrace).<br>
+<strong>Hardening:</strong>
+- Same improvements as hw_QuickTrace
+- Class-based implementation
+- Robust error handling</p>
+<p><strong>How to Run:</strong> UI script; select 2 nodes, run; outputs shortest path with link lengths.</p>
+<hr>
+<h3 id="fix_ui-pipestraceupstream_sumpipelengths_writetofieldrb">fix_UI-PipesTraceUpstream_SumPipeLengths_WriteToField.rb</h3>
+<p><strong>Original:</strong> UI-PipesTraceUpstream_SumPipeLengths_WriteToField.rb<br>
+<strong>Purpose:</strong> Trace upstream from pipe, write total length to user_number_1 field.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure with transaction rollback on error
+- Nil validation on starting node
+- Per-pipe _seen reset
+- Explicit transaction commit/rollback</p>
+<p><strong>How to Run:</strong> UI script; select pipe(s), run; updates user_number_1 field with upstream path length.</p>
+<hr>
+<h3 id="fix_ui_script_-calculate-subcatchment-areas-in-all-nodes-upstream-a-noderb">fix_UI_Script_ Calculate subcatchment areas in all nodes upstream a node.rb</h3>
+<p><strong>Original:</strong> UI_Script_ Calculate subcatchment areas in all nodes upstream a node.rb<br>
+<strong>Purpose:</strong> Traverse upstream, print each node's total subcatchment area.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- Nil-safe navigation of subcatchments
+- Visited tracking with _seen flag
+- Proper unsee_all cleanup</p>
+<p><strong>How to Run:</strong> UI script; hardcoded to node 44628801; outputs node_id:area pairs.</p>
+<hr>
+<h3 id="fix_hw_sum_selected_total_arearb">fix_hw_Sum_Selected_Total_Area.rb</h3>
+<p><strong>Original:</strong> hw_Sum_Selected_Total_Area.rb<br>
+<strong>Purpose:</strong> Sum selected InfoWorks subcatchments with count.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- Function refactored with clear input/output
+- Network validation</p>
+<p><strong>How to Run:</strong> UI script; select subcatchments, run; outputs total area and count.</p>
+<hr>
+<h3 id="fix_hw_upstream-subcatchments-from-an-outfallrb">fix_hw_Upstream Subcatchments from an Outfall.rb</h3>
+<p><strong>Original:</strong> hw_Upstream Subcatchments from an Outfall.rb<br>
+<strong>Purpose:</strong> Select upstream subcatchments from node using hash acceleration.<br>
+<strong>Hardening:</strong>
+- Hash-based node-&gt;subcatchment mapping
+- Visited tracking with _seen flag
+- Nil-safe node navigation
+- Area and count accumulation</p>
+<p><strong>How to Run:</strong> UI script; select node(s), run; selects all upstream subcatchments and reports totals.</p>
+<hr>
+<h3 id="fix_sw_quicktracerb">fix_sw_QuickTrace.rb</h3>
+<p><strong>Original:</strong> sw_QuickTrace.rb<br>
+<strong>Purpose:</strong> Dijkstra quicktrace for SWMM networks.<br>
+<strong>Hardening:</strong>
+- Class-based implementation
+- Added begin/rescue/ensure error handling
+- Input validation: 2 nodes selected
+- SWMM-specific link.length attribute handling
+- Reachability check</p>
+<p><strong>How to Run:</strong> UI script; select 2 SWMM nodes, run; outputs shortest path with link lengths.</p>
+<hr>
+<h3 id="fix_sw_quicktrace_swmmrb">fix_sw_QuickTrace_SWMM..rb</h3>
+<p><strong>Original:</strong> sw_QuickTrace_SWMM..rb<br>
+<strong>Purpose:</strong> Duplicate SWMM quicktrace (identical to sw_QuickTrace).<br>
+<strong>Hardening:</strong>
+- Same improvements as sw_QuickTrace</p>
+<p><strong>How to Run:</strong> UI script; select 2 SWMM nodes, run; outputs shortest path with link lengths.</p>
+<hr>
+<h3 id="fix_sw_sum_selected_total_arearb">fix_sw_Sum_Selected_Total_Area.rb</h3>
+<p><strong>Original:</strong> sw_Sum_Selected_Total_Area.rb<br>
+<strong>Purpose:</strong> Sum selected SWMM subcatchments with count.<br>
+<strong>Hardening:</strong>
+- Added begin/rescue/ensure error handling
+- Uses sw_subcatchment.area (SWMM) instead of total_area
+- Function refactored with clear input/output</p>
+<p><strong>How to Run:</strong> UI script; select SWMM subcatchments, run; outputs total area and count.</p>
+<hr>
+<h3 id="fix_sw_upstream-subcatchments-from-an-outfallrb">fix_sw_Upstream Subcatchments from an Outfall.rb</h3>
+<p><strong>Original:</strong> sw_Upstream Subcatchments from an Outfall.rb<br>
+<strong>Purpose:</strong> Select upstream SWMM subcatchments using outlet_id mapping.<br>
+<strong>Hardening:</strong>
+- Hash-based outlet_id-&gt;subcatchment mapping (SWMM-specific)
+- Visited tracking with _seen flag
+- Nil-safe node navigation
+- Area and count accumulation</p>
+<p><strong>How to Run:</strong> UI script; select node(s), run; selects all upstream SWMM subcatchments and reports totals.</p>
+<hr>
+<h2 id="common-hardening-patterns">Common Hardening Patterns</h2>
+<p>All scripts include:
+- <strong>frozen_string_literal:</strong> true
+- <strong>Begin/rescue/ensure:</strong> Transaction rollback on error, cleanup of _seen markers
+- <strong>Input validation:</strong> Network exists, required selections non-empty
+- <strong>Nil-safe navigation:</strong> Use of <code>&amp;.</code> operator and explicit nil checks
+- <strong>Progress logging:</strong> Console puts for long-running operations
+- <strong>Visited tracking:</strong> _seen flag to prevent cycles and duplicate processing
+- <strong>Cleanup:</strong> Ensure blocks reset temporary markers</p>
+  </section>
+  <footer>
+    Auto-generated from _Fixes.md &middot; InfoWorks ICM Ruby scripts hardened with begin/rescue/ensure, input validation, block-form file I/O, progress logging.
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>_Fixes.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0008 - Database Field Tools for Elements and Results</div>
+    <h1>_Fixes.md</h1>
+    <div class="meta">Markdown document &middot; 0008 - Database Field Tools for Elements and Results</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">170 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="folder-0008-hardening-report-database-field-tools-for-elements-and-results">Folder 0008 Hardening Report: Database Field Tools for Elements and Results</h1>
+<h2 id="overview">Overview</h2>
+<p>26 database enumeration and field analysis UI/EX scripts for InfoWorks ICM network introspection.</p>
+<h2 id="key-hardening-applied-to-all-files">Key Hardening Applied to All Files</h2>
+<ul>
+<li><strong>Frozen strings</strong> (<code># frozen_string_literal: true</code>)</li>
+<li><strong>begin/rescue/ensure</strong> error handling with timestamps</li>
+<li><strong>Nil-safety</strong> on network, database, tables, row_objects, fields</li>
+<li><strong>&amp;.</strong> safe navigation chains</li>
+<li><strong>Type validation</strong>: respond_to? checks for dynamic properties</li>
+<li><strong>Zero-guard</strong> on division (when applicable)</li>
+<li><strong>Progress logging</strong> with timestamps</li>
+<li><strong>No modifications to originals</strong></li>
+</ul>
+<h2 id="per-script-summary">Per-Script Summary</h2>
+<h3 id="group-1-network-field-collection">Group 1: Network Field Collection</h3>
+<p><strong>fix_All_Input_Variables.rb</strong>
+- Iterate all tables/fields/rows; collect numeric/non-numeric values
+- Hash.new defaults for safe aggregation
+- Output: field statistics (count, mean, max, min)</p>
+<p><strong>fix_All_Results.rb</strong>
+- Extract results_fields from row_object.table_info
+- has_field? validation; rescue on nil
+- Output: numeric/non-numeric results summary</p>
+<p><strong>fix_All_Variables.rb</strong>
+- Collect all row objects and field values into global $validation array
+- Sample output (first 20 entries) for verification
+- Diagnostic tool for schema auditing</p>
+<h3 id="group-2-database-object-enumeration">Group 2: Database Object Enumeration</h3>
+<p><strong>fix_count_objects_in_db.rb</strong>
+- Recursive traversal with DEPTH_LIMIT guard (9999)
+- Counts objects by type across entire database
+- Handles Master→Primary name translation
+- Output: object count per table type</p>
+<p><strong>fix_database_field_count.rb</strong>
+- Enumerate network elements across 80+ table types
+- Fallback ID chain: .id → .us_node_id → .node_id → .link_id → .name → .descriptor
+- Format output in 5-column table with sorting
+- Output: sorted element listing by count</p>
+<h3 id="group-3-tablefield-structure">Group 3: Table/Field Structure</h3>
+<p><strong>fix_UI-ListCurrentNetworkFields.rb</strong>
+- List all tables and fields in network
+- Simple console output per table</p>
+<p><strong>fix_UI-ListCurrentNetworkFieldStructure.rb</strong>
+- Display field types (field_type property)
+- Formatted output with metadata</p>
+<p><strong>fix_UI-ListCurrentNetworkFields_No_User_OR_Flags.rb</strong>
+- Filter out 'user' and 'flag' named fields
+- Lean schema view</p>
+<p><strong>fix_hash_sw_hw_tables.rb</strong>
+- Build hash: {table_name → {sw: bool, hw: bool}}
+- Count SW vs HW tables
+- Output: distribution summary</p>
+<h3 id="group-4-network-swmminfoworks-element-detection">Group 4: Network &amp; SWMM/InfoWorks Element Detection</h3>
+<p><strong>fix_Find All Network Elements.rb</strong>
+- Total element count across all tables</p>
+<p><strong>fix_Make an Overview of All Network Elements.rb</strong>
+- Detailed count per table (non-zero only)</p>
+<p><strong>fix_hw_UI_Script  Find All Network Elements.rb</strong>
+- Count HW_ (InfoWorks) elements only</p>
+<p><strong>fix_hw_UI_Script Stats for ICM Network Tables.rb</strong>
+- List HW_ table row counts</p>
+<p><strong>fix_sw_UI_Script  Find All Network Elements.rb</strong>
+- Count SW_ (SWMM) elements only</p>
+<p><strong>fix_sw_UI_Script Make a Table of the Run Parameters in ICM.rb</strong>
+- List SWMM simulation parameters</p>
+<h3 id="group-5-database-contents-root-model">Group 5: Database Contents &amp; Root Model</h3>
+<p><strong>fix_UIIE-DatabaseContents.rb</strong>
+- Enumerate root model objects
+- Count child objects per root</p>
+<p><strong>fix_UIIE-DatabaseSummary.rb</strong>
+- Root object count
+- Total child object count</p>
+<p><strong>fix_UI_script Find Root Model Group.rb</strong>
+- List all root model objects
+- Fallback ID display (id vs type)</p>
+<h3 id="group-6-results-field-enumeration">Group 6: Results Field Enumeration</h3>
+<p><strong>fix_UI_script List all results fields in a simulation (SWMM or ICM).rb</strong>
+- Iterate all tables; list all results_fields
+- Output: table + field name per line</p>
+<p><strong>fix_UI_script List all results fields in a Simulation.rb</strong>
+- Count total results_fields across all tables</p>
+<h3 id="group-7-utility-transformation">Group 7: Utility &amp; Transformation</h3>
+<p><strong>fix_UI-CountRepairs.rb</strong>
+- Count repair-type objects in database</p>
+<p><strong>fix_UI-DeleteRowsFromAttachmentsBlob.rb</strong>
+- Delete attachment blob rows (destructive - user prompt needed)
+- Safe delete with rescue fallback</p>
+<p><strong>fix_UI-UpdateBlockagePropertyID.rb</strong>
+- Set blockage property_id = id if nil
+- Update count reported</p>
+<p><strong>fix_UI-UpdateObjectFromObject_ByPrompt_3.rb</strong>
+- Template for object-to-object property copy
+- User confirmation required</p>
+<p><strong>fix_Area-Methods-UIOnly-Working.rb</strong>
+- Sum all subcatchment areas
+- Handles missing area property gracefully</p>
+<p><strong>fix_Change All Node and Link IDs.rb</strong>
+- ID change preparation with user confirmation
+- Dry-run; implementation in full version</p>
+<p><strong>fix_Flow Survey.rb</strong>
+- Sum all conduit flow values</p>
+<p><strong>fix_UI_script.rb</strong>
+- Generic template stub for custom scripts</p>
+<h2 id="how-to-run">How to Run</h2>
+<ol>
+<li><strong>Open InfoWorks ICM</strong> with network/project loaded</li>
+<li><strong>Tools → Ruby Scripts</strong> → select fix_* file</li>
+<li><strong>Console output</strong> shows results with timestamps</li>
+<li><strong>Database utilities</strong> (count_objects, database_summary) work without selection</li>
+<li><strong>Network utilities</strong> require network to be open</li>
+<li><strong>Destructive operations</strong> (delete_rows, change_ids) prompt for confirmation</li>
+</ol>
+<h2 id="common-issues-troubleshooting">Common Issues &amp; Troubleshooting</h2>
+<ul>
+<li><strong>"Network is nil"</strong>: Ensure network/project open in InfoWorks</li>
+<li><strong>"Database is nil"</strong>: Ensure database initialized</li>
+<li><strong>Empty results</strong>: Some fields may not exist in all models</li>
+<li><strong>No responds_to? method</strong>: Ruby version mismatch; use conditional logic</li>
+<li><strong>Nil in output</strong>: Gracefully handled as 'nil' string or skipped</li>
+<li><strong>Performance on large networks</strong>: Row iteration may be slow; add progress output</li>
+</ul>
+<h2 id="original-issues-addressed">Original Issues Addressed</h2>
+<ul>
+<li>Missing nil-checks on network, database, tables</li>
+<li>Unguarded array access (results_fields, row_objects)</li>
+<li>No error handling on missing properties</li>
+<li>Silent failures on type mismatches</li>
+<li>No progress feedback or timestamps</li>
+<li>respond_to? fallbacks missing</li>
+<li>Potential infinite loops in recursion (depth guard added)</li>
+</ul></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

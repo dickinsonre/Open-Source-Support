@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>readme.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0025 - Miscellaneous</div>
+    <h1>readme.md</h1>
+    <div class="meta">Markdown document &middot; 0025 - Miscellaneous</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">115 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><p>markdown</p>
+<h1 id="folder-structure">Folder Structure</h1>
+<h2 id="open-source-support">OPEN-SOURCE-SUPPORT</h2>
+<ul>
+<li><strong>01 InfoWorks ICM</strong></li>
+<li><strong>01 Ruby</strong><ul>
+<li><strong>01 InfoWorks</strong></li>
+<li><strong>02 SWMM</strong></li>
+<li><strong>0001 - Element and Field Statistics</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0002 - Tracing Tools</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0003 - Scenario Tools</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0004 - Scenario Sensitivity - InfoWorks</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0005 - Import Export of Data Tables</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0006 - ICM SWMM vs ICM InfoWorks All Tables</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0007 - Hydraulic Comparison Tools for ICM InfoWorks and SWMM</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0008 - Database Field Tools for Elements and Results</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0009 - Polygon Subcatchment Boundary Tools</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0010 - List all results fields with Stats</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0011 - Get results from all timesteps in the IWR File</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0012 - ICM InfoWorks Results to SWMM5 Summary Tables</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0013 - SUDS or LID Tools</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0014 - InfoSewer to ICM Comparison Tools</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0015 - Export SWMM5 Calibration Files</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0016 - InfoSWMM and SWMM5 Tools in Ruby</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0017 - Subcatchment Grid and Tabs Tools</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0018 - Create Selection list using a SQL query</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0019 - Node Connection Tools</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0020 - All Node, Subs and Link IDs Tools</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0021 - Change the Geometry or Rename IDs</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0022 - TBA</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0023 - TBA</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0024 - Utilities</strong><ul>
+<li><em>(Content omitted for brevity)</em></li>
+</ul>
+</li>
+<li><strong>0025 - Miscellaneous</strong><ul>
+<li><code>Bill James_Similarity_Index.md</code></li>
+<li><code>Bill_James_Similarity_Index.rb</code></li>
+<li><code>Content Categories.png</code></li>
+<li><code>hub.rb</code></li>
+<li><code>hw_parameters.rb</code></li>
+<li><code>ICM Ruby Tutorials.rb</code></li>
+<li><code>image.png</code></li>
+<li><code>Input Message Box.rb</code></li>
+<li><code>master_all_1.rb</code></li>
+<li><code>master_rb.bat</code></li>
+<li><code>prompt_layout.rb</code></li>
+<li><code>readme_hub.md</code></li>
+<li><code>Sandbox.rb</code></li>
+<li><code>sw_parameters.rb</code></li>
+<li><code>WAYNE.md</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="description">Description</h3>
+<p>This section focuses on the <strong>0025 - Miscellaneous</strong> directory under the <code>02 SWMM</code> folder, containing various Ruby scripts, documentation, images, and other miscellaneous files:</p>
+<ul>
+<li><strong>Similarity Index:</strong> <code>Bill James_Similarity_Index.md</code> and <code>Bill_James_Similarity_Index.rb</code> explore or implement a similarity index, potentially related to methodologies from Bill James.</li>
+<li><strong>Visual Aids:</strong> </li>
+<li><code>Content Categories.png</code> might categorize different aspects of the project or tools.</li>
+<li><code>image.png</code> is a generic image file, possibly used for demonstration or reference.</li>
+<li><strong>Scripts:</strong></li>
+<li><code>hub.rb</code> could serve as a central hub for managing or executing other scripts or functionalities.</li>
+<li><code>hw_parameters.rb</code> and <code>sw_parameters.rb</code> manage parameters for HydroWorks (HW) and SWMM (SW) respectively.</li>
+<li><code>ICM Ruby Tutorials.rb</code> likely contains tutorials or examples for using Ruby within ICM.</li>
+<li><code>Input Message Box.rb</code> deals with creating or managing message box inputs, useful for user interface interactions.</li>
+<li><code>master_all_1.rb</code> and <code>master_rb.bat</code> might be scripts or batch files for running multiple scripts or managing the project workflow.</li>
+<li><code>prompt_layout.rb</code> could be related to layout prompts or UI design elements.</li>
+<li><code>Sandbox.rb</code> is typically used for testing or development in an isolated environment.</li>
+<li><strong>Documentation:</strong></li>
+<li><code>readme_hub.md</code> provides information or instructions related to <code>hub.rb</code>.</li>
+<li><code>WAYNE.md</code> might be a personal note or documentation, possibly related to an individual or project named Wayne.</li>
+</ul>
+<h3 id="usage">Usage</h3>
+<p>To utilize the contents within the <code>0025 - Miscellaneous</code> directory:</p>
+<ol>
+<li><strong>Environment Setup:</strong> Ensure Ruby is installed. Note that <code>master_rb.bat</code> suggests some files might need a Windows environment for execution.</li>
+<li><strong>Navigation:</strong> Navigate to this subdirectory within your project structure.</li>
+<li><strong>Execution:</strong> Execute Ruby scripts from the command line or integrate them into your workflow for various tasks.</li>
+</ol>
+<p>Example execution:
+```sh
+ruby Bill_James_Similarity_Index.rb</p>
+<p>Note
+Before running any script, check for dependencies or specific setup requirements.
+Always backup your data before running scripts that might alter or process it.
+Review readme_hub.md for any specific instructions or context on how to use or understand the miscellaneous tools provided in this folder.</p>
+<p>This version provides a clearer focus on the <code>0025 - Miscellaneous</code> folder, detailing its contents and usage in a structured manner. !</p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

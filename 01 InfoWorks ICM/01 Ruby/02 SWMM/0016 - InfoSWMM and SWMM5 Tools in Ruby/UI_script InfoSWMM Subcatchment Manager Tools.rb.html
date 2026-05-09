@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>UI_script InfoSWMM Subcatchment Manager Tools.rb</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+<style>pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehl .hll { background-color: #49483e }
+.codehl { background: #272822; color: #f8f8f2 }
+.codehl .c { color: #75715e } /* Comment */
+.codehl .err { color: #960050; background-color: #1e0010 } /* Error */
+.codehl .esc { color: #f8f8f2 } /* Escape */
+.codehl .g { color: #f8f8f2 } /* Generic */
+.codehl .k { color: #66d9ef } /* Keyword */
+.codehl .l { color: #ae81ff } /* Literal */
+.codehl .n { color: #f8f8f2 } /* Name */
+.codehl .o { color: #f92672 } /* Operator */
+.codehl .x { color: #f8f8f2 } /* Other */
+.codehl .p { color: #f8f8f2 } /* Punctuation */
+.codehl .ch { color: #75715e } /* Comment.Hashbang */
+.codehl .cm { color: #75715e } /* Comment.Multiline */
+.codehl .cp { color: #75715e } /* Comment.Preproc */
+.codehl .cpf { color: #75715e } /* Comment.PreprocFile */
+.codehl .c1 { color: #75715e } /* Comment.Single */
+.codehl .cs { color: #75715e } /* Comment.Special */
+.codehl .gd { color: #f92672 } /* Generic.Deleted */
+.codehl .ge { color: #f8f8f2; font-style: italic } /* Generic.Emph */
+.codehl .gr { color: #f8f8f2 } /* Generic.Error */
+.codehl .gh { color: #f8f8f2 } /* Generic.Heading */
+.codehl .gi { color: #a6e22e } /* Generic.Inserted */
+.codehl .go { color: #66d9ef } /* Generic.Output */
+.codehl .gp { color: #f92672; font-weight: bold } /* Generic.Prompt */
+.codehl .gs { color: #f8f8f2; font-weight: bold } /* Generic.Strong */
+.codehl .gu { color: #75715e } /* Generic.Subheading */
+.codehl .gt { color: #f8f8f2 } /* Generic.Traceback */
+.codehl .kc { color: #66d9ef } /* Keyword.Constant */
+.codehl .kd { color: #66d9ef } /* Keyword.Declaration */
+.codehl .kn { color: #f92672 } /* Keyword.Namespace */
+.codehl .kp { color: #66d9ef } /* Keyword.Pseudo */
+.codehl .kr { color: #66d9ef } /* Keyword.Reserved */
+.codehl .kt { color: #66d9ef } /* Keyword.Type */
+.codehl .ld { color: #e6db74 } /* Literal.Date */
+.codehl .m { color: #ae81ff } /* Literal.Number */
+.codehl .s { color: #e6db74 } /* Literal.String */
+.codehl .na { color: #a6e22e } /* Name.Attribute */
+.codehl .nb { color: #f8f8f2 } /* Name.Builtin */
+.codehl .nc { color: #a6e22e } /* Name.Class */
+.codehl .no { color: #66d9ef } /* Name.Constant */
+.codehl .nd { color: #a6e22e } /* Name.Decorator */
+.codehl .ni { color: #f8f8f2 } /* Name.Entity */
+.codehl .ne { color: #a6e22e } /* Name.Exception */
+.codehl .nf { color: #a6e22e } /* Name.Function */
+.codehl .nl { color: #f8f8f2 } /* Name.Label */
+.codehl .nn { color: #f8f8f2 } /* Name.Namespace */
+.codehl .nx { color: #a6e22e } /* Name.Other */
+.codehl .py { color: #f8f8f2 } /* Name.Property */
+.codehl .nt { color: #f92672 } /* Name.Tag */
+.codehl .nv { color: #f8f8f2 } /* Name.Variable */
+.codehl .ow { color: #f92672 } /* Operator.Word */
+.codehl .w { color: #f8f8f2 } /* Text.Whitespace */
+.codehl .mb { color: #ae81ff } /* Literal.Number.Bin */
+.codehl .mf { color: #ae81ff } /* Literal.Number.Float */
+.codehl .mh { color: #ae81ff } /* Literal.Number.Hex */
+.codehl .mi { color: #ae81ff } /* Literal.Number.Integer */
+.codehl .mo { color: #ae81ff } /* Literal.Number.Oct */
+.codehl .sa { color: #e6db74 } /* Literal.String.Affix */
+.codehl .sb { color: #e6db74 } /* Literal.String.Backtick */
+.codehl .sc { color: #e6db74 } /* Literal.String.Char */
+.codehl .dl { color: #e6db74 } /* Literal.String.Delimiter */
+.codehl .sd { color: #e6db74 } /* Literal.String.Doc */
+.codehl .s2 { color: #e6db74 } /* Literal.String.Double */
+.codehl .se { color: #ae81ff } /* Literal.String.Escape */
+.codehl .sh { color: #e6db74 } /* Literal.String.Heredoc */
+.codehl .si { color: #e6db74 } /* Literal.String.Interpol */
+.codehl .sx { color: #e6db74 } /* Literal.String.Other */
+.codehl .sr { color: #e6db74 } /* Literal.String.Regex */
+.codehl .s1 { color: #e6db74 } /* Literal.String.Single */
+.codehl .ss { color: #e6db74 } /* Literal.String.Symbol */
+.codehl .bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
+.codehl .fm { color: #a6e22e } /* Name.Function.Magic */
+.codehl .vc { color: #f8f8f2 } /* Name.Variable.Class */
+.codehl .vg { color: #f8f8f2 } /* Name.Variable.Global */
+.codehl .vi { color: #f8f8f2 } /* Name.Variable.Instance */
+.codehl .vm { color: #f8f8f2 } /* Name.Variable.Magic */
+.codehl .il { color: #ae81ff } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0016 - InfoSWMM and SWMM5 Tools in Ruby</div>
+    <h1>UI_script InfoSWMM Subcatchment Manager Tools.rb</h1>
+    <div class="meta">Ruby script &middot; 0016 - InfoSWMM and SWMM5 Tools in Ruby</div>
+    <div class="badges"><span class="badge rb">Ruby</span><span class="badge fix">Hardened: <a href="fix_UI_script%20InfoSWMM%20Subcatchment%20Manager%20Tools.rb.html">fix_UI_script InfoSWMM Subcatchment Manager Tools.rb</a></span><span class="badge lines">99 lines &middot; 3,408 bytes</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h2>Source</h2><div class="codewrap"><table class="codehltable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span>
+<span class="normal">98</span>
+<span class="normal">99</span></pre></div></td><td class="code"><div class="codehl"><pre><span></span><code><span class="c1"># Usage example</span>
+<span class="n">cn</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">current_network</span>
+
+<span class="n">val</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">prompt</span> <span class="s2">&quot;Choose USA or SI Units SWMM5 Subcatchment Width Calculation Method&quot;</span><span class="p">,</span>
+<span class="o">[</span>
+  <span class="o">[</span><span class="s1">&#39;USA Units&#39;</span><span class="p">,</span><span class="s1">&#39;Boolean&#39;</span><span class="p">,</span><span class="kp">false</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;SI  Units&#39;</span><span class="p">,</span><span class="s1">&#39;Boolean&#39;</span><span class="p">,</span><span class="kp">true</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Width = 1.7 * Max(Height, Width)&#39;</span><span class="p">,</span> <span class="s1">&#39;Boolean&#39;</span><span class="p">,</span><span class="kp">false</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Width = K * SQRT(Area)&#39;</span><span class="p">,</span> <span class="s1">&#39;Boolean&#39;</span><span class="p">,</span><span class="kp">false</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Width = K * Perimeter&#39;</span><span class="p">,</span> <span class="s1">&#39;Boolean&#39;</span><span class="p">,</span><span class="kp">false</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Width = Area / Flow Length&#39;</span><span class="p">,</span> <span class="s1">&#39;Boolean&#39;</span><span class="p">,</span><span class="kp">false</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;K value 0.2 to 5 default of 1&#39;</span><span class="p">,</span> <span class="s1">&#39;String&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Choose the Unit type and Width Option&#39;</span><span class="p">,</span> <span class="s1">&#39;String&#39;</span><span class="o">]</span>
+<span class="o">]</span><span class="p">,</span> <span class="kp">false</span>
+<span class="no">USA</span> <span class="o">=</span> <span class="n">val</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+<span class="no">SI</span>  <span class="o">=</span> <span class="n">val</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span>
+<span class="n">K</span>   <span class="o">=</span> <span class="n">val</span><span class="o">[</span><span class="mi">6</span><span class="o">].</span><span class="n">to_f</span>
+<span class="n">K</span>   <span class="o">=</span> <span class="n">K</span><span class="o">.</span><span class="n">to_f</span>
+<span class="n">K</span>   <span class="o">=</span> <span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="k">if</span> <span class="n">K</span><span class="o">.</span><span class="n">nil?</span> <span class="o">||</span> <span class="n">K</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="no">MaxHeight</span> <span class="o">=</span> <span class="n">val</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span>
+<span class="no">SQRT_Area</span> <span class="o">=</span> <span class="n">val</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span>
+<span class="no">Width_Perimeter</span> <span class="o">=</span> <span class="n">val</span><span class="o">[</span><span class="mi">4</span><span class="o">]</span>
+<span class="no">Flow_Length</span> <span class="o">=</span> <span class="n">val</span><span class="o">[</span><span class="mi">5</span><span class="o">]</span>
+
+<span class="n">cn</span><span class="o">.</span><span class="n">transaction_begin</span>
+
+<span class="c1"># Initialize a hash to store perimeter, max_height, and max_width for each subcatchment</span>
+<span class="n">subcatchment_measurements</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="n">cn</span><span class="o">.</span><span class="n">row_object_collection</span><span class="p">(</span><span class="s1">&#39;hw_subcatchment&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">polygon</span><span class="o">|</span>
+  <span class="n">boundary_array</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">boundary_array</span>
+  <span class="n">perimeter</span> <span class="o">=</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span>
+  <span class="n">max_height</span> <span class="o">=</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span>
+  <span class="n">max_width</span> <span class="o">=</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span>
+
+  <span class="k">if</span> <span class="n">boundary_array</span><span class="o">.</span><span class="n">any?</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">boundary_array</span><span class="o">.</span><span class="n">each_slice</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">to_a</span>
+    <span class="n">min_x</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:first</span><span class="p">)</span><span class="o">.</span><span class="n">min</span>
+    <span class="n">max_x</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:first</span><span class="p">)</span><span class="o">.</span><span class="n">max</span>
+    <span class="n">min_y</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:last</span><span class="p">)</span><span class="o">.</span><span class="n">min</span>
+    <span class="n">max_y</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:last</span><span class="p">)</span><span class="o">.</span><span class="n">max</span>
+    <span class="n">max_width</span> <span class="o">=</span> <span class="n">max_x</span> <span class="o">-</span> <span class="n">min_x</span>
+    <span class="n">max_height</span> <span class="o">=</span> <span class="n">max_y</span> <span class="o">-</span> <span class="n">min_y</span>
+
+    <span class="n">points</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">point</span><span class="p">,</span> <span class="n">index</span><span class="o">|</span>
+      <span class="n">next_point</span> <span class="o">=</span> <span class="n">points</span><span class="o">[</span><span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">points</span><span class="o">.</span><span class="n">size</span><span class="o">]</span>
+      <span class="n">distance</span> <span class="o">=</span> <span class="no">Math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">next_point</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">-</span> <span class="n">point</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">next_point</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">-</span> <span class="n">point</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+      <span class="n">perimeter</span> <span class="o">+=</span> <span class="n">distance</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="c1"># Store the measurements in the hash with subcatchment ID as the key</span>
+  <span class="n">subcatchment_measurements</span><span class="o">[</span><span class="n">polygon</span><span class="o">.</span><span class="n">subcatchment_id</span><span class="o">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="ss">perimeter</span><span class="p">:</span> <span class="n">perimeter</span><span class="p">,</span>
+    <span class="ss">max_height</span><span class="p">:</span> <span class="n">max_height</span><span class="p">,</span>
+    <span class="ss">max_width</span><span class="p">:</span> <span class="n">max_width</span>
+  <span class="p">}</span>
+<span class="k">end</span>
+
+<span class="c1"># Output the measurements for each subcatchment</span>
+<span class="n">subcatchment_measurements</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="nb">id</span><span class="p">,</span> <span class="n">measurements</span><span class="o">|</span>
+  <span class="nb">puts</span> <span class="s2">&quot;Subcatchment ID: </span><span class="si">#{</span><span class="nb">id</span><span class="si">}</span><span class="s2">, Perimeter: </span><span class="si">#{</span><span class="s1">&#39;%.4f&#39;</span> <span class="o">%</span> <span class="n">measurements</span><span class="o">[</span><span class="ss">:perimeter</span><span class="o">]</span><span class="si">}</span><span class="s2">, Max Height: </span><span class="si">#{</span><span class="s1">&#39;%.4f&#39;</span> <span class="o">%</span> <span class="n">measurements</span><span class="o">[</span><span class="ss">:max_height</span><span class="o">]</span><span class="si">}</span><span class="s2">, Max Width: </span><span class="si">#{</span><span class="s1">&#39;%.4f&#39;</span> <span class="o">%</span> <span class="n">measurements</span><span class="o">[</span><span class="ss">:max_width</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="k">end</span>
+
+<span class="n">total_before</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">total_after</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">cn</span><span class="o">.</span><span class="n">row_objects</span><span class="p">(</span><span class="s1">&#39;hw_subcatchment&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">ro</span><span class="o">|</span>
+  <span class="k">if</span> <span class="n">ro</span><span class="o">.</span><span class="n">total_area</span> <span class="o">&amp;&amp;</span> <span class="n">ro</span><span class="o">.</span><span class="n">catchment_dimension</span>
+    <span class="n">total_before</span> <span class="o">+=</span> <span class="n">ro</span><span class="o">.</span><span class="n">catchment_dimension</span>
+    <span class="k">if</span> <span class="no">MaxHeight</span>  
+      <span class="n">ro</span><span class="o">.</span><span class="n">catchment_dimension</span> <span class="o">=</span> <span class="mi">1</span><span class="o">.</span><span class="mi">7</span> <span class="o">*</span> <span class="o">[</span><span class="n">subcatchment_measurements</span><span class="o">[</span><span class="n">ro</span><span class="o">.</span><span class="n">subcatchment_id</span><span class="o">][</span><span class="ss">:max_width</span><span class="o">]</span><span class="p">,</span> <span class="n">subcatchment_measurements</span><span class="o">[</span><span class="n">ro</span><span class="o">.</span><span class="n">subcatchment_id</span><span class="o">][</span><span class="ss">:max_height</span><span class="o">]].</span><span class="n">max</span>
+    <span class="k">end</span> 
+    <span class="k">if</span> <span class="no">SQRT_Area</span> 
+      <span class="n">ro</span><span class="o">.</span><span class="n">catchment_dimension</span> <span class="o">=</span> <span class="n">K</span> <span class="o">*</span> <span class="no">Math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ro</span><span class="o">.</span><span class="n">total_area</span> <span class="o">*</span> <span class="p">(</span><span class="no">USA</span> <span class="p">?</span> <span class="mi">43560</span><span class="o">.</span><span class="mi">0</span> <span class="p">:</span> <span class="mi">10000</span><span class="o">.</span><span class="mi">0</span><span class="p">))</span>
+    <span class="k">end</span>  
+    <span class="k">if</span> <span class="no">Width_Perimeter</span>  
+      <span class="n">ro</span><span class="o">.</span><span class="n">catchment_dimension</span> <span class="o">=</span> <span class="n">K</span> <span class="o">*</span> <span class="n">subcatchment_measurements</span><span class="o">[</span><span class="n">ro</span><span class="o">.</span><span class="n">subcatchment_id</span><span class="o">][</span><span class="ss">:perimeter</span><span class="o">]</span>
+    <span class="k">end</span> 
+    <span class="k">if</span> <span class="no">Flow_Length</span> 
+      <span class="n">ro</span><span class="o">.</span><span class="n">catchment_dimension</span> <span class="o">=</span> <span class="p">(</span><span class="n">ro</span><span class="o">.</span><span class="n">total_area</span> <span class="o">*</span> <span class="p">(</span><span class="no">USA</span> <span class="p">?</span> <span class="mi">43560</span><span class="o">.</span><span class="mi">0</span> <span class="p">:</span> <span class="mi">10000</span><span class="o">.</span><span class="mi">0</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="o">[</span><span class="n">subcatchment_measurements</span><span class="o">[</span><span class="n">ro</span><span class="o">.</span><span class="n">subcatchment_id</span><span class="o">][</span><span class="ss">:max_width</span><span class="o">]</span><span class="p">,</span> <span class="n">subcatchment_measurements</span><span class="o">[</span><span class="n">ro</span><span class="o">.</span><span class="n">subcatchment_id</span><span class="o">][</span><span class="ss">:max_height</span><span class="o">]].</span><span class="n">max</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="n">total_after</span> <span class="o">+=</span> <span class="n">ro</span><span class="o">.</span><span class="n">catchment_dimension</span>
+    <span class="n">ro</span><span class="o">.</span><span class="n">write</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="nb">puts</span> <span class="s2">&quot;Total SWMM5 Width or dimension before update: </span><span class="si">#{</span><span class="s1">&#39;%.4f&#39;</span> <span class="o">%</span> <span class="n">total_before</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nb">puts</span> <span class="s2">&quot;Total SWMM5 Width or dimension after update:  </span><span class="si">#{</span><span class="s1">&#39;%.4f&#39;</span> <span class="o">%</span> <span class="n">total_after</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nb">puts</span> <span class="s2">&quot;Total SWMM5 Width or dimension change:        </span><span class="si">#{</span><span class="s1">&#39;%.4f&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">total_after</span> <span class="o">-</span> <span class="n">total_before</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="k">if</span> <span class="no">SQRT_Area</span> 
+  <span class="nb">puts</span> <span class="n">K</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">?</span> <span class="s2">&quot;Width = K * SQRT(Area) with K = 1&quot;</span> <span class="p">:</span> <span class="s2">&quot;Width = K * SQRT(Area) with K = </span><span class="si">#{</span><span class="n">K</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="k">end</span>
+<span class="k">if</span> <span class="no">Width_Perimeter</span> 
+  <span class="nb">puts</span> <span class="n">K</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">?</span> <span class="s2">&quot;Width = K * Perimeter with K = 1&quot;</span> <span class="p">:</span> <span class="s2">&quot;Width = K * Perimeter with K = </span><span class="si">#{</span><span class="n">K</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="k">end</span>
+
+<span class="n">cn</span><span class="o">.</span><span class="n">transaction_commit</span>
+
+
+</code></pre></div>
+</td></tr></table></div></section>
+  <footer>Auto-generated &middot; Original file unmodified</footer>
+</div>
+</body>
+</html>

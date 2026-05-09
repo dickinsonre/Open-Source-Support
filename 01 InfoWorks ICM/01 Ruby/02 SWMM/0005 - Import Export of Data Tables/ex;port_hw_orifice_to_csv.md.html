@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ex;port_hw_orifice_to_csv.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0005 - Import Export of Data Tables</div>
+    <h1>ex;port_hw_orifice_to_csv.md</h1>
+    <div class="meta">Markdown document &middot; 0005 - Import Export of Data Tables</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">257 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="hw_orifice-csv-export-script-summary">HW_Orifice CSV Export Script Summary</h1>
+<h2 id="overview">Overview</h2>
+<p>This Ruby script exports selected <code>hw_orifice</code> objects from an InfoWorks ICM network to a CSV file. It provides an interactive interface for selecting orifice attributes to export, with robust error handling and data formatting capabilities specifically tailored for orifice hydraulic structures.</p>
+<h2 id="key-features">Key Features</h2>
+<h3 id="1-interactive-field-selection">1. <strong>Interactive Field Selection</strong></h3>
+<ul>
+<li>User-friendly dialog for attribute selection</li>
+<li>"SELECT/DESELECT ALL FIELDS" toggle functionality</li>
+<li>Pre-configured defaults focusing on essential orifice parameters</li>
+</ul>
+<h3 id="2-comprehensive-field-coverage">2. <strong>Comprehensive Field Coverage</strong></h3>
+<p>The script supports exporting 35+ orifice attributes organized into logical categories:</p>
+<h4 id="key-identifiers">Key Identifiers</h4>
+<ul>
+<li>Upstream/Downstream Node IDs</li>
+<li>Link Suffix</li>
+<li>Asset ID/UID</li>
+<li>Infonet ID</li>
+</ul>
+<h4 id="basic-orifice-properties">Basic Orifice Properties</h4>
+<ul>
+<li>Link Type (should be ORIFICE)</li>
+<li>System Type</li>
+<li>Sewer Reference</li>
+<li>Branch ID</li>
+</ul>
+<h4 id="physical-characteristics">Physical Characteristics</h4>
+<ul>
+<li><strong>Invert Level</strong>: Bottom elevation of the orifice</li>
+<li><strong>Diameter</strong>: Size of circular orifices</li>
+<li><strong>Opening Type</strong>: Shape classification (CIRCULAR, RECTANGULAR, etc.)</li>
+</ul>
+<h4 id="hydraulic-parameters">Hydraulic Parameters</h4>
+<ul>
+<li><strong>Discharge Coefficient (Cd)</strong>: Primary flow coefficient</li>
+<li><strong>Secondary Discharge Coefficient</strong>: For drowned/submerged conditions</li>
+<li><strong>Limiting Discharge</strong>: Maximum flow capacity</li>
+</ul>
+<h4 id="flow-control-parameters-controllable-orifices">Flow Control Parameters (Controllable Orifices)</h4>
+<ul>
+<li><strong>Flow Limits</strong>: Min/Max flow rates</li>
+<li><strong>Flow Rate Changes</strong>: Positive/Negative change rates</li>
+<li><strong>Control Threshold</strong>: Trigger level for control actions</li>
+</ul>
+<h4 id="additional-data">Additional Data</h4>
+<ul>
+<li>Settlement efficiencies (upstream/downstream)</li>
+<li>Geometry (point arrays)</li>
+<li>User-defined fields (10 numeric, 10 text)</li>
+<li>Notes and hyperlinks</li>
+</ul>
+<h3 id="3-data-processing-features">3. <strong>Data Processing Features</strong></h3>
+<h4 id="selection-based-export">Selection-Based Export</h4>
+<ul>
+<li>Exports only orifices marked as selected</li>
+<li>Provides count statistics (total vs. selected)</li>
+</ul>
+<h4 id="data-type-handling">Data Type Handling</h4>
+<ul>
+<li><strong>Point Arrays</strong>: Formatted as <code>X1,Y1;X2,Y2;...</code></li>
+<li><strong>Hyperlinks</strong>: Structured as <code>Description,URL;...</code></li>
+<li><strong>Arrays</strong>: Generic comma-separated format</li>
+<li><strong>Null Values</strong>: Represented as empty strings</li>
+</ul>
+<h4 id="error-management">Error Management</h4>
+<ul>
+<li>Graceful handling of missing attributes</li>
+<li>Warning logs for inaccessible fields</li>
+<li>Continuous processing despite errors</li>
+</ul>
+<h3 id="4-file-management">4. <strong>File Management</strong></h3>
+<h4 id="output-configuration">Output Configuration</h4>
+<ul>
+<li>Timestamped filename: <code>selected_hw_orifices_export_YYYYMMDD_HHMMSS.csv</code></li>
+<li>User-defined export directory</li>
+<li>Automatic directory creation</li>
+</ul>
+<h4 id="intelligent-cleanup">Intelligent Cleanup</h4>
+<ul>
+<li>Removes empty CSV files automatically</li>
+<li>Platform-aware file size detection</li>
+<li>Header-only file detection</li>
+</ul>
+<h3 id="5-user-feedback">5. <strong>User Feedback</strong></h3>
+<h4 id="progress-monitoring">Progress Monitoring</h4>
+<ul>
+<li>Real-time console logging</li>
+<li>Orifice identification in logs</li>
+<li>Performance timing metrics</li>
+</ul>
+<h4 id="summary-reporting">Summary Reporting</h4>
+<ul>
+<li>Final dialog displaying:</li>
+<li>Export file location</li>
+<li>Number of orifices exported</li>
+<li>Field count per orifice</li>
+</ul>
+<h4 id="error-communication">Error Communication</h4>
+<ul>
+<li>Clear messages for:</li>
+<li>Network availability</li>
+<li>File permissions</li>
+<li>Disk space</li>
+<li>Data access issues</li>
+</ul>
+<h2 id="technical-implementation">Technical Implementation</h2>
+<h3 id="dependencies">Dependencies</h3>
+<pre><code class="language-ruby">require 'csv'
+require 'fileutils'
+</code></pre>
+<h3 id="core-api-usage">Core API Usage</h3>
+<ul>
+<li><code>WSApplication.current_network</code> - Network access</li>
+<li><code>network.row_objects('hw_orifice')</code> - Orifice collection</li>
+<li><code>orifice.selected</code> - Selection state</li>
+<li><code>WSApplication.prompt</code> - User interface</li>
+</ul>
+<h3 id="error-handling-strategy">Error Handling Strategy</h3>
+<ol>
+<li><strong>Environment</strong>: WSApplication presence</li>
+<li><strong>Network</strong>: Loading validation</li>
+<li><strong>File System</strong>: Permission and space checks</li>
+<li><strong>Data Access</strong>: Method availability</li>
+<li><strong>CSV Format</strong>: Data integrity</li>
+</ol>
+<h2 id="usage-workflow">Usage Workflow</h2>
+<ol>
+<li>
+<p><strong>Preparation</strong>
+   - Load InfoWorks ICM network
+   - Select orifice objects to export</p>
+</li>
+<li>
+<p><strong>Execution</strong>
+   - Run script in application
+   - Choose export directory
+   - Select desired fields</p>
+</li>
+<li>
+<p><strong>Output</strong>
+   - Timestamped CSV file
+   - Summary statistics
+   - Detailed console log</p>
+</li>
+</ol>
+<h2 id="debugging-features">Debugging Features</h2>
+<h3 id="debug-block-optional">Debug Block (Optional)</h3>
+<pre><code class="language-ruby"># Uncomment to inspect orifice object methods
+# Lists all available methods
+# Helps verify field availability
+</code></pre>
+<h3 id="logging-detail">Logging Detail</h3>
+<ul>
+<li>Per-orifice processing status</li>
+<li>Missing attribute notifications</li>
+<li>Limited stack traces (5 lines)</li>
+</ul>
+<h2 id="performance-aspects">Performance Aspects</h2>
+<ul>
+<li>Memory-efficient sequential processing</li>
+<li>Direct CSV writing</li>
+<li>Execution time measurement</li>
+</ul>
+<h2 id="customization-guidelines">Customization Guidelines</h2>
+<h3 id="adding-fields">Adding Fields</h3>
+<ol>
+<li>
+<p>Update <code>FIELDS_TO_EXPORT</code> array:
+   <code>ruby
+   ['Display Name', :method_name, default_state, 'CSV Header']</code></p>
+</li>
+<li>
+<p>Add special handling if needed</p>
+</li>
+</ol>
+<h3 id="export-modifications">Export Modifications</h3>
+<ul>
+<li>CSV delimiter options</li>
+<li>Complex type formatting</li>
+<li>Null representation changes</li>
+</ul>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="code-design">Code Design</h3>
+<ol>
+<li>
+<p><strong>Defensive Approach</strong>
+   - Method existence checks
+   - Null safety
+   - Operation validation</p>
+</li>
+<li>
+<p><strong>User Interface</strong>
+   - Clear error messaging
+   - Progress indicators
+   - Result summaries</p>
+</li>
+<li>
+<p><strong>Data Handling</strong>
+   - Type consistency
+   - Format standardization
+   - Character escaping</p>
+</li>
+</ol>
+<h2 id="limitations">Limitations</h2>
+<ol>
+<li>Selection-based export only</li>
+<li>InfoWorks ICM dependency</li>
+<li>CSV format restrictions</li>
+<li>Single-threaded execution</li>
+</ol>
+<h2 id="enhancement-possibilities">Enhancement Possibilities</h2>
+<ol>
+<li><strong>Batch Operations</strong>: Multiple object type support</li>
+<li><strong>Export Formats</strong>: Excel, JSON, XML options</li>
+<li><strong>Filter Options</strong>: Beyond selection status</li>
+<li><strong>Performance</strong>: Parallel processing</li>
+<li><strong>Validation</strong>: Pre-export checks</li>
+<li><strong>Automation</strong>: Scheduled exports</li>
+</ol>
+<h2 id="orifice-specific-considerations">Orifice-Specific Considerations</h2>
+<h3 id="hydraulic-focus">Hydraulic Focus</h3>
+<ul>
+<li>Emphasis on discharge coefficients</li>
+<li>Support for drowned conditions</li>
+<li>Flow limiting parameters</li>
+</ul>
+<h3 id="control-features">Control Features</h3>
+<ul>
+<li>Controllable orifice support</li>
+<li>Flow rate change parameters</li>
+<li>Threshold-based control</li>
+</ul>
+<h3 id="physical-properties">Physical Properties</h3>
+<ul>
+<li>Opening type classification</li>
+<li>Dimensional parameters</li>
+<li>Invert level tracking</li>
+</ul>
+<h2 id="common-applications">Common Applications</h2>
+<ol>
+<li><strong>Hydraulic Analysis</strong>: Export discharge coefficients and flow limits</li>
+<li><strong>Asset Inventory</strong>: Complete orifice specifications with IDs</li>
+<li><strong>Control System Review</strong>: Controllable orifice parameters</li>
+<li><strong>Maintenance Records</strong>: User fields for inspection data</li>
+<li><strong>Model Calibration</strong>: Physical characteristics for validation</li>
+</ol>
+<h2 id="comparison-with-other-export-scripts">Comparison with Other Export Scripts</h2>
+<h3 id="similarities">Similarities</h3>
+<ul>
+<li>Same overall architecture</li>
+<li>Consistent error handling</li>
+<li>Identical user interface approach</li>
+</ul>
+<h3 id="differences">Differences</h3>
+<ul>
+<li>Simpler parameter set than weirs/pumps</li>
+<li>Focus on basic hydraulic properties</li>
+<li>Less complex control logic</li>
+<li>Fewer operational parameters</li>
+</ul>
+<h2 id="script-reliability">Script Reliability</h2>
+<h3 id="data-integrity">Data Integrity</h3>
+<ul>
+<li>Preserves numeric precision</li>
+<li>Maintains text formatting</li>
+<li>Handles special characters</li>
+</ul>
+<h3 id="error-recovery">Error Recovery</h3>
+<ul>
+<li>Continues after field errors</li>
+<li>Logs all issues</li>
+<li>Provides actionable feedback</li>
+</ul>
+<h3 id="file-safety">File Safety</h3>
+<ul>
+<li>Validates write operations</li>
+<li>Cleans up empty files</li>
+<li>Confirms successful export</li>
+</ul></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

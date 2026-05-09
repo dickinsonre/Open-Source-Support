@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SWMM5_Import_ICM_InfoWorks_with_Cleanup_Exchange.rb</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+<style>pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehl .hll { background-color: #49483e }
+.codehl { background: #272822; color: #f8f8f2 }
+.codehl .c { color: #75715e } /* Comment */
+.codehl .err { color: #960050; background-color: #1e0010 } /* Error */
+.codehl .esc { color: #f8f8f2 } /* Escape */
+.codehl .g { color: #f8f8f2 } /* Generic */
+.codehl .k { color: #66d9ef } /* Keyword */
+.codehl .l { color: #ae81ff } /* Literal */
+.codehl .n { color: #f8f8f2 } /* Name */
+.codehl .o { color: #f92672 } /* Operator */
+.codehl .x { color: #f8f8f2 } /* Other */
+.codehl .p { color: #f8f8f2 } /* Punctuation */
+.codehl .ch { color: #75715e } /* Comment.Hashbang */
+.codehl .cm { color: #75715e } /* Comment.Multiline */
+.codehl .cp { color: #75715e } /* Comment.Preproc */
+.codehl .cpf { color: #75715e } /* Comment.PreprocFile */
+.codehl .c1 { color: #75715e } /* Comment.Single */
+.codehl .cs { color: #75715e } /* Comment.Special */
+.codehl .gd { color: #f92672 } /* Generic.Deleted */
+.codehl .ge { color: #f8f8f2; font-style: italic } /* Generic.Emph */
+.codehl .gr { color: #f8f8f2 } /* Generic.Error */
+.codehl .gh { color: #f8f8f2 } /* Generic.Heading */
+.codehl .gi { color: #a6e22e } /* Generic.Inserted */
+.codehl .go { color: #66d9ef } /* Generic.Output */
+.codehl .gp { color: #f92672; font-weight: bold } /* Generic.Prompt */
+.codehl .gs { color: #f8f8f2; font-weight: bold } /* Generic.Strong */
+.codehl .gu { color: #75715e } /* Generic.Subheading */
+.codehl .gt { color: #f8f8f2 } /* Generic.Traceback */
+.codehl .kc { color: #66d9ef } /* Keyword.Constant */
+.codehl .kd { color: #66d9ef } /* Keyword.Declaration */
+.codehl .kn { color: #f92672 } /* Keyword.Namespace */
+.codehl .kp { color: #66d9ef } /* Keyword.Pseudo */
+.codehl .kr { color: #66d9ef } /* Keyword.Reserved */
+.codehl .kt { color: #66d9ef } /* Keyword.Type */
+.codehl .ld { color: #e6db74 } /* Literal.Date */
+.codehl .m { color: #ae81ff } /* Literal.Number */
+.codehl .s { color: #e6db74 } /* Literal.String */
+.codehl .na { color: #a6e22e } /* Name.Attribute */
+.codehl .nb { color: #f8f8f2 } /* Name.Builtin */
+.codehl .nc { color: #a6e22e } /* Name.Class */
+.codehl .no { color: #66d9ef } /* Name.Constant */
+.codehl .nd { color: #a6e22e } /* Name.Decorator */
+.codehl .ni { color: #f8f8f2 } /* Name.Entity */
+.codehl .ne { color: #a6e22e } /* Name.Exception */
+.codehl .nf { color: #a6e22e } /* Name.Function */
+.codehl .nl { color: #f8f8f2 } /* Name.Label */
+.codehl .nn { color: #f8f8f2 } /* Name.Namespace */
+.codehl .nx { color: #a6e22e } /* Name.Other */
+.codehl .py { color: #f8f8f2 } /* Name.Property */
+.codehl .nt { color: #f92672 } /* Name.Tag */
+.codehl .nv { color: #f8f8f2 } /* Name.Variable */
+.codehl .ow { color: #f92672 } /* Operator.Word */
+.codehl .w { color: #f8f8f2 } /* Text.Whitespace */
+.codehl .mb { color: #ae81ff } /* Literal.Number.Bin */
+.codehl .mf { color: #ae81ff } /* Literal.Number.Float */
+.codehl .mh { color: #ae81ff } /* Literal.Number.Hex */
+.codehl .mi { color: #ae81ff } /* Literal.Number.Integer */
+.codehl .mo { color: #ae81ff } /* Literal.Number.Oct */
+.codehl .sa { color: #e6db74 } /* Literal.String.Affix */
+.codehl .sb { color: #e6db74 } /* Literal.String.Backtick */
+.codehl .sc { color: #e6db74 } /* Literal.String.Char */
+.codehl .dl { color: #e6db74 } /* Literal.String.Delimiter */
+.codehl .sd { color: #e6db74 } /* Literal.String.Doc */
+.codehl .s2 { color: #e6db74 } /* Literal.String.Double */
+.codehl .se { color: #ae81ff } /* Literal.String.Escape */
+.codehl .sh { color: #e6db74 } /* Literal.String.Heredoc */
+.codehl .si { color: #e6db74 } /* Literal.String.Interpol */
+.codehl .sx { color: #e6db74 } /* Literal.String.Other */
+.codehl .sr { color: #e6db74 } /* Literal.String.Regex */
+.codehl .s1 { color: #e6db74 } /* Literal.String.Single */
+.codehl .ss { color: #e6db74 } /* Literal.String.Symbol */
+.codehl .bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
+.codehl .fm { color: #a6e22e } /* Name.Function.Magic */
+.codehl .vc { color: #f8f8f2 } /* Name.Variable.Class */
+.codehl .vg { color: #f8f8f2 } /* Name.Variable.Global */
+.codehl .vi { color: #f8f8f2 } /* Name.Variable.Instance */
+.codehl .vm { color: #f8f8f2 } /* Name.Variable.Magic */
+.codehl .il { color: #ae81ff } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0022 - Hackathon AWI OffShoots</div>
+    <h1>SWMM5_Import_ICM_InfoWorks_with_Cleanup_Exchange.rb</h1>
+    <div class="meta">Ruby script &middot; 0022 - Hackathon AWI OffShoots</div>
+    <div class="badges"><span class="badge rb">Ruby</span><span class="badge fix">Hardened: <a href="fix_SWMM5_Import_ICM_InfoWorks_with_Cleanup_Exchange.rb.html">fix_SWMM5_Import_ICM_InfoWorks_with_Cleanup_Exchange.rb</a></span><span class="badge lines">438 lines &middot; 14,832 bytes</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h2>Source</h2><div class="codewrap"><table class="codehltable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
+<span class="normal">  2</span>
+<span class="normal">  3</span>
+<span class="normal">  4</span>
+<span class="normal">  5</span>
+<span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
+<span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span></pre></div></td><td class="code"><div class="codehl"><pre><span></span><code><span class="c1"># ============================================================================</span>
+<span class="c1"># SWMM5 Import WITH CLEANUP - EXCHANGE SCRIPT (Version 3 - Refactored &amp; Enhanced)</span>
+<span class="c1"># ============================================================================</span>
+<span class="c1"># </span>
+<span class="c1"># WHAT THIS SCRIPT DOES:</span>
+<span class="c1">#   Processes SWMM5 .inp files via ICMExchange, importing them into ICM SWMM Networks.</span>
+<span class="c1">#   </span>
+<span class="c1">#   Phases: Import -&gt; Cleanup (sw_label) -&gt; Validation -&gt; Reporting</span>
+<span class="c1">#</span>
+<span class="c1"># NEW IN VERSION 3:</span>
+<span class="c1">#   - Refactored into functional components.</span>
+<span class="c1">#   - Implemented cleanup of empty visualization labels (sw_label table).</span>
+<span class="c1">#   - Enhanced validation logic (accurate connectivity checks).</span>
+<span class="c1">#   - Added performance timing metrics.</span>
+<span class="c1">#   - Uses Ruby Logger for structured log files.</span>
+<span class="c1">#</span>
+<span class="c1"># RUNS AUTOMATICALLY:</span>
+<span class="c1">#   Launched by the UI script. Reads configuration via ENV[&#39;ICM_IMPORT_CONFIG&#39;].</span>
+<span class="c1">#</span>
+<span class="c1"># ============================================================================</span>
+
+<span class="nb">require</span> <span class="s1">&#39;yaml&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;logger&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;fileutils&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;set&#39;</span>
+
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<span class="c1"># Global State and Helpers</span>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<span class="vg">$script_logger</span> <span class="o">=</span> <span class="kp">nil</span>
+<span class="vg">$aggregate_stats</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="ss">files_processed</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="ss">files_successful</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="ss">files_failed</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="ss">total_nodes</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="ss">total_links</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="ss">total_subcatchments</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="ss">total_labels_cleaned</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="ss">total_import_time</span><span class="p">:</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span>
+  <span class="ss">failed_files</span><span class="p">:</span> <span class="o">[]</span>
+<span class="p">}</span>
+
+<span class="c1"># Dual logging: Console (simple) and File (structured)</span>
+<span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">level</span> <span class="o">=</span> <span class="ss">:info</span><span class="p">)</span>
+  <span class="c1"># Output to console (ICMExchange stdout) for live streaming</span>
+  <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%H:%M:%S&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">] </span><span class="si">#{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="c1"># Output to log file</span>
+  <span class="vg">$script_logger</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span> <span class="k">if</span> <span class="vg">$script_logger</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">time_it</span>
+  <span class="n">start_time</span> <span class="o">=</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span>
+  <span class="k">yield</span>
+  <span class="no">Time</span><span class="o">.</span><span class="n">now</span> <span class="o">-</span> <span class="n">start_time</span>
+<span class="k">end</span>
+
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<span class="c1"># Initialization and Configuration</span>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<span class="k">def</span> <span class="nf">initialize_script</span>
+  <span class="c1"># Load configuration strictly from the environment variable</span>
+  <span class="n">config_file</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;ICM_IMPORT_CONFIG&#39;</span><span class="o">]</span>
+  <span class="k">unless</span> <span class="n">config_file</span> <span class="o">&amp;&amp;</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+    <span class="nb">puts</span> <span class="s2">&quot;ERROR: Configuration file not found via ICM_IMPORT_CONFIG. Run the UI script first.&quot;</span>
+    <span class="nb">exit</span> <span class="mi">1</span>
+  <span class="k">end</span>
+
+  <span class="k">begin</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+    <span class="nb">puts</span> <span class="s2">&quot;ERROR: Failed to parse configuration file: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nb">exit</span> <span class="mi">1</span>
+  <span class="k">end</span>
+
+  <span class="c1"># Setup Logging</span>
+  <span class="n">log_dir</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">[</span><span class="s1">&#39;base_directory&#39;</span><span class="o">]</span><span class="p">,</span> <span class="s2">&quot;ICM Import Log Files&quot;</span><span class="p">)</span>
+  <span class="no">FileUtils</span><span class="o">.</span><span class="n">mkdir_p</span><span class="p">(</span><span class="n">log_dir</span><span class="p">)</span>
+
+  <span class="n">log_filename</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">log_dir</span><span class="p">,</span> <span class="s2">&quot;SWMM5_Batch_Import_</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m%d_%H%M%S&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.log&quot;</span><span class="p">)</span>
+  
+  <span class="vg">$script_logger</span> <span class="o">=</span> <span class="no">Logger</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">log_filename</span><span class="p">)</span>
+  <span class="vg">$script_logger</span><span class="o">.</span><span class="n">formatter</span> <span class="o">=</span> <span class="nb">proc</span> <span class="k">do</span> <span class="o">|</span><span class="n">severity</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">progname</span><span class="p">,</span> <span class="n">msg</span><span class="o">|</span>
+    <span class="s2">&quot;</span><span class="si">#{</span><span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-%d %H:%M:%S&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> [</span><span class="si">#{</span><span class="n">severity</span><span class="si">}</span><span class="s2">] </span><span class="si">#{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+  <span class="k">end</span>
+
+  <span class="c1"># Open Database</span>
+  <span class="k">begin</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">open</span>
+  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+    <span class="n">log</span> <span class="s2">&quot;Error opening database: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">:error</span>
+    <span class="nb">exit</span> <span class="mi">1</span>
+  <span class="k">end</span>
+
+  <span class="n">log</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span>
+  <span class="n">log</span> <span class="s2">&quot;SWMM5 Import to ICM (V3) - Exchange Script Initialized&quot;</span>
+  <span class="n">log</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span>
+  <span class="n">log</span> <span class="s2">&quot;Database GUID: </span><span class="si">#{</span><span class="n">db</span><span class="o">.</span><span class="n">guid</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="n">log</span> <span class="s2">&quot;Files to process: </span><span class="si">#{</span><span class="n">config</span><span class="o">[</span><span class="s1">&#39;file_configs&#39;</span><span class="o">].</span><span class="n">length</span><span class="si">}</span><span class="s2">&quot;</span>
+
+  <span class="p">{</span> <span class="ss">config</span><span class="p">:</span> <span class="n">config</span><span class="p">,</span> <span class="ss">db</span><span class="p">:</span> <span class="n">db</span><span class="p">,</span> <span class="ss">log_dir</span><span class="p">:</span> <span class="n">log_dir</span><span class="p">,</span> <span class="ss">log_filename</span><span class="p">:</span> <span class="n">log_filename</span> <span class="p">}</span>
+<span class="k">end</span>
+
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<span class="c1"># Phase 1: Import File</span>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<span class="k">def</span> <span class="nf">import_file</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">network_name</span><span class="p">,</span> <span class="n">log_dir</span><span class="p">)</span>
+  <span class="n">log</span> <span class="s2">&quot;PHASE 1: Importing SWMM5 data&quot;</span>
+  <span class="n">network</span> <span class="o">=</span> <span class="kp">nil</span>
+
+  <span class="c1"># 1. Create Network Object</span>
+  <span class="k">begin</span>
+    <span class="c1"># Explicitly creating &#39;SWMM network&#39; type</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">new_model_object</span><span class="p">(</span><span class="s1">&#39;SWMM network&#39;</span><span class="p">,</span> <span class="n">network_name</span><span class="p">)</span>
+    <span class="n">log</span> <span class="s2">&quot;  Network object created (ID: </span><span class="si">#{</span><span class="n">network</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span>
+  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+    <span class="c1"># Handle duplicate names robustly</span>
+    <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="s2">&quot;already exists&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="s2">&quot;Name is not unique&quot;</span><span class="p">)</span>
+      <span class="k">raise</span> <span class="s2">&quot;Network &#39;</span><span class="si">#{</span><span class="n">network_name</span><span class="si">}</span><span class="s2">&#39; already exists (Duplicate name)&quot;</span>
+    <span class="k">else</span>
+      <span class="k">raise</span> <span class="s2">&quot;Failed to create network object: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="c1"># 2. Import Data</span>
+  <span class="n">import_log_path</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">log_dir</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="no">File</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;.inp&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">_ImportLog_</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m%d_%H%M%S&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.txt&quot;</span><span class="p">)</span>
+  <span class="n">net</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">open</span>
+  
+  <span class="n">import_success</span> <span class="o">=</span> <span class="kp">false</span>
+  <span class="n">import_time</span> <span class="o">=</span> <span class="n">time_it</span> <span class="k">do</span>
+    <span class="c1"># Import using the &quot;inp&quot; driver for SWMM5 into SWMM networks</span>
+    <span class="c1"># Ensuring path format is compatible (ICM API often prefers Windows paths)</span>
+    <span class="n">import_success</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">import_ex</span><span class="p">(</span>
+        <span class="n">file_path</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">),</span> 
+        <span class="s2">&quot;inp&quot;</span><span class="p">,</span> 
+        <span class="kp">nil</span><span class="p">,</span> 
+        <span class="n">import_log_path</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:total_import_time</span><span class="o">]</span> <span class="o">+=</span> <span class="n">import_time</span>
+  <span class="n">log</span> <span class="s2">&quot;  Import duration: </span><span class="si">#{</span><span class="nb">sprintf</span><span class="p">(</span><span class="s1">&#39;%.2f&#39;</span><span class="p">,</span> <span class="n">import_time</span><span class="p">)</span><span class="si">}</span><span class="s2">s&quot;</span>
+
+  <span class="c1"># 3. Handle Failure</span>
+  <span class="k">unless</span> <span class="n">import_success</span>
+    <span class="n">log</span> <span class="s2">&quot;  Import process reported failure. Check log: </span><span class="si">#{</span><span class="n">import_log_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">:error</span>
+    <span class="c1"># Dump import log contents to main log</span>
+    <span class="k">if</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">import_log_path</span><span class="p">)</span>
+        <span class="n">log</span> <span class="s2">&quot;  --- Import Log Contents (First 100 lines) ---&quot;</span><span class="p">,</span> <span class="ss">:warn</span>
+        <span class="no">File</span><span class="o">.</span><span class="n">foreach</span><span class="p">(</span><span class="n">import_log_path</span><span class="p">)</span><span class="o">.</span><span class="n">with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">line</span><span class="p">,</span> <span class="n">i</span><span class="o">|</span>
+            <span class="n">log</span> <span class="s2">&quot;    &gt; </span><span class="si">#{</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">:warn</span>
+            <span class="k">break</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">100</span>
+        <span class="k">end</span>
+        <span class="n">log</span> <span class="s2">&quot;  ---------------------------------------------&quot;</span><span class="p">,</span> <span class="ss">:warn</span>
+    <span class="k">end</span>
+    <span class="k">raise</span> <span class="s2">&quot;Import failed&quot;</span>
+  <span class="k">end</span>
+
+  <span class="n">log</span> <span class="s2">&quot;  SUCCESS: Import completed.&quot;</span>
+  <span class="p">{</span> <span class="ss">net</span><span class="p">:</span> <span class="n">net</span><span class="p">,</span> <span class="ss">network_obj</span><span class="p">:</span> <span class="n">network</span> <span class="p">}</span>
+<span class="k">end</span>
+
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<span class="c1"># Phase 2: Cleanup (sw_label)</span>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<span class="k">def</span> <span class="nf">cleanup_visualization_labels</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
+  <span class="n">log</span> <span class="s2">&quot;PHASE 2: Cleaning up empty visualization labels (sw_label)&quot;</span>
+  
+  <span class="c1"># In SWMM networks, visualization labels are stored in &#39;sw_label&#39;.</span>
+  <span class="n">table_name</span> <span class="o">=</span> <span class="s1">&#39;sw_label&#39;</span>
+  
+  <span class="k">unless</span> <span class="n">net</span><span class="o">.</span><span class="n">table_exists?</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">0</span>
+  <span class="k">end</span>
+  
+  <span class="n">labels</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">row_objects</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+  <span class="k">if</span> <span class="n">labels</span><span class="o">.</span><span class="n">empty?</span>
+    <span class="k">return</span> <span class="mi">0</span>
+  <span class="k">end</span>
+  
+  <span class="n">log</span> <span class="s2">&quot;  Found </span><span class="si">#{</span><span class="n">labels</span><span class="o">.</span><span class="n">length</span><span class="si">}</span><span class="s2"> labels. Analyzing for empty content...&quot;</span>
+  <span class="n">deleted_count</span> <span class="o">=</span> <span class="mi">0</span>
+  
+  <span class="c1"># Use transaction for safe deletion</span>
+  <span class="n">net</span><span class="o">.</span><span class="n">transaction_begin</span>
+  <span class="k">begin</span>
+    <span class="n">labels</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">label</span><span class="o">|</span>
+      <span class="c1"># Check the &#39;label&#39; field content</span>
+      <span class="n">content</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">label</span>
+      <span class="k">if</span> <span class="n">content</span><span class="o">.</span><span class="n">nil?</span> <span class="o">||</span> <span class="n">content</span><span class="o">.</span><span class="n">strip</span><span class="o">.</span><span class="n">empty?</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">delete</span>
+        <span class="n">deleted_count</span> <span class="o">+=</span> <span class="mi">1</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">transaction_commit</span>
+    <span class="n">log</span> <span class="s2">&quot;  SUCCESS: Deleted </span><span class="si">#{</span><span class="n">deleted_count</span><span class="si">}</span><span class="s2"> empty labels.&quot;</span>
+  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">transaction_rollback</span>
+    <span class="n">log</span> <span class="s2">&quot;  ERROR during label cleanup: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">. Transaction rolled back.&quot;</span><span class="p">,</span> <span class="ss">:error</span>
+    <span class="k">return</span> <span class="mi">0</span>
+  <span class="k">end</span>
+  
+  <span class="n">deleted_count</span>
+<span class="k">end</span>
+
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<span class="c1"># Phase 3: Validation and Statistics</span>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<span class="k">def</span> <span class="nf">validate_and_report</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
+  <span class="n">log</span> <span class="s2">&quot;PHASE 3: Validation and Statistics&quot;</span>
+  <span class="n">stats</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">nodes</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="ss">links</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="ss">subcatchments</span><span class="p">:</span> <span class="mi">0</span> <span class="p">}</span>
+  <span class="n">warnings</span> <span class="o">=</span> <span class="o">[]</span>
+
+  <span class="k">begin</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">row_objects</span><span class="p">(</span><span class="s1">&#39;_nodes&#39;</span><span class="p">)</span>
+    <span class="n">links</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">row_objects</span><span class="p">(</span><span class="s1">&#39;_links&#39;</span><span class="p">)</span>
+    <span class="n">subcatchments</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">row_objects</span><span class="p">(</span><span class="s1">&#39;_subcatchments&#39;</span><span class="p">)</span>
+
+    <span class="n">stats</span><span class="o">[</span><span class="ss">:nodes</span><span class="o">]</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="n">length</span>
+    <span class="n">stats</span><span class="o">[</span><span class="ss">:links</span><span class="o">]</span> <span class="o">=</span> <span class="n">links</span><span class="o">.</span><span class="n">length</span>
+    <span class="n">stats</span><span class="o">[</span><span class="ss">:subcatchments</span><span class="o">]</span> <span class="o">=</span> <span class="n">subcatchments</span><span class="o">.</span><span class="n">length</span>
+
+    <span class="n">log</span> <span class="s2">&quot;  Statistics: Nodes=</span><span class="si">#{</span><span class="n">stats</span><span class="o">[</span><span class="ss">:nodes</span><span class="o">]</span><span class="si">}</span><span class="s2">, Links=</span><span class="si">#{</span><span class="n">stats</span><span class="o">[</span><span class="ss">:links</span><span class="o">]</span><span class="si">}</span><span class="s2">, Subs=</span><span class="si">#{</span><span class="n">stats</span><span class="o">[</span><span class="ss">:subcatchments</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Check 1: Empty network</span>
+    <span class="k">if</span> <span class="n">stats</span><span class="o">[</span><span class="ss">:nodes</span><span class="o">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">stats</span><span class="o">[</span><span class="ss">:links</span><span class="o">]</span> <span class="o">==</span> <span class="mi">0</span>
+      <span class="n">warnings</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;Network is empty&quot;</span>
+    <span class="k">end</span>
+
+    <span class="c1"># Check 2: Disconnected subcatchments</span>
+    <span class="n">disconnected_subs</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">subcatchments</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="nb">sub</span><span class="o">|</span>
+      <span class="c1"># Check both node_id and subcatchment_id for connection in SWMM networks</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nb">sub</span><span class="o">.</span><span class="n">node_id</span><span class="o">.</span><span class="n">nil?</span> <span class="o">||</span> <span class="nb">sub</span><span class="o">.</span><span class="n">node_id</span><span class="o">.</span><span class="n">empty?</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nb">sub</span><span class="o">.</span><span class="n">subcatchment_id</span><span class="o">.</span><span class="n">nil?</span> <span class="o">||</span> <span class="nb">sub</span><span class="o">.</span><span class="n">subcatchment_id</span><span class="o">.</span><span class="n">empty?</span><span class="p">)</span>
+          <span class="n">disconnected_subs</span> <span class="o">+=</span> <span class="mi">1</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="k">if</span> <span class="n">disconnected_subs</span> <span class="o">&gt;</span> <span class="mi">0</span>
+      <span class="n">warnings</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">disconnected_subs</span><span class="si">}</span><span class="s2"> subcatchment(s) have no outlet (node or subcatchment)&quot;</span>
+    <span class="k">end</span>
+
+    <span class="c1"># Check 3: Unconnected nodes (Islanding) - Comprehensive and Robust Check</span>
+    <span class="n">connected_nodes</span> <span class="o">=</span> <span class="no">Set</span><span class="o">.</span><span class="n">new</span>
+    
+    <span class="c1"># Nodes connected by links</span>
+    <span class="n">links</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">link</span><span class="o">|</span>
+      <span class="n">connected_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">us_node_id</span><span class="p">)</span> <span class="k">if</span> <span class="n">link</span><span class="o">.</span><span class="n">us_node_id</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">link</span><span class="o">.</span><span class="n">us_node_id</span><span class="o">.</span><span class="n">empty?</span>
+      <span class="n">connected_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">ds_node_id</span><span class="p">)</span> <span class="k">if</span> <span class="n">link</span><span class="o">.</span><span class="n">ds_node_id</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">link</span><span class="o">.</span><span class="n">ds_node_id</span><span class="o">.</span><span class="n">empty?</span>
+    <span class="k">end</span>
+    
+    <span class="c1"># Nodes connected as subcatchment outlets</span>
+    <span class="n">subcatchments</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="nb">sub</span><span class="o">|</span>
+      <span class="c1"># We only care if it connects to a node here (sub-to-sub connections don&#39;t count for node connectivity)</span>
+      <span class="n">connected_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">sub</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span> <span class="k">if</span> <span class="nb">sub</span><span class="o">.</span><span class="n">node_id</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nb">sub</span><span class="o">.</span><span class="n">node_id</span><span class="o">.</span><span class="n">empty?</span>
+    <span class="k">end</span>
+
+    <span class="n">all_node_ids</span> <span class="o">=</span> <span class="no">Set</span><span class="o">.</span><span class="n">new</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">node</span><span class="o">|</span> <span class="n">all_node_ids</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="p">}</span>
+
+    <span class="c1"># Calculate the difference</span>
+    <span class="n">unconnected_nodes</span> <span class="o">=</span> <span class="n">all_node_ids</span> <span class="o">-</span> <span class="n">connected_nodes</span>
+    <span class="k">if</span> <span class="n">unconnected_nodes</span><span class="o">.</span><span class="n">any?</span>
+      <span class="n">examples</span> <span class="o">=</span> <span class="n">unconnected_nodes</span><span class="o">.</span><span class="n">to_a</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span>
+      <span class="n">warnings</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">unconnected_nodes</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> node(s) are unconnected (Islands). Examples: </span><span class="si">#{</span><span class="n">examples</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">end</span>
+
+    <span class="k">if</span> <span class="n">warnings</span><span class="o">.</span><span class="n">any?</span>
+      <span class="n">log</span> <span class="s2">&quot;  Validation finished with </span><span class="si">#{</span><span class="n">warnings</span><span class="o">.</span><span class="n">length</span><span class="si">}</span><span class="s2"> warning(s):&quot;</span><span class="p">,</span> <span class="ss">:warn</span>
+      <span class="n">warnings</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">w</span><span class="o">|</span> <span class="n">log</span> <span class="s2">&quot;    * </span><span class="si">#{</span><span class="n">w</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">:warn</span> <span class="p">}</span>
+    <span class="k">else</span>
+      <span class="n">log</span> <span class="s2">&quot;  Validation passed with no warnings.&quot;</span>
+    <span class="k">end</span>
+
+  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+    <span class="n">log</span> <span class="s2">&quot;  ERROR during validation/statistics analysis: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">:error</span>
+  <span class="k">end</span>
+  
+  <span class="n">stats</span>
+<span class="k">end</span>
+
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<span class="c1"># Main Processing Loop</span>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<span class="k">def</span> <span class="nf">main_process_loop</span><span class="p">(</span><span class="n">init_data</span><span class="p">)</span>
+  <span class="n">config</span> <span class="o">=</span> <span class="n">init_data</span><span class="o">[</span><span class="ss">:config</span><span class="o">]</span>
+  <span class="n">db</span> <span class="o">=</span> <span class="n">init_data</span><span class="o">[</span><span class="ss">:db</span><span class="o">]</span>
+  <span class="n">log_dir</span> <span class="o">=</span> <span class="n">init_data</span><span class="o">[</span><span class="ss">:log_dir</span><span class="o">]</span>
+  <span class="n">file_configs</span> <span class="o">=</span> <span class="n">config</span><span class="o">[</span><span class="s1">&#39;file_configs&#39;</span><span class="o">]</span>
+
+  <span class="n">log</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span>
+  <span class="n">log</span> <span class="s2">&quot;BATCH PROCESSING STARTING&quot;</span>
+  <span class="n">log</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span>
+
+  <span class="n">file_configs</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">file_config</span><span class="p">,</span> <span class="n">index</span><span class="o">|</span>
+    <span class="n">file_basename</span> <span class="o">=</span> <span class="n">file_config</span><span class="o">[</span><span class="s1">&#39;file_basename&#39;</span><span class="o">]</span>
+    <span class="n">file_path</span> <span class="o">=</span> <span class="n">file_config</span><span class="o">[</span><span class="s1">&#39;file_path&#39;</span><span class="o">]</span>
+    <span class="n">network_name</span> <span class="o">=</span> <span class="n">file_config</span><span class="o">[</span><span class="s1">&#39;network_name&#39;</span><span class="o">]</span>
+
+    <span class="n">log</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span><span class="o">*</span><span class="mi">70</span>
+    <span class="n">log</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">file_configs</span><span class="o">.</span><span class="n">length</span><span class="si">}</span><span class="s2">] Processing: </span><span class="si">#{</span><span class="n">file_basename</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">log</span> <span class="s2">&quot;-&quot;</span><span class="o">*</span><span class="mi">70</span>
+
+    <span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:files_processed</span><span class="o">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">network_obj</span> <span class="o">=</span> <span class="kp">nil</span>
+
+    <span class="k">begin</span>
+      <span class="c1"># Input Validation</span>
+      <span class="k">raise</span> <span class="s2">&quot;File not found&quot;</span> <span class="k">unless</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+      <span class="c1"># Phase 1: Import</span>
+      <span class="n">import_result</span> <span class="o">=</span> <span class="n">import_file</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">network_name</span><span class="p">,</span> <span class="n">log_dir</span><span class="p">)</span>
+      <span class="n">net</span> <span class="o">=</span> <span class="n">import_result</span><span class="o">[</span><span class="ss">:net</span><span class="o">]</span>
+      <span class="n">network_obj</span> <span class="o">=</span> <span class="n">import_result</span><span class="o">[</span><span class="ss">:network_obj</span><span class="o">]</span>
+
+      <span class="c1"># Phase 2: Cleanup</span>
+      <span class="n">labels_cleaned</span> <span class="o">=</span> <span class="mi">0</span>
+      <span class="k">if</span> <span class="n">config</span><span class="o">[</span><span class="s1">&#39;cleanup_empty_label_lists&#39;</span><span class="o">]</span>
+        <span class="n">labels_cleaned</span> <span class="o">=</span> <span class="n">cleanup_visualization_labels</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
+      <span class="k">end</span>
+
+      <span class="c1"># Phase 3: Validation</span>
+      <span class="n">import_stats</span> <span class="o">=</span> <span class="p">{}</span>
+      <span class="k">if</span> <span class="n">config</span><span class="o">[</span><span class="s1">&#39;validate_after_import&#39;</span><span class="o">]</span>
+        <span class="n">import_stats</span> <span class="o">=</span> <span class="n">validate_and_report</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
+      <span class="k">end</span>
+
+      <span class="c1"># Finalize: Commit</span>
+      <span class="n">commit_message</span> <span class="o">=</span> <span class="s2">&quot;Imported SWMM5: </span><span class="si">#{</span><span class="n">file_basename</span><span class="si">}</span><span class="s2">.&quot;</span>
+      <span class="n">commit_message</span> <span class="o">+=</span> <span class="s2">&quot; (Cleaned </span><span class="si">#{</span><span class="n">labels_cleaned</span><span class="si">}</span><span class="s2"> empty labels)&quot;</span> <span class="k">if</span> <span class="n">labels_cleaned</span> <span class="o">&gt;</span> <span class="mi">0</span>
+      
+      <span class="n">net</span><span class="o">.</span><span class="n">commit</span><span class="p">(</span><span class="n">commit_message</span><span class="p">)</span>
+      <span class="n">log</span> <span class="s2">&quot;Network committed.&quot;</span>
+
+      <span class="c1"># Update Stats on Success</span>
+      <span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:files_successful</span><span class="o">]</span> <span class="o">+=</span> <span class="mi">1</span>
+      <span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:total_nodes</span><span class="o">]</span> <span class="o">+=</span> <span class="n">import_stats</span><span class="o">[</span><span class="ss">:nodes</span><span class="o">]</span> <span class="o">||</span> <span class="mi">0</span>
+      <span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:total_links</span><span class="o">]</span> <span class="o">+=</span> <span class="n">import_stats</span><span class="o">[</span><span class="ss">:links</span><span class="o">]</span> <span class="o">||</span> <span class="mi">0</span>
+      <span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:total_subcatchments</span><span class="o">]</span> <span class="o">+=</span> <span class="n">import_stats</span><span class="o">[</span><span class="ss">:subcatchments</span><span class="o">]</span> <span class="o">||</span> <span class="mi">0</span>
+      <span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:total_labels_cleaned</span><span class="o">]</span> <span class="o">+=</span> <span class="n">labels_cleaned</span>
+
+      <span class="n">log</span> <span class="s2">&quot;SUCCESS: </span><span class="si">#{</span><span class="n">file_basename</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+      <span class="c1"># Error Handling</span>
+      <span class="n">log</span> <span class="s2">&quot;FAILURE: Failed to process </span><span class="si">#{</span><span class="n">file_basename</span><span class="si">}</span><span class="s2">. Reason: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">:error</span>
+      <span class="vg">$script_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Backtrace:</span><span class="se">\n</span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="vg">$script_logger</span>
+      
+      <span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:files_failed</span><span class="o">]</span> <span class="o">+=</span> <span class="mi">1</span>
+      <span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:failed_files</span><span class="o">]</span> <span class="o">&lt;&lt;</span> <span class="p">{</span> <span class="ss">file</span><span class="p">:</span> <span class="n">file_basename</span><span class="p">,</span> <span class="ss">reason</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span> <span class="p">}</span>
+
+      <span class="c1"># Cleanup partial import if network object exists</span>
+      <span class="k">if</span> <span class="n">network_obj</span>
+        <span class="k">begin</span>
+          <span class="c1"># Check if the object still exists (by name, as ID might be unreliable if creation failed partially)</span>
+          <span class="k">if</span> <span class="n">db</span><span class="o">.</span><span class="n">find_model_object</span><span class="p">(</span><span class="s1">&#39;SWMM network&#39;</span><span class="p">,</span> <span class="n">network_name</span><span class="p">)</span>
+            <span class="n">log</span> <span class="s2">&quot;Attempting to delete partially processed network &#39;</span><span class="si">#{</span><span class="n">network_name</span><span class="si">}</span><span class="s2">&#39;...&quot;</span>
+            <span class="n">network_obj</span><span class="o">.</span><span class="n">delete</span>
+            <span class="n">log</span> <span class="s2">&quot;Successfully deleted network object.&quot;</span>
+          <span class="k">end</span>
+        <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">cleanup_error</span>
+          <span class="n">log</span> <span class="s2">&quot;Could not delete network object during cleanup: </span><span class="si">#{</span><span class="n">cleanup_error</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">:error</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<span class="c1"># Summary Generation</span>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<span class="k">def</span> <span class="nf">generate_summary</span><span class="p">(</span><span class="n">init_data</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span>
+  <span class="n">log_dir</span> <span class="o">=</span> <span class="n">init_data</span><span class="o">[</span><span class="ss">:log_dir</span><span class="o">]</span>
+
+  <span class="n">log</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span>
+  <span class="n">log</span> <span class="s2">&quot;BATCH IMPORT SUMMARY&quot;</span>
+  <span class="n">log</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span>
+  <span class="n">log</span> <span class="s2">&quot;Total duration: </span><span class="si">#{</span><span class="nb">sprintf</span><span class="p">(</span><span class="s1">&#39;%.2f&#39;</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span><span class="si">}</span><span class="s2">s&quot;</span>
+  <span class="n">log</span> <span class="s2">&quot;Files processed: </span><span class="si">#{</span><span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:files_processed</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="n">log</span> <span class="s2">&quot;Successful: </span><span class="si">#{</span><span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:files_successful</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="n">log</span> <span class="s2">&quot;Failed: </span><span class="si">#{</span><span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:files_failed</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+
+  <span class="k">if</span> <span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:files_successful</span><span class="o">]</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="n">log</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Aggregate Statistics:&quot;</span>
+    <span class="n">log</span> <span class="s2">&quot;  Nodes: </span><span class="si">#{</span><span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:total_nodes</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">log</span> <span class="s2">&quot;  Links: </span><span class="si">#{</span><span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:total_links</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">log</span> <span class="s2">&quot;  Subcatchments: </span><span class="si">#{</span><span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:total_subcatchments</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">log</span> <span class="s2">&quot;  Empty Labels Cleaned: </span><span class="si">#{</span><span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:total_labels_cleaned</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">log</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Performance Metrics:&quot;</span>
+    <span class="n">avg_import</span> <span class="o">=</span> <span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:total_import_time</span><span class="o">]</span> <span class="o">/</span> <span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:files_successful</span><span class="o">]</span>
+    <span class="n">log</span> <span class="s2">&quot;  Total Import Time: </span><span class="si">#{</span><span class="nb">sprintf</span><span class="p">(</span><span class="s1">&#39;%.2f&#39;</span><span class="p">,</span> <span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:total_import_time</span><span class="o">]</span><span class="p">)</span><span class="si">}</span><span class="s2">s (Avg: </span><span class="si">#{</span><span class="nb">sprintf</span><span class="p">(</span><span class="s1">&#39;%.2f&#39;</span><span class="p">,</span> <span class="n">avg_import</span><span class="p">)</span><span class="si">}</span><span class="s2">s)&quot;</span>
+  <span class="k">end</span>
+
+  <span class="k">if</span> <span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:failed_files</span><span class="o">].</span><span class="n">any?</span>
+    <span class="n">log</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Failed Files:&quot;</span><span class="p">,</span> <span class="ss">:warn</span>
+    <span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:failed_files</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">failed</span><span class="o">|</span>
+      <span class="n">log</span> <span class="s2">&quot;  * </span><span class="si">#{</span><span class="n">failed</span><span class="o">[</span><span class="ss">:file</span><span class="o">]</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">failed</span><span class="o">[</span><span class="ss">:reason</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">:warn</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="c1"># Write summary file for UI script</span>
+  <span class="n">summary_file</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">log_dir</span><span class="p">,</span> <span class="s2">&quot;batch_summary.txt&quot;</span><span class="p">)</span>
+  <span class="k">begin</span>
+    <span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">summary_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;BATCH_IMPORT_SUMMARY&quot;</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;files_processed=</span><span class="si">#{</span><span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:files_processed</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;files_successful=</span><span class="si">#{</span><span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:files_successful</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;files_failed=</span><span class="si">#{</span><span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:files_failed</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;total_nodes=</span><span class="si">#{</span><span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:total_nodes</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;total_links=</span><span class="si">#{</span><span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:total_links</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;total_subcatchments=</span><span class="si">#{</span><span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:total_subcatchments</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;total_labels_cleaned=</span><span class="si">#{</span><span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:total_labels_cleaned</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;total_duration=</span><span class="si">#{</span><span class="nb">sprintf</span><span class="p">(</span><span class="s1">&#39;%.2f&#39;</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">end</span>
+  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+    <span class="n">log</span> <span class="s2">&quot;ERROR: Failed to write summary file: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">:error</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># ============================================================================</span>
+<span class="c1"># Script Execution</span>
+<span class="c1"># ============================================================================</span>
+<span class="n">start_time</span> <span class="o">=</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span>
+<span class="n">init_data</span> <span class="o">=</span> <span class="kp">nil</span>
+<span class="k">begin</span>
+  <span class="n">init_data</span> <span class="o">=</span> <span class="n">initialize_script</span>
+  <span class="n">main_process_loop</span><span class="p">(</span><span class="n">init_data</span><span class="p">)</span>
+<span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+  <span class="n">log</span> <span class="s2">&quot;A critical error occurred during execution: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">:fatal</span>
+  <span class="n">log</span> <span class="n">e</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">),</span> <span class="ss">:fatal</span>
+<span class="k">ensure</span>
+  <span class="n">duration</span> <span class="o">=</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span> <span class="o">-</span> <span class="n">start_time</span>
+  <span class="n">generate_summary</span><span class="p">(</span><span class="n">init_data</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span> <span class="k">if</span> <span class="n">init_data</span>
+  <span class="vg">$script_logger</span><span class="o">.</span><span class="n">close</span> <span class="k">if</span> <span class="vg">$script_logger</span>
+<span class="k">end</span>
+
+<span class="c1"># Exit with appropriate code</span>
+<span class="nb">exit</span><span class="p">(</span><span class="vg">$aggregate_stats</span><span class="o">[</span><span class="ss">:files_failed</span><span class="o">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">?</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+</td></tr></table></div></section>
+  <footer>Auto-generated &middot; Original file unmodified</footer>
+</div>
+</body>
+</html>

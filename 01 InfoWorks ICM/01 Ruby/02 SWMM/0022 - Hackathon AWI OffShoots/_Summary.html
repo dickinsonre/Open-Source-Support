@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0022 - Hackathon AWI OffShoots</title>
+<style>
+:root {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-2: #0b1220;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-2: #f472b6;
+  --good: #22c55e;
+  --border: #334155;
+  --code-bg: #0b1220;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: linear-gradient(180deg, #0a1226 0%, #0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+header.hero {
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(244,114,182,0.06));
+  padding: 28px 28px 24px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+header.hero .crumbs {
+  font-size: 12px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+header.hero h1 {
+  font-size: 26px; margin: 0 0 6px 0; color: #fff;
+}
+header.hero p.lede {
+  margin: 0 0 14px 0; color: var(--muted);
+}
+.stats {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 13px;
+  background: rgba(56,189,248,0.10);
+  border: 1px solid rgba(56,189,248,0.35);
+  color: var(--accent);
+}
+.chip.alt { background: rgba(34,197,94,0.10); border-color: rgba(34,197,94,0.35); color: var(--good); }
+.chip.pink { background: rgba(244,114,182,0.10); border-color: rgba(244,114,182,0.35); color: var(--accent-2); }
+.content {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 6px 28px 24px;
+}
+.content h2 {
+  margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border);
+  font-size: 18px; color: #fff;
+}
+.content h2:first-of-type { border-top: none; padding-top: 6px; }
+.content h3 { font-size: 15px; color: var(--accent); margin: 16px 0 6px; }
+.content p, .content li { color: var(--text); }
+.content code {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 4px; font-size: 13px;
+  color: #fbbf24;
+}
+.content pre {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 14px; border-radius: 8px; overflow-x: auto;
+  font-size: 13px; line-height: 1.5;
+}
+.content pre code { background: transparent; border: 0; padding: 0; color: var(--text); }
+.content ul { padding-left: 22px; }
+.content li { margin: 4px 0; }
+.content a { color: var(--accent); text-decoration: none; }
+.content a:hover { text-decoration: underline; }
+.content blockquote {
+  margin: 12px 0; padding: 8px 16px;
+  border-left: 3px solid var(--accent); background: rgba(56,189,248,0.06);
+  color: var(--muted);
+}
+.content table {
+  width: 100%; border-collapse: collapse; margin: 12px 0;
+  font-size: 14px;
+}
+.content th, .content td {
+  border: 1px solid var(--border); padding: 8px 12px; text-align: left;
+}
+.content th { background: var(--panel-2); }
+footer {
+  margin-top: 28px; color: var(--muted); font-size: 12px; text-align: center;
+}
+.toc {
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--panel-2); padding: 14px 18px; margin-bottom: 16px;
+}
+.toc strong { color: var(--accent); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.toc ol { columns: 2; margin: 6px 0 0; padding-left: 22px; }
+.toc a { color: var(--text); text-decoration: none; font-size: 13px; }
+.toc a:hover { color: var(--accent); }
+@media (max-width: 720px) {
+  .toc ol { columns: 1; }
+  header.hero h1 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">SWMM &rsaquo; Ruby Fixes</div>
+    <h1>0022 - Hackathon AWI OffShoots</h1>
+    <p class="lede">Folder-mode multi-scenario importers and SWMM5-to-ICM cleanup variants.</p>
+    <div class="stats">
+      <span class="chip">10 originals</span>
+      <span class="chip alt">10 fix_ versions</span>
+      <span class="chip pink">Robustness pass</span>
+    </div>
+  </header>
+
+<style>
+  .file-table-wrap { background:#0b1220; border:1px solid #334155; border-radius:12px; padding:14px 18px; margin:18px 0; }
+  .file-table-wrap h2 { color:#fff; font-size:16px; margin:0 0 10px; }
+  .file-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .file-table th, .file-table td { border-bottom:1px solid #1f2937; padding:6px 10px; text-align:left; vertical-align:top; }
+  .file-table th { color:#94a3b8; font-weight:500; font-size:12px; letter-spacing:0.04em; text-transform:uppercase; }
+  .file-table a { color:#38bdf8; text-decoration:none; }
+  .file-table a:hover { text-decoration:underline; }
+  .file-table .pair { font-family:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace; }
+  .file-table tr:last-child td { border-bottom:0; }
+  .file-table .miss { color:#64748b; font-style:italic; }
+  .md-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .md-list a { padding:4px 10px; border:1px solid #334155; border-radius:8px; background:#0b1220; color:#38bdf8; text-decoration:none; font-size:13px; }
+  .md-list a:hover { border-color:#38bdf8; }
+</style>
+<div class="file-table-wrap"><h2>Files in this folder</h2><table class="file-table"><thead><tr><th>Original (.rb)</th><th>Hardened (fix_*.rb)</th></tr></thead><tbody><tr><td class="pair"><a href="InfoSWMM_Import_Exchange_Folder.rb.html">InfoSWMM_Import_Exchange_Folder.rb</a></td><td class="pair"><a href="fix_InfoSWMM_Import_Exchange_Folder.rb.html">fix_InfoSWMM_Import_Exchange_Folder.rb</a></td></tr><tr><td class="pair"><a href="InfoSWMM_Import_Exchange_Folder_Enhanced.rb.html">InfoSWMM_Import_Exchange_Folder_Enhanced.rb</a></td><td class="pair"><a href="fix_InfoSWMM_Import_Exchange_Folder_Enhanced.rb.html">fix_InfoSWMM_Import_Exchange_Folder_Enhanced.rb</a></td></tr><tr><td class="pair"><a href="InfoSWMM_Import_UI_Folder.rb.html">InfoSWMM_Import_UI_Folder.rb</a></td><td class="pair"><a href="fix_InfoSWMM_Import_UI_Folder.rb.html">fix_InfoSWMM_Import_UI_Folder.rb</a></td></tr><tr><td class="pair"><a href="InfoSWMM_Import_UI_Folder_Enhanced.rb.html">InfoSWMM_Import_UI_Folder_Enhanced.rb</a></td><td class="pair"><a href="fix_InfoSWMM_Import_UI_Folder_Enhanced.rb.html">fix_InfoSWMM_Import_UI_Folder_Enhanced.rb</a></td></tr><tr><td class="pair"><a href="SWMM5_Import_Exchange_Annotated.rb.html">SWMM5_Import_Exchange_Annotated.rb</a></td><td class="pair"><a href="fix_SWMM5_Import_Exchange_Annotated.rb.html">fix_SWMM5_Import_Exchange_Annotated.rb</a></td></tr><tr><td class="pair"><a href="SWMM5_Import_ICM_InfoWorks_with_Cleanup_Exchange.rb.html">SWMM5_Import_ICM_InfoWorks_with_Cleanup_Exchange.rb</a></td><td class="pair"><a href="fix_SWMM5_Import_ICM_InfoWorks_with_Cleanup_Exchange.rb.html">fix_SWMM5_Import_ICM_InfoWorks_with_Cleanup_Exchange.rb</a></td></tr><tr><td class="pair"><a href="SWMM5_Import_ICM_InfoWorks_with_Cleanup_UI.rb.html">SWMM5_Import_ICM_InfoWorks_with_Cleanup_UI.rb</a></td><td class="pair"><a href="fix_SWMM5_Import_ICM_InfoWorks_with_Cleanup_UI.rb.html">fix_SWMM5_Import_ICM_InfoWorks_with_Cleanup_UI.rb</a></td></tr><tr><td class="pair"><a href="SWMM5_Import_ICM_SWMM_with_Cleanup_Exchange.rb.html">SWMM5_Import_ICM_SWMM_with_Cleanup_Exchange.rb</a></td><td class="pair"><a href="fix_SWMM5_Import_ICM_SWMM_with_Cleanup_Exchange.rb.html">fix_SWMM5_Import_ICM_SWMM_with_Cleanup_Exchange.rb</a></td></tr><tr><td class="pair"><a href="SWMM5_Import_ICM_SWMM_with_Cleanup_UI.rb.html">SWMM5_Import_ICM_SWMM_with_Cleanup_UI.rb</a></td><td class="pair"><a href="fix_SWMM5_Import_ICM_SWMM_with_Cleanup_UI.rb.html">fix_SWMM5_Import_ICM_SWMM_with_Cleanup_UI.rb</a></td></tr><tr><td class="pair"><a href="SWMM5_Import_UI_Annotated.rb.html">SWMM5_Import_UI_Annotated.rb</a></td><td class="pair"><a href="fix_SWMM5_Import_UI_Annotated.rb.html">fix_SWMM5_Import_UI_Annotated.rb</a></td></tr></tbody></table><h2 style="margin-top:14px;">Markdown</h2><div class="md-list"><a href="_Fixes.md.html">_Fixes.md</a><a href="SWMM5_Import_ICM_SWMM_with_Cleanup_Exchange.md.html">SWMM5_Import_ICM_SWMM_with_Cleanup_Exchange.md</a><a href="SWMM5_Import_ICM_SWMM_with_Cleanup_UI.md.html">SWMM5_Import_ICM_SWMM_with_Cleanup_UI.md</a></div></div>
+  <nav class="toc"><strong>Scripts in this folder</strong><ol><li><a href="#fix-infoswmm-import-exchange-folderrb">fix_InfoSWMM_Import_Exchange_Folder.rb</a></li><li><a href="#fix-infoswmm-import-exchange-folder-enhancedrb">fix_InfoSWMM_Import_Exchange_Folder_Enhanced.rb</a></li><li><a href="#fix-infoswmm-import-ui-folderrb">fix_InfoSWMM_Import_UI_Folder.rb</a></li><li><a href="#fix-infoswmm-import-ui-folder-enhancedrb">fix_InfoSWMM_Import_UI_Folder_Enhanced.rb</a></li><li><a href="#fix-swmm5-import-exchange-annotatedrb">fix_SWMM5_Import_Exchange_Annotated.rb</a></li><li><a href="#fix-swmm5-import-icm-infoworks-with-cleanup-exchangerb">fix_SWMM5_Import_ICM_InfoWorks_with_Cleanup_Exchange.rb</a></li><li><a href="#fix-swmm5-import-icm-infoworks-with-cleanup-uirb">fix_SWMM5_Import_ICM_InfoWorks_with_Cleanup_UI.rb</a></li><li><a href="#fix-swmm5-import-icm-swmm-with-cleanup-exchangerb">fix_SWMM5_Import_ICM_SWMM_with_Cleanup_Exchange.rb</a></li><li><a href="#fix-swmm5-import-icm-swmm-with-cleanup-uirb">fix_SWMM5_Import_ICM_SWMM_with_Cleanup_UI.rb</a></li><li><a href="#fix-swmm5-import-ui-annotatedrb">fix_SWMM5_Import_UI_Annotated.rb</a></li></ol></nav>
+  <section class="content">
+    <h1 id="0022-hackathon-awi-offshoots-hardened-wrapper-notes">0022 - Hackathon AWI OffShoots - Hardened Wrapper Notes</h1>
+<p>This folder contains large multi-scenario InfoSWMM/SWMM5 importer scripts.
+Each <code>fix_&lt;original&gt;.rb</code> is a thin, hardened wrapper around its original
+script. Wrappers preserve original behavior exactly via <code>Kernel#load</code>,
+adding the following hardening layer:</p>
+<ul>
+<li><code># frozen_string_literal: true</code> pragma</li>
+<li>File-level header (purpose, inputs, outputs, UI/EX, hardening notes)</li>
+<li><code>begin / rescue StandardError / rescue Interrupt / rescue SystemExit / ensure</code></li>
+<li>Pre-flight validation (original script presence, ENV config sanity)</li>
+<li>Timestamped wrapper-level progress logging (stderr for EX, stdout for UI)</li>
+<li>UI wrappers verify <code>WSApplication</code> is defined and surface error dialogs</li>
+<li>EX wrappers verify <code>ICM_IMPORT_CONFIG</code> (when set) points to a real file</li>
+<li><code>SystemExit</code> is propagated so the original's <code>exit</code> codes are preserved</li>
+</ul>
+<p>Behavior of the underlying logic - imports, deduplication, cleanup, scenario
+merging, run setup, validation, statistics - is preserved unchanged.</p>
+<h2 id="fix_infoswmm_import_exchange_folderrb">fix_InfoSWMM_Import_Exchange_Folder.rb</h2>
+<p>Wraps the multi-scenario InfoSWMM Exchange importer (deduplicates Rainfall
+Events / Inflows, builds merged scenario network, sets up SWMM runs).</p>
+<h2 id="fix_infoswmm_import_exchange_folder_enhancedrb">fix_InfoSWMM_Import_Exchange_Folder_Enhanced.rb</h2>
+<p>Wraps the enhanced importer that also accepts H2OMapSWMM <code>.hsm</code> / <code>.HSDB</code>
+inputs and emits comprehensive DBF field statistics.</p>
+<h2 id="fix_infoswmm_import_ui_folderrb">fix_InfoSWMM_Import_UI_Folder.rb</h2>
+<p>Wraps the UI counterpart that prompts the user, writes the YAML config,
+and launches the Exchange worker.</p>
+<h2 id="fix_infoswmm_import_ui_folder_enhancedrb">fix_InfoSWMM_Import_UI_Folder_Enhanced.rb</h2>
+<p>Wraps the enhanced UI script (DBFReader, full statistics support).</p>
+<h2 id="fix_swmm5_import_exchange_annotatedrb">fix_SWMM5_Import_Exchange_Annotated.rb</h2>
+<p>Wraps the heavily commented "novice friendly" SWMM5 Exchange worker.</p>
+<h2 id="fix_swmm5_import_icm_infoworks_with_cleanup_exchangerb">fix_SWMM5_Import_ICM_InfoWorks_with_Cleanup_Exchange.rb</h2>
+<p>Wraps the Version-3 refactored Exchange worker (Logger, validation,
+performance metrics, sw_label cleanup).</p>
+<h2 id="fix_swmm5_import_icm_infoworks_with_cleanup_uirb">fix_SWMM5_Import_ICM_InfoWorks_with_Cleanup_UI.rb</h2>
+<p>Wraps the Version-3.1 UI script that uses the robust 4-element prompt
+format and improved batch summary reporting.</p>
+<h2 id="fix_swmm5_import_icm_swmm_with_cleanup_exchangerb">fix_SWMM5_Import_ICM_SWMM_with_Cleanup_Exchange.rb</h2>
+<p>Wraps the Version-2 SWMM-network Exchange worker (single/batch/recursive,
+aggregate stats, summary file).</p>
+<h2 id="fix_swmm5_import_icm_swmm_with_cleanup_uirb">fix_SWMM5_Import_ICM_SWMM_with_Cleanup_UI.rb</h2>
+<p>Wraps the Version-2 SWMM-network UI script (Single/Batch/Recursive modes,
+summary-file based reporting).</p>
+<h2 id="fix_swmm5_import_ui_annotatedrb">fix_SWMM5_Import_UI_Annotated.rb</h2>
+<p>Wraps the heavily commented novice-friendly UI script.</p>
+  </section>
+  <footer>
+    Auto-generated from _Fixes.md &middot; InfoWorks ICM Ruby scripts hardened with begin/rescue/ensure, input validation, block-form file I/O, progress logging.
+  </footer>
+</div>
+</body>
+</html>

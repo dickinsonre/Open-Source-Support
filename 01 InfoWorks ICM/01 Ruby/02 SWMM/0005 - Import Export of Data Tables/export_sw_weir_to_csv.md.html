@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>export_sw_weir_to_csv.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0005 - Import Export of Data Tables</div>
+    <h1>export_sw_weir_to_csv.md</h1>
+    <div class="meta">Markdown document &middot; 0005 - Import Export of Data Tables</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">310 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="swmm-weir-csv-export-script-summary">SWMM Weir CSV Export Script Summary</h1>
+<h2 id="overview">Overview</h2>
+<p>This Ruby script exports selected SWMM (Storm Water Management Model) weir objects from an InfoSWMM/InfoWorks ICM network to a CSV file. It includes statistical analysis capabilities and handles SWMM-specific weir types including transverse, sideflow, V-notch, trapezoidal, and roadway weirs.</p>
+<h2 id="key-features">Key Features</h2>
+<h3 id="1-interactive-field-selection-with-statistics">1. <strong>Interactive Field Selection with Statistics</strong></h3>
+<ul>
+<li>User-friendly dialog for attribute selection</li>
+<li>"SELECT/DESELECT ALL FIELDS" toggle option</li>
+<li><strong>Statistical Analysis Option</strong>: Calculate min, max, mean, and standard deviation</li>
+<li>Pre-configured defaults for essential SWMM weir parameters</li>
+</ul>
+<h3 id="2-swmm-specific-weir-field-coverage">2. <strong>SWMM-Specific Weir Field Coverage</strong></h3>
+<p>The script supports exporting 40+ SWMM weir attributes organized by functionality:</p>
+<h4 id="core-identifiers">Core Identifiers</h4>
+<ul>
+<li>Weir ID (SWMM link name)</li>
+<li>Upstream Node ID</li>
+<li>Downstream Node ID</li>
+<li>Branch ID</li>
+</ul>
+<h4 id="weir-types-characteristics">Weir Types &amp; Characteristics</h4>
+<ul>
+<li><strong>Link Type</strong>: TRANSVERSE, SIDEFLOW, V-NOTCH, TRAPEZOIDAL, ROADWAY</li>
+<li><strong>Crest Level</strong>: Elevation of weir crest</li>
+<li><strong>Weir Height</strong>: Interpretation varies by type:</li>
+<li>Height for TRANSVERSE/SIDEFLOW/V-NOTCH</li>
+<li>Depth for ROADWAY</li>
+<li><strong>Weir Width</strong>: Interpretation varies by type:</li>
+<li>Width for TRANSVERSE/SIDEFLOW</li>
+<li>Top width for TRAPEZOIDAL</li>
+<li>Surface width for ROADWAY</li>
+</ul>
+<h4 id="geometric-parameters">Geometric Parameters</h4>
+<ul>
+<li><strong>Left Slope</strong>: For trapezoidal and roadway weirs</li>
+<li><strong>Right Slope</strong>: For trapezoidal weirs</li>
+<li><strong>End Contractions</strong>: Number of contracted ends</li>
+<li><strong>Point Array</strong>: Vertex coordinates for spatial representation</li>
+</ul>
+<h4 id="hydraulic-coefficients">Hydraulic Coefficients</h4>
+<ul>
+<li><strong>Discharge Coefficient (Cd)</strong>: Primary flow coefficient</li>
+<li><strong>Sideflow Discharge Coefficient</strong>: For SIDEFLOW weirs</li>
+<li><strong>Secondary Discharge Coefficient</strong>: For drowned/surcharge conditions</li>
+<li><strong>Variable Discharge Coefficient</strong>: YES/NO flag for using weir curves</li>
+</ul>
+<h4 id="control-features">Control Features</h4>
+<ul>
+<li><strong>Weir Curve ID</strong>: Reference to discharge curve</li>
+<li><strong>Flap Gate</strong>: YES/NO for one-way flow</li>
+<li><strong>Allows Surcharge</strong>: YES/NO for surcharge algorithm</li>
+</ul>
+<h4 id="user-data">User Data</h4>
+<ul>
+<li>Notes and Hyperlinks</li>
+<li>10 User Number fields</li>
+<li>10 User Text fields</li>
+</ul>
+<h3 id="3-advanced-data-processing">3. <strong>Advanced Data Processing</strong></h3>
+<h4 id="swmm-specific-data-handling">SWMM-Specific Data Handling</h4>
+<ul>
+<li><strong>Boolean Conversion</strong>: YES/NO or 1/0 values handled for statistics</li>
+<li><strong>Point Arrays</strong>: Formatted as <code>X1,Y1;X2,Y2;...</code></li>
+<li><strong>Hyperlinks</strong>: Standard <code>Description,URL;...</code> format</li>
+<li><strong>Type-Specific Parameters</strong>: Different interpretations based on weir type</li>
+</ul>
+<h4 id="statistical-analysis-features">Statistical Analysis Features</h4>
+<p>When enabled:
+- Calculates statistics for numeric fields only
+- Intelligently excludes IDs, types, and text fields
+- Handles boolean values as 1/0 for statistics
+- Formatted table output with aligned columns</p>
+<h3 id="4-file-management">4. <strong>File Management</strong></h3>
+<h4 id="output-configuration">Output Configuration</h4>
+<ul>
+<li>Timestamped filename: <code>selected_swmm_weirs_export_YYYYMMDD_HHMMSS.csv</code></li>
+<li>User-specified export directory</li>
+<li>Automatic directory creation</li>
+</ul>
+<h4 id="intelligent-cleanup">Intelligent Cleanup</h4>
+<ul>
+<li>Detects empty files (header-only)</li>
+<li>Platform-aware file size calculation</li>
+<li>Automatic deletion of empty exports</li>
+</ul>
+<h3 id="5-enhanced-user-feedback">5. <strong>Enhanced User Feedback</strong></h3>
+<h4 id="console-output">Console Output</h4>
+<ul>
+<li>Real-time processing status</li>
+<li>Per-weir identification in logs</li>
+<li>Formatted statistics table</li>
+<li>Performance metrics</li>
+</ul>
+<h4 id="statistics-table-format">Statistics Table Format</h4>
+<pre><code>----------------------------------------------------------------
+| Parameter (Header)    | Count | Min    | Max    | Mean   | Std Dev |
+----------------------------------------------------------------
+| CrestElev            | 45    | 120.50 | 135.75 | 128.32 | 3.456   |
+| WeirHeight           | 45    | 1.500  | 5.500  | 3.250  | 0.875   |
+| DischCoeff           | 45    | 2.800  | 3.300  | 3.150  | 0.125   |
+----------------------------------------------------------------
+</code></pre>
+<h4 id="summary-dialog">Summary Dialog</h4>
+<ul>
+<li>Export file path</li>
+<li>Number of weirs written</li>
+<li>Field count per weir</li>
+</ul>
+<h2 id="technical-implementation">Technical Implementation</h2>
+<h3 id="dependencies">Dependencies</h3>
+<pre><code class="language-ruby">require 'csv'
+require 'fileutils'
+</code></pre>
+<h3 id="statistical-functions">Statistical Functions</h3>
+<pre><code class="language-ruby">def calculate_mean(arr)
+def calculate_std_dev(arr, mean)
+</code></pre>
+<h3 id="core-api-methods">Core API Methods</h3>
+<ul>
+<li><code>WSApplication.current_network</code> - Network access</li>
+<li><code>network.row_objects('sw_weir')</code> - SWMM weir collection</li>
+<li><code>weir.selected</code> - Selection state check</li>
+<li><code>WSApplication.prompt</code> - User interface</li>
+</ul>
+<h3 id="error-handling">Error Handling</h3>
+<ol>
+<li><strong>Environment</strong>: Application presence validation</li>
+<li><strong>Network</strong>: Loading state verification</li>
+<li><strong>File System</strong>: Permission and space checks</li>
+<li><strong>Data Access</strong>: Method availability</li>
+<li><strong>Type Conversion</strong>: Numeric parsing for statistics</li>
+</ol>
+<h2 id="usage-workflow">Usage Workflow</h2>
+<ol>
+<li>
+<p><strong>Preparation</strong>
+   - Load InfoSWMM/InfoWorks ICM network
+   - Select SWMM weir objects</p>
+</li>
+<li>
+<p><strong>Execution</strong>
+   - Run script in application
+   - Choose export folder
+   - Select fields and statistics option</p>
+</li>
+<li>
+<p><strong>Results</strong>
+   - CSV file with selected data
+   - Optional statistics display
+   - Summary confirmation dialog</p>
+</li>
+</ol>
+<h2 id="swmm-weir-specific-considerations">SWMM Weir-Specific Considerations</h2>
+<h3 id="weir-type-support">Weir Type Support</h3>
+<p>The script handles all SWMM weir types with their specific parameters:</p>
+<h4 id="transverse">TRANSVERSE</h4>
+<ul>
+<li>Standard overflow weir</li>
+<li>Height and width parameters</li>
+</ul>
+<h4 id="sideflow">SIDEFLOW</h4>
+<ul>
+<li>Lateral overflow structure</li>
+<li>Additional sideflow coefficient</li>
+</ul>
+<h4 id="v-notch">V-NOTCH</h4>
+<ul>
+<li>Triangular weir</li>
+<li>Height defines notch depth</li>
+</ul>
+<h4 id="trapezoidal">TRAPEZOIDAL</h4>
+<ul>
+<li>Trapezoidal cross-section</li>
+<li>Left and right slopes</li>
+</ul>
+<h4 id="roadway">ROADWAY</h4>
+<ul>
+<li>Broad-crested weir</li>
+<li>Surface width and road parameters</li>
+</ul>
+<h3 id="swmm5-geometry-mapping">SWMM5 Geometry Mapping</h3>
+<ul>
+<li>Geom1 → weir_height (varies by type)</li>
+<li>Geom2 → weir_width (varies by type)</li>
+<li>Geom3 → left_slope</li>
+<li>Geom4 → right_slope</li>
+</ul>
+<h2 id="debugging-features">Debugging Features</h2>
+<h3 id="debug-block">Debug Block</h3>
+<pre><code class="language-ruby"># Uncomment to inspect sw_weir methods
+# Shows all available methods
+# Helps verify field names match SWMM structure
+</code></pre>
+<h3 id="enhanced-logging">Enhanced Logging</h3>
+<ul>
+<li>Weir ID in all messages</li>
+<li>Missing attribute warnings</li>
+<li>Numeric conversion notifications</li>
+</ul>
+<h2 id="performance-optimization">Performance &amp; Optimization</h2>
+<h3 id="efficiency-features">Efficiency Features</h3>
+<ul>
+<li>Direct CSV writing</li>
+<li>Incremental statistics calculation</li>
+<li>Memory-efficient processing</li>
+</ul>
+<h3 id="data-validation">Data Validation</h3>
+<ul>
+<li>Type checking for statistics</li>
+<li>Boolean to numeric conversion</li>
+<li>Safe array handling</li>
+</ul>
+<h2 id="customization-guide">Customization Guide</h2>
+<h3 id="adding-fields">Adding Fields</h3>
+<pre><code class="language-ruby">['Display Name', :method_symbol, default_state, 'CSV_Header']
+</code></pre>
+<h3 id="modifying-type-specific-logic">Modifying Type-Specific Logic</h3>
+<ul>
+<li>Adjust geometry interpretation</li>
+<li>Add new weir types</li>
+<li>Customize coefficient handling</li>
+</ul>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="swmm-compliance">SWMM Compliance</h3>
+<ol>
+<li>
+<p><strong>Field Naming</strong>
+   - Match SWMM .inp conventions
+   - Use standard abbreviations
+   - Maintain type consistency</p>
+</li>
+<li>
+<p><strong>Data Quality</strong>
+   - Validate numeric ranges
+   - Check type-specific requirements
+   - Preserve precision</p>
+</li>
+<li>
+<p><strong>User Experience</strong>
+   - Clear field descriptions
+   - Logical grouping
+   - Helpful warnings</p>
+</li>
+</ol>
+<h2 id="limitations">Limitations</h2>
+<ol>
+<li>Selection-based export only</li>
+<li>Application environment required</li>
+<li>CSV format for complex geometries</li>
+<li>Single-threaded processing</li>
+</ol>
+<h2 id="enhancement-opportunities">Enhancement Opportunities</h2>
+<ol>
+<li><strong>SWMM Integration</strong>: Direct .inp file generation</li>
+<li><strong>Type Filtering</strong>: Export specific weir types only</li>
+<li><strong>Validation</strong>: SWMM compliance checking</li>
+<li><strong>Visualization</strong>: Weir curve plotting</li>
+<li><strong>Batch Processing</strong>: Multiple networks</li>
+<li><strong>Cross-Reference</strong>: Node connectivity validation</li>
+</ol>
+<h2 id="comparison-with-other-scripts">Comparison with Other Scripts</h2>
+<h3 id="vs-hw_weir-script">vs. HW_Weir Script</h3>
+<ul>
+<li>Simpler parameter set</li>
+<li>SWMM-specific type system</li>
+<li>Different geometry interpretation</li>
+<li>Statistical analysis addition</li>
+</ul>
+<h3 id="vs-swmm-node-script">vs. SWMM Node Script</h3>
+<ul>
+<li>Focused on hydraulic structures</li>
+<li>Type-dependent parameters</li>
+<li>Simpler data structures</li>
+<li>No water quality parameters</li>
+</ul>
+<h3 id="shared-features">Shared Features</h3>
+<ul>
+<li>Statistical analysis option</li>
+<li>Consistent UI approach</li>
+<li>Robust error handling</li>
+<li>Smart file management</li>
+</ul>
+<h2 id="common-use-cases">Common Use Cases</h2>
+<ol>
+<li><strong>Model Migration</strong>: Export weirs for SWMM model building</li>
+<li><strong>Hydraulic Analysis</strong>: Review discharge coefficients and dimensions</li>
+<li><strong>Type Inventory</strong>: Catalog weir types in the system</li>
+<li><strong>Calibration</strong>: Extract parameters for comparison</li>
+<li><strong>QA/QC</strong>: Statistical review of weir parameters</li>
+</ol>
+<h2 id="script-reliability">Script Reliability</h2>
+<h3 id="robust-features">Robust Features</h3>
+<ul>
+<li>Comprehensive error handling</li>
+<li>Type-safe conversions</li>
+<li>Missing method detection</li>
+<li>Graceful failure modes</li>
+</ul>
+<h3 id="quality-assurance">Quality Assurance</h3>
+<ul>
+<li>Statistics validation</li>
+<li>Export verification</li>
+<li>File integrity checks</li>
+<li>Clear user feedback</li>
+</ul>
+<h2 id="swmm-specific-notes">SWMM-Specific Notes</h2>
+<h3 id="parameter-variations">Parameter Variations</h3>
+<p>Different weir types use geometry fields differently:
+- Check type before interpreting height/width
+- Slopes only apply to certain types
+- Some parameters are type-exclusive</p>
+<h3 id="boolean-handling">Boolean Handling</h3>
+<p>SWMM uses YES/NO or 1/0 for:
+- Flap gates
+- Variable discharge coefficients
+- Surcharge allowance</p>
+<h3 id="curve-references">Curve References</h3>
+<p>Weir curves allow variable discharge coefficients based on head differential, referenced by ID when var_dis_coeff is YES.</p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

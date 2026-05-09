@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Get Minimum X,Y for All Nodes.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0021 - Change the Geometry or Rename IDs</div>
+    <h1>Get Minimum X,Y for All Nodes.md</h1>
+    <div class="meta">Markdown document &middot; 0021 - Change the Geometry or Rename IDs</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">77 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h3 id="summary-of-the-ruby-code-markdown"><strong>Summary of the Ruby Code (Markdown)</strong></h3>
+<h4 id="overview"><strong>Overview</strong></h4>
+<p>This Ruby script, adapted from <strong>Innovyze Ruby Documentation</strong>, determines the <strong>bounding box</strong> of all nodes in an <strong>InfoWorks ICM</strong> hydraulic network by finding the <strong>minimum and maximum x/y coordinates</strong>. The script then prints these values along with the <strong>InfoWorks ICM version</strong>.</p>
+<hr>
+<h3 id="step-by-step-breakdown"><strong>Step-by-Step Breakdown</strong></h3>
+<h4 id="1-retrieve-the-current-network"><strong>1. Retrieve the Current Network</strong></h4>
+<pre><code class="language-ruby">net = WSApplication.current_network
+</code></pre>
+<ul>
+<li>Gets the active hydraulic network in <strong>InfoWorks ICM</strong>.</li>
+</ul>
+<h4 id="2-initialize-variables"><strong>2. Initialize Variables</strong></h4>
+<pre><code class="language-ruby">min_x = nil
+min_y = nil
+max_x = nil
+max_y = nil
+</code></pre>
+<ul>
+<li>Sets up variables to store the <strong>minimum and maximum x/y coordinates</strong> of network nodes.</li>
+</ul>
+<h4 id="3-iterate-over-nodes-to-find-bounding-box"><strong>3. Iterate Over Nodes to Find Bounding Box</strong></h4>
+<pre><code class="language-ruby">net.row_objects('_nodes').each do |node|
+</code></pre>
+<ul>
+<li>Loops through <strong>all nodes</strong> in the network.</li>
+</ul>
+<h5 id="determine-minimum-and-maximum-coordinates"><strong>Determine Minimum and Maximum Coordinates</strong></h5>
+<pre><code class="language-ruby">if min_x.nil? || node.x &lt; min_x
+  min_x = node.x
+end
+if max_x.nil? || node.x &gt; max_x
+  max_x = node.x
+end
+if min_y.nil? || node.y &lt; min_y
+  min_y = node.y
+end
+if max_y.nil? || node.y &gt; max_y
+  max_y = node.y
+end
+</code></pre>
+<ul>
+<li><strong>Compares</strong> each node’s x/y coordinates to the current min/max values.</li>
+<li><strong>Updates</strong> min/max values accordingly.</li>
+</ul>
+<h4 id="4-print-the-bounding-box-coordinates"><strong>4. Print the Bounding Box Coordinates</strong></h4>
+<pre><code class="language-ruby">puts &quot;Minimum x, y: #{'%.3f' % min_x},   #{'%.3f' % min_y}&quot;
+puts &quot;Maximum x, y: #{'%.3f' % max_x},   #{'%.3f' % max_y}&quot;
+</code></pre>
+<ul>
+<li>Displays the <strong>bounding box limits</strong>, rounded to three decimal places.</li>
+</ul>
+<h4 id="5-display-infoworks-icm-version"><strong>5. Display InfoWorks ICM Version</strong></h4>
+<pre><code class="language-ruby">puts 'Welcome to InfoWorks ICM Version ' + WSApplication.version
+</code></pre>
+<ul>
+<li>Prints the <strong>software version</strong> for reference.</li>
+</ul>
+<hr>
+<h3 id="key-features"><strong>Key Features</strong></h3>
+<p>✅ Computes the <strong>bounding box</strong> for all nodes in the network.<br>
+✅ Uses a simple <strong>iteration-based approach</strong> to track min/max coordinates.<br>
+✅ Outputs results <strong>formatted</strong> to three decimal places.<br>
+✅ Displays the <strong>InfoWorks ICM version</strong> for context.  </p>
+<hr>
+<h3 id="potential-applications"><strong>Potential Applications</strong></h3>
+<ul>
+<li><strong>Network Visualization</strong>: Determines spatial extents for plotting.  </li>
+<li><strong>Data Quality Check</strong>: Detects outliers or misplaced nodes.  </li>
+<li><strong>Model Validation</strong>: Ensures network fits within expected boundaries.  </li>
+</ul>
+<p>Would you like additional functionality, such as exporting the bounding box coordinates to a file or visualizing the network extent? 🚀</p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>readme.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0018 - InfoWorks vs SWMM Comparison Tools</div>
+    <h1>readme.md</h1>
+    <div class="meta">Markdown document &middot; 0018 - InfoWorks vs SWMM Comparison Tools</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">115 lines</span></div>
+    <div class="toolbar"><a href="./index.html">Master index</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="infoworks-vs-swmm-comparison-tools">InfoWorks vs SWMM Comparison Tools</h1>
+<p><strong>Scripts by Bob Dickinson.</strong>
+<em>This readme was AI-generated based on the contents of the scripts.</em></p>
+<hr>
+<p>This folder contains scripts for comparing network data between an ICM InfoWorks network and an ICM SWMM network open simultaneously in the same ICM session. All scripts use the <strong>current network</strong> (InfoWorks, <code>hw_</code> tables) and the <strong>background network</strong> (SWMM, <code>sw_</code> tables).</p>
+<hr>
+<h2 id="scripts">Scripts</h2>
+<h3 id="diagnostic">Diagnostic</h3>
+<h4 id="icm-infoworks-vs-icm-swmm-subcatchmentrb"><code>ICM InfoWorks vs ICM SWMM Subcatchment.rb</code></h4>
+<p>A lightweight first-pass diagnostic. Prints the names of both networks, lists available tables in each, and counts/prints the first few IDs from <code>hw_subcatchment</code> (InfoWorks) and <code>sw_subcatchment</code> (SWMM). Use this to confirm both networks are open and accessible before running the deeper comparison scripts.</p>
+<hr>
+<h3 id="node-comparison">Node Comparison</h3>
+<h4 id="compare-infoworks-to-swmm-for-nodesrb-compare-infoworks-to-swmm-for-nodesmd"><code>Compare InfoWorks to SWMM for Nodes.rb</code> · <code>Compare InfoWorks to SWMM for Nodes.md</code></h4>
+<p>Prompts the user to select one or more node attributes to compare between <code>hw_node</code> (InfoWorks) and <code>sw_node</code> (SWMM), matched by <code>node_id</code>. For each selected attribute pair:</p>
+<table>
+<thead>
+<tr>
+<th>InfoWorks (<code>hw_node</code>)</th>
+<th>SWMM (<code>sw_node</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ground_level</code></td>
+<td><code>ground_level</code></td>
+</tr>
+<tr>
+<td><code>chamber_floor</code></td>
+<td><code>invert_elevation</code></td>
+</tr>
+<tr>
+<td><code>flood_level</code></td>
+<td><code>surcharge_depth</code> (+ <code>invert_elevation</code>)</td>
+</tr>
+<tr>
+<td><code>maximum_depth</code></td>
+<td><code>maximum_depth</code></td>
+</tr>
+<tr>
+<td><code>floodable_area</code></td>
+<td><code>ponded_area</code></td>
+</tr>
+<tr>
+<td><code>chamber_area</code> / <code>shaft_area</code></td>
+<td><code>min_surfarea</code> (hardcoded 12.566)</td>
+</tr>
+</tbody>
+</table>
+<p>Prints per-node differences (where &gt; 0.1%), totals for each network, the absolute difference, and the percentage of matched nodes within the 0.1% threshold.</p>
+<h4 id="current_background_node_comparerb"><code>current_background_node_compare.rb</code></h4>
+<p>An alternate node comparison with a different attribute set (X/Y coordinates, ground level, flooding discharge coefficient, chamber floor vs invert elevation). Uses the same current/background network pattern and ID-based matching. Complements the above for spatial and geometry checks.</p>
+<hr>
+<h3 id="conduitlink-comparison">Conduit/Link Comparison</h3>
+<h4 id="compare-infoworks-to-swmm-for-linksrb-compare-infoworks-to-swmm-for-linksmd"><code>Compare InfoWorks to SWMM for Links.rb</code> · <code>Compare InfoWorks to SWMM for Links.md</code></h4>
+<p>Prompts the user to select conduit attributes to compare between <code>hw_conduit</code> (InfoWorks) and <code>sw_conduit</code> (SWMM), matched by <code>asset_id</code>. Attribute pairs:</p>
+<table>
+<thead>
+<tr>
+<th>InfoWorks (<code>hw_conduit</code>)</th>
+<th>SWMM (<code>sw_conduit</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>conduit_length</code></td>
+<td><code>length</code></td>
+</tr>
+<tr>
+<td><code>conduit_height</code></td>
+<td><code>conduit_height</code></td>
+</tr>
+<tr>
+<td><code>conduit_width</code></td>
+<td><code>conduit_width</code></td>
+</tr>
+<tr>
+<td><code>number_of_barrels</code></td>
+<td><code>number_of_barrels</code></td>
+</tr>
+<tr>
+<td><code>us_invert</code> / <code>ds_invert</code></td>
+<td><code>us_invert</code> / <code>ds_invert</code></td>
+</tr>
+<tr>
+<td><code>us_headloss_coeff</code> / <code>ds_headloss_coeff</code></td>
+<td>same</td>
+</tr>
+<tr>
+<td><code>bottom_roughness_N</code> / <code>top_roughness_N</code></td>
+<td><code>Mannings_N</code></td>
+</tr>
+</tbody>
+</table>
+<p>Prints per-conduit differences (where &gt; 0.1%), totals, and the match rate within 0.1%.</p>
+<h4 id="current_background_conduit_comparerb"><code>current_background_conduit_compare.rb</code></h4>
+<p>An alternate conduit comparison script. Covers a similar attribute set using the same pattern as its node counterpart above. Useful as a cross-check or alternative prompt layout.</p>
+<hr>
+<h3 id="subcatchment-inflow-comparison">Subcatchment &amp; Inflow Comparison</h3>
+<h4 id="compare-infoworks-to-swmm-for-subcatchment-and-node-inflowsrb-compare-infoworks-to-swmm-for-subcatchment-and-node-inflowsmd"><code>Compare InfoWorks to SWMM for Subcatchment and Node Inflows.rb</code> · <code>Compare InfoWorks to SWMM for Subcatchment and Node Inflows.md</code></h4>
+<p>Compares <code>hw_subcatchment</code> (InfoWorks) flow fields to <code>sw_node</code> (SWMM) inflow fields, matched by ID. The user selects which cross-network field pairs to compare, including population, trade_flow, base_flow, and additional_foul_flow against sw_node <code>base_flow</code>, <code>inflow_baseline</code>, and <code>additional_dwf</code>. Prints matched values and differences.</p>
+<h4 id="compare-icm-trade-flow-to-swmm-base-flowrb"><code>Compare ICM trade flow to SWMM Base Flow.rb</code></h4>
+<p>Compares <code>hw_subcatchment.trade_flow</code> (InfoWorks) to <code>sw_node.base_flow</code> (SWMM) for all matched IDs, and also reports totals for <code>base_flow</code>, <code>additional_foul_flow</code>, <code>population</code>, and <code>population_flow</code> from the InfoWorks subcatchments.</p>
+<p>Has two optional actions via prompt:
+- <strong>Set trade_flow to base_flow</strong> — writes <code>sw_node.base_flow</code> back into <code>hw_subcatchment.trade_flow</code> in the InfoWorks network (commits a transaction).
+- <strong>Make ICM Subcatchments from ICM SWMM Nodes</strong> — creates new <code>hw_subcatchment</code> objects in the InfoWorks network from SWMM Junction nodes, copying <code>node_id</code>, <code>trade_flow</code> (from <code>base_flow</code>), and XY coordinates. Sets <code>total_area = 1.0</code> as a placeholder.</p>
+<hr>
+<h3 id="full-parameter-comparison">Full Parameter Comparison</h3>
+<h4 id="model_evaluation_logicrb"><code>Model_Evaluation_Logic.rb</code></h4>
+<p>The comprehensive v2.2 master comparison script. Structured into 12 sections covering InfoWorks subcatchment grid, land use hierarchy, runoff surface grid, SWMM physical properties, infiltration parameters, infiltration model detection, advanced parameter tracing (with <code>surface_type</code>-based pervious/impervious matching), area distribution analysis, extended parameter comparison, parameter mapping reference, mismatch summary, and CSV export.</p>
+<p><strong>Key v2.2 fix:</strong> uses <code>hw_runoff_surface.surface_type</code> keyword patterns to correctly identify pervious/impervious surfaces rather than assuming slot order.</p>
+<p><strong>Configuration constants at the top of the file:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PAGE_WIDTH</code></td>
+<td><code>180</code></td>
+<td>Output line width</td>
+</tr>
+<tr>
+<td><code>TOLERANCE</code></td>
+<td><code>0.001</code></td>
+<td>Mismatch threshold</td>
+</tr>
+<tr>
+<td><code>EXPORT_CSV</code></td>
+<td><code>true</code></td>
+<td>Set <code>false</code> to disable CSV</td>
+</tr>
+<tr>
+<td><code>CSV_PATH</code></td>
+<td><code>C:/Temp/ICM_Comparison_Report.csv</code></td>
+<td>Output path — <strong>change before running</strong></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="network-geometry-spatial-utilities">Network Geometry &amp; Spatial Utilities</h3>
+<h4 id="sonnet_exchange_centroid_bn_cn_networksrb-sonnet_exchange_centroid_bn_cn_networksmd"><code>sonnet_exchange_centroid_bn_cn_networks.rb</code> · <code>sonnet_exchange_centroid_bn_cn_networks.md</code></h4>
+<p>A multi-function cross-network utility operating on the current (InfoWorks, <code>hw_node</code>) and background (SWMM, <code>sw_node</code>) networks. Provides four capabilities:</p>
+<ul>
+<li><strong><code>compare_nodes</code></strong> — iterates <code>hw_node</code> in the current network, finds the matching <code>sw_node</code> in the background by ID, and prints any ground level differences or IDs that exist in only one network.</li>
+<li><strong><code>copy_node_data</code></strong> — copies a specified field from <code>sw_node</code> (background) to <code>hw_node</code> (current) for all matched IDs, wrapped in a transaction.</li>
+<li><strong><code>find_unique_objects</code></strong> — reports IDs present in one network but not the other, for any two named tables.</li>
+<li><strong><code>find_centroid_and_farthest_distance</code></strong> / <strong><code>find_nearby_objects</code></strong> — calculates the geometric centroid of all nodes in a given table and the maximum distance to any node, then uses those values to do a spatial proximity search across both networks.</li>
+</ul>
+<p>The script runs all four operations in sequence as a demonstration. Edit the method calls at the bottom to use selectively.</p>
+<hr>
+<h2 id="usage">Usage</h2>
+<ol>
+<li>Open both an InfoWorks network (as current) and a SWMM network (as background) in ICM.</li>
+<li>Run <code>ICM InfoWorks vs ICM SWMM Subcatchment.rb</code> to verify both networks are accessible.</li>
+<li>Use the <code>Compare...</code> scripts for interactive attribute-by-attribute comparisons of nodes, conduits, or subcatchment inflows.</li>
+<li>Run <code>Model_Evaluation_Logic.rb</code> for the full subcatchment parameter comparison with CSV export.</li>
+</ol></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

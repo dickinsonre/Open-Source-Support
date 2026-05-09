@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SWMM Ruby Fixes — Master Index</title>
+<style>
+:root { --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220; --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8; --accent-2:#f472b6; --good:#22c55e; --border:#334155; }
+* { box-sizing: border-box; }
+body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:linear-gradient(180deg,#0a1226 0%,#0f172a 100%); color:var(--text); line-height:1.6; }
+.wrap { max-width:1180px; margin:0 auto; padding:36px 24px 80px; }
+header.hero { border:1px solid var(--border); background:linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06)); padding:28px; border-radius:14px; margin-bottom:18px; }
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:30px; margin:0 0 8px; color:#fff; }
+header.hero p.lede { margin:0; color:var(--muted); }
+.statgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-top:18px; }
+.stat { background:var(--panel-2); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+.stat .num { font-size:26px; font-weight:600; color:var(--accent); }
+.stat .lbl { font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); margin-top:2px; }
+.section { background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:8px 26px 22px; margin-top:18px; }
+.section h2 { color:#fff; font-size:18px; border-bottom:1px solid var(--border); padding-bottom:8px; }
+.cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:14px; margin-top:14px; }
+.card { background:var(--panel-2); border:1px solid var(--border); border-radius:12px; padding:14px 16px; transition:transform 0.15s, border-color 0.15s; text-decoration:none; color:inherit; display:flex; flex-direction:column; gap:6px; }
+.card:hover { transform:translateY(-2px); border-color:var(--accent); }
+.card .name { font-size:14px; font-weight:600; color:var(--accent); }
+.card .desc { font-size:13px; color:var(--text); flex:1; }
+.card .meta { font-size:12px; color:var(--muted); display:flex; gap:10px; }
+.card .meta span { background:rgba(56,189,248,0.10); border:1px solid rgba(56,189,248,0.30); padding:2px 8px; border-radius:999px; }
+.section ul { padding-left:22px; }
+.section li { margin:4px 0; color:var(--text); }
+.section code { background:var(--panel-2); border:1px solid var(--border); padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24; }
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">InfoWorks ICM &rsaquo; 01 Ruby &rsaquo; 02 SWMM</div>
+    <h1>Ruby Script Robustness Pass</h1>
+    <p class="lede">Every <code>.rb</code> in this tree paired with a <code>fix_</code> sibling: outer error handling, validated inputs, block-form file I/O, transaction safety, timestamped progress.</p>
+    <div class="statgrid">
+      <div class="stat"><div class="num">26</div><div class="lbl">Folders</div></div>
+      <div class="stat"><div class="num">279</div><div class="lbl">Original scripts</div></div>
+      <div class="stat"><div class="num">279</div><div class="lbl">fix_ scripts</div></div>
+      <div class="stat"><div class="num">26</div><div class="lbl">_Summary.html files</div></div>
+    </div>
+  </header>
+
+  <section class="section">
+    <h2>What the robustness pass adds</h2>
+    <ul>
+      <li><code># frozen_string_literal: true</code> pragma at the top of every fix_ file.</li>
+      <li>Header docblock — purpose, inputs, outputs, UI vs Exchange, hardening notes.</li>
+      <li><code>begin / rescue =&gt; e / ensure</code> around main logic so transactions roll back, files close, and the error trail surfaces cleanly.</li>
+      <li>Pre-flight validation — current_network not nil, selection non-empty, prompts not cancelled, file paths exist.</li>
+      <li>File I/O via block forms <code>File.open(...) do |f| ... end</code> and <code>CSV.open(...) do |csv| ... end</code>.</li>
+      <li>Timestamped progress logging <code>[HH:MM:SS] ...</code> so batches show liveness.</li>
+      <li>Nil-safety with <code>&amp;.</code> and explicit <code>next if ro.nil?</code> guards.</li>
+      <li>Per-row <code>rescue</code> so a single bad row doesn't abort the batch.</li>
+      <li><code>transaction_begin / transaction_commit</code> paired with <code>transaction_cancel</code> on rescue, only when the original used transactions.</li>
+      <li>For very large Exchange importers, fix_ uses a thin delegating wrapper via <code>Kernel#load</code> to add the outer safety net without touching the original logic.</li>
+    </ul>
+  </section>
+
+  <section class="section">
+    <h2>Folders (26)</h2>
+    <div class="cards">
+      <a class="card" href="./0000%20-%20InfoSWMM%20Multi-Scenario%20Import/_Summary.html"><div class="name">0000 - InfoSWMM Multi-Scenario Import</div><div class="desc">Multi-scenario importer that pulls InfoSWMM exports into ICM with phase-based workflow (UI + Exchange).</div><div class="meta"><span>2 orig</span><span>2 fix_</span></div></a><a class="card" href="./0000%20-%20PCSWMM%20Import%20to%20ICM%20SWMM/_Summary.html"><div class="name">0000 - PCSWMM Import to ICM SWMM</div><div class="desc">PCSWMM .inp ingestion into ICM SWMM via UI prompts and an Exchange worker.</div><div class="meta"><span>2 orig</span><span>2 fix_</span></div></a><a class="card" href="./0001%20-%20Element%20and%20Field%20Statistics/_Summary.html"><div class="name">0001 - Element and Field Statistics</div><div class="desc">Statistics over element fields (lengths, diameters, depression storage, user numbers, all-parameter stats).</div><div class="meta"><span>18 orig</span><span>18 fix_</span></div></a><a class="card" href="./0002%20-%20Tracing%20Tools/_Summary.html"><div class="name">0002 - Tracing Tools</div><div class="desc">Network traversal: upstream/downstream traces, Dijkstra shortest path, boundary trace, area accumulators.</div><div class="meta"><span>22 orig</span><span>22 fix_</span></div></a><a class="card" href="./0003%20-%20Scenario%20Tools/_Summary.html"><div class="name">0003 - Scenario Tools</div><div class="desc">Scenario generators (alphabetic, numbered, parametric) and DWF/scenario importers from CSV.</div><div class="meta"><span>10 orig</span><span>10 fix_</span></div></a><a class="card" href="./0004%20-%20Scenario%20Sensitivity%20-%20InfoWorks/_Summary.html"><div class="name">0004 - Scenario Sensitivity - InfoWorks</div><div class="desc">Parametric sensitivity scenarios over GIM and link data.</div><div class="meta"><span>2 orig</span><span>2 fix_</span></div></a><a class="card" href="./0005%20-%20Import%20Export%20of%20Data%20Tables/_Summary.html"><div class="name">0005 - Import Export of Data Tables</div><div class="desc">Bulk CSV/snapshot export-import for nodes, conduits, pumps, weirs, orifices, subcatchments, parameters.</div><div class="meta"><span>40 orig</span><span>40 fix_</span></div></a><a class="card" href="./0006%20-%20ICM%20SWMM%20vs%20ICM%20InfoWorks%20All%20Tables/_Summary.html"><div class="name">0006 - ICM SWMM vs ICM InfoWorks All Tables</div><div class="desc">Side-by-side enumeration of ICM SWMM and ICM InfoWorks table names, run params, sensors.</div><div class="meta"><span>11 orig</span><span>11 fix_</span></div></a><a class="card" href="./0007%20-%20Hydraulic%20Comparison%20Tools%20for%20ICM%20InfoWorks%20and%20SWMM/_Summary.html"><div class="name">0007 - Hydraulic Comparison Tools for ICM InfoWorks and SWMM</div><div class="desc">Hydraulic math: Manning's, Kutter, tau/shear stress, HEC-22 inlet checks.</div><div class="meta"><span>7 orig</span><span>7 fix_</span></div></a><a class="card" href="./0008%20-%20Database%20Field%20Tools%20for%20Elements%20and%20Results/_Summary.html"><div class="name">0008 - Database Field Tools for Elements and Results</div><div class="desc">Field/schema introspection: list every input variable, every result, network field structures.</div><div class="meta"><span>28 orig</span><span>28 fix_</span></div></a><a class="card" href="./0009%20-%20Polygon%20Subcatchment%20Boundary%20Tools/_Summary.html"><div class="name">0009 - Polygon Subcatchment Boundary Tools</div><div class="desc">Polygon ops: result points, generic-sided shapes, create subs/nodes from polygons.</div><div class="meta"><span>6 orig</span><span>6 fix_</span></div></a><a class="card" href="./0010%20-%20List%20all%20results%20fields%20with%20Stats/_Summary.html"><div class="name">0010 - List all results fields with Stats</div><div class="desc">Enumerate result fields and dump min/max/mean/std-dev per field for nodes, links, subcatchments, flap valves.</div><div class="meta"><span>7 orig</span><span>7 fix_</span></div></a><a class="card" href="./0011%20-%20Get%20results%20from%20all%20timesteps%20in%20the%20IWR%20File/_Summary.html"><div class="name">0011 - Get results from all timesteps in the IWR File</div><div class="desc">Time-series extraction for every timestep across links, nodes, subcatchments, manholes.</div><div class="meta"><span>11 orig</span><span>11 fix_</span></div></a><a class="card" href="./0012%20-%20ICM%20InfoWorks%20Results%20to%20SWMM5%20%20Summary%20Tables/_Summary.html"><div class="name">0012 - ICM InfoWorks Results to SWMM5  Summary Tables</div><div class="desc">Replicate EPA SWMM5-style summary tables (Link Flow, Node Depth, Surcharge, Runoff) from ICM results.</div><div class="meta"><span>6 orig</span><span>6 fix_</span></div></a><a class="card" href="./0013%20-%20SUDS%20or%20LID%20Tools/_Summary.html"><div class="name">0013 - SUDS or LID Tools</div><div class="desc">Sustainable Urban Drainage / LID controls: bulk creation and CSV export.</div><div class="meta"><span>4 orig</span><span>4 fix_</span></div></a><a class="card" href="./0014%20-%20InfoSewer%20to%20ICM%20Comparison%20Tools/_Summary.html"><div class="name">0014 - InfoSewer to ICM Comparison Tools</div><div class="desc">InfoSewer steady-state report parsers, peaking-factor calculators, subcatchment generators from imported manholes.</div><div class="meta"><span>7 orig</span><span>7 fix_</span></div></a><a class="card" href="./0015%20-%20Export%20SWMM5%20Calibration%20Files/_Summary.html"><div class="name">0015 - Export SWMM5 Calibration Files</div><div class="desc">Export per-element time series in EPA SWMM5 .DAT calibration format (flow, depth, velocity, runoff, groundwater).</div><div class="meta"><span>13 orig</span><span>13 fix_</span></div></a><a class="card" href="./0016%20-%20InfoSWMM%20and%20SWMM5%20Tools%20in%20Ruby/_Summary.html"><div class="name">0016 - InfoSWMM and SWMM5 Tools in Ruby</div><div class="desc">InfoSWMM subcatchment manager, SWMM5 .RPT parser, inflow file builder.</div><div class="meta"><span>3 orig</span><span>3 fix_</span></div></a><a class="card" href="./0017%20-%20Subcatchment%20Grid%20and%20Tabs%20Tools/_Summary.html"><div class="name">0017 - Subcatchment Grid and Tabs Tools</div><div class="desc">Subcatchment grid/tabs: land-use, runoff surfaces, copy/move pumps, nearest-node connections, multi-load copies.</div><div class="meta"><span>19 orig</span><span>19 fix_</span></div></a><a class="card" href="./0018%20-%20Create%20Selection%20list%20using%20a%20SQL%20query/_Summary.html"><div class="name">0018 - Create Selection list using a SQL query</div><div class="desc">Build selection lists from SQL, generate per-row reports, find isolated nodes, detect duplicate links.</div><div class="meta"><span>6 orig</span><span>6 fix_</span></div></a><a class="card" href="./0019%20-%20Node%20Connection%20Tools/_Summary.html"><div class="name">0019 - Node Connection Tools</div><div class="desc">Detect dry pipes, bifurcation nodes, header nodes via graph traversal.</div><div class="meta"><span>4 orig</span><span>4 fix_</span></div></a><a class="card" href="./0020%20-%20All%20Node%2C%20Subs%20and%20Link%20IDs%20Tools/_Summary.html"><div class="name">0020 - All Node, Subs and Link IDs Tools</div><div class="desc">Bulk rename of node/sub/link IDs with collision detection; duplicate ID reporting.</div><div class="meta"><span>5 orig</span><span>5 fix_</span></div></a><a class="card" href="./0021%20-%20Change%20the%20Geometry%20or%20Rename%20IDs/_Summary.html"><div class="name">0021 - Change the Geometry or Rename IDs</div><div class="desc">Split links, change subcatchment polygon shapes, add 1D results points, rename objects.</div><div class="meta"><span>12 orig</span><span>12 fix_</span></div></a><a class="card" href="./0022%20-%20Hackathon%20AWI%20OffShoots/_Summary.html"><div class="name">0022 - Hackathon AWI OffShoots</div><div class="desc">Folder-mode multi-scenario importers and SWMM5-to-ICM cleanup variants.</div><div class="meta"><span>10 orig</span><span>10 fix_</span></div></a><a class="card" href="./0024%20-%20Utilities/_Summary.html"><div class="name">0024 - Utilities</div><div class="desc">Cross-network comparisons, asset-id mappers, network-info utilities.</div><div class="meta"><span>13 orig</span><span>13 fix_</span></div></a><a class="card" href="./0025%20-%20Miscellaneous/_Summary.html"><div class="name">0025 - Miscellaneous</div><div class="desc">Sandbox demos, Bill James similarity index, prompt-layout examples, parameter listings.</div><div class="meta"><span>11 orig</span><span>11 fix_</span></div></a>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Notable bugs fixed during the pass</h2>
+    <ul>
+      <li><strong>0017</strong> <code>Move_Copy_Impored_Pumps.rb</code> — called undefined <code>new_pump_ro()</code>; fix_ uses <code>net.new_row_object('hw_pump')</code>.</li>
+      <li><strong>0017</strong> <em>Copy selected subcatchments</em> — opened a fresh transaction inside the per-copy loop; fix_ wraps the whole batch in one transaction.</li>
+      <li><strong>0017</strong> nearest-node scripts replaced magic <code>999999999.9</code> with <code>Float::INFINITY</code> and pre-built node arrays for O(N+M) instead of O(N×M).</li>
+      <li><strong>0018</strong> <code>UI_Script.rb</code> — SQL had an extra trailing quote; fix_ corrects it.</li>
+      <li><strong>0002</strong> <code>Sum_Selected_Total_Area.rb</code> — typo <code>row   objects</code>; fix_ uses <code>row_objects</code>.</li>
+    </ul>
+  </section>
+
+  <footer>
+    Auto-generated &middot; Originals untouched &middot; All fix_ files preserve original behavior
+  </footer>
+</div>
+</body>
+</html>

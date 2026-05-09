@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SWMM5_Import_UI_Annotated.rb</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+<style>pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehl .hll { background-color: #49483e }
+.codehl { background: #272822; color: #f8f8f2 }
+.codehl .c { color: #75715e } /* Comment */
+.codehl .err { color: #960050; background-color: #1e0010 } /* Error */
+.codehl .esc { color: #f8f8f2 } /* Escape */
+.codehl .g { color: #f8f8f2 } /* Generic */
+.codehl .k { color: #66d9ef } /* Keyword */
+.codehl .l { color: #ae81ff } /* Literal */
+.codehl .n { color: #f8f8f2 } /* Name */
+.codehl .o { color: #f92672 } /* Operator */
+.codehl .x { color: #f8f8f2 } /* Other */
+.codehl .p { color: #f8f8f2 } /* Punctuation */
+.codehl .ch { color: #75715e } /* Comment.Hashbang */
+.codehl .cm { color: #75715e } /* Comment.Multiline */
+.codehl .cp { color: #75715e } /* Comment.Preproc */
+.codehl .cpf { color: #75715e } /* Comment.PreprocFile */
+.codehl .c1 { color: #75715e } /* Comment.Single */
+.codehl .cs { color: #75715e } /* Comment.Special */
+.codehl .gd { color: #f92672 } /* Generic.Deleted */
+.codehl .ge { color: #f8f8f2; font-style: italic } /* Generic.Emph */
+.codehl .gr { color: #f8f8f2 } /* Generic.Error */
+.codehl .gh { color: #f8f8f2 } /* Generic.Heading */
+.codehl .gi { color: #a6e22e } /* Generic.Inserted */
+.codehl .go { color: #66d9ef } /* Generic.Output */
+.codehl .gp { color: #f92672; font-weight: bold } /* Generic.Prompt */
+.codehl .gs { color: #f8f8f2; font-weight: bold } /* Generic.Strong */
+.codehl .gu { color: #75715e } /* Generic.Subheading */
+.codehl .gt { color: #f8f8f2 } /* Generic.Traceback */
+.codehl .kc { color: #66d9ef } /* Keyword.Constant */
+.codehl .kd { color: #66d9ef } /* Keyword.Declaration */
+.codehl .kn { color: #f92672 } /* Keyword.Namespace */
+.codehl .kp { color: #66d9ef } /* Keyword.Pseudo */
+.codehl .kr { color: #66d9ef } /* Keyword.Reserved */
+.codehl .kt { color: #66d9ef } /* Keyword.Type */
+.codehl .ld { color: #e6db74 } /* Literal.Date */
+.codehl .m { color: #ae81ff } /* Literal.Number */
+.codehl .s { color: #e6db74 } /* Literal.String */
+.codehl .na { color: #a6e22e } /* Name.Attribute */
+.codehl .nb { color: #f8f8f2 } /* Name.Builtin */
+.codehl .nc { color: #a6e22e } /* Name.Class */
+.codehl .no { color: #66d9ef } /* Name.Constant */
+.codehl .nd { color: #a6e22e } /* Name.Decorator */
+.codehl .ni { color: #f8f8f2 } /* Name.Entity */
+.codehl .ne { color: #a6e22e } /* Name.Exception */
+.codehl .nf { color: #a6e22e } /* Name.Function */
+.codehl .nl { color: #f8f8f2 } /* Name.Label */
+.codehl .nn { color: #f8f8f2 } /* Name.Namespace */
+.codehl .nx { color: #a6e22e } /* Name.Other */
+.codehl .py { color: #f8f8f2 } /* Name.Property */
+.codehl .nt { color: #f92672 } /* Name.Tag */
+.codehl .nv { color: #f8f8f2 } /* Name.Variable */
+.codehl .ow { color: #f92672 } /* Operator.Word */
+.codehl .w { color: #f8f8f2 } /* Text.Whitespace */
+.codehl .mb { color: #ae81ff } /* Literal.Number.Bin */
+.codehl .mf { color: #ae81ff } /* Literal.Number.Float */
+.codehl .mh { color: #ae81ff } /* Literal.Number.Hex */
+.codehl .mi { color: #ae81ff } /* Literal.Number.Integer */
+.codehl .mo { color: #ae81ff } /* Literal.Number.Oct */
+.codehl .sa { color: #e6db74 } /* Literal.String.Affix */
+.codehl .sb { color: #e6db74 } /* Literal.String.Backtick */
+.codehl .sc { color: #e6db74 } /* Literal.String.Char */
+.codehl .dl { color: #e6db74 } /* Literal.String.Delimiter */
+.codehl .sd { color: #e6db74 } /* Literal.String.Doc */
+.codehl .s2 { color: #e6db74 } /* Literal.String.Double */
+.codehl .se { color: #ae81ff } /* Literal.String.Escape */
+.codehl .sh { color: #e6db74 } /* Literal.String.Heredoc */
+.codehl .si { color: #e6db74 } /* Literal.String.Interpol */
+.codehl .sx { color: #e6db74 } /* Literal.String.Other */
+.codehl .sr { color: #e6db74 } /* Literal.String.Regex */
+.codehl .s1 { color: #e6db74 } /* Literal.String.Single */
+.codehl .ss { color: #e6db74 } /* Literal.String.Symbol */
+.codehl .bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
+.codehl .fm { color: #a6e22e } /* Name.Function.Magic */
+.codehl .vc { color: #f8f8f2 } /* Name.Variable.Class */
+.codehl .vg { color: #f8f8f2 } /* Name.Variable.Global */
+.codehl .vi { color: #f8f8f2 } /* Name.Variable.Instance */
+.codehl .vm { color: #f8f8f2 } /* Name.Variable.Magic */
+.codehl .il { color: #ae81ff } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0022 - Hackathon AWI OffShoots</div>
+    <h1>SWMM5_Import_UI_Annotated.rb</h1>
+    <div class="meta">Ruby script &middot; 0022 - Hackathon AWI OffShoots</div>
+    <div class="badges"><span class="badge rb">Ruby</span><span class="badge fix">Hardened: <a href="fix_SWMM5_Import_UI_Annotated.rb.html">fix_SWMM5_Import_UI_Annotated.rb</a></span><span class="badge lines">402 lines &middot; 14,359 bytes</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h2>Source</h2><div class="codewrap"><table class="codehltable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
+<span class="normal">  2</span>
+<span class="normal">  3</span>
+<span class="normal">  4</span>
+<span class="normal">  5</span>
+<span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
+<span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span></pre></div></td><td class="code"><div class="codehl"><pre><span></span><code><span class="c1">#Here is the rewritten code saved as `SWMM5_Import_UI_Annotated.rb`.</span>
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># FILE: SWMM5_Import_UI_Annotated.rb</span>
+<span class="c1">#</span>
+<span class="c1"># DESCRIPTION:</span>
+<span class="c1"># This is the &quot;User Interface&quot; (UI) script for importing SWMM5 files.</span>
+<span class="c1"># It runs inside the ICM user interface (the window you see).</span>
+<span class="c1">#</span>
+<span class="c1"># Its main jobs are:</span>
+<span class="c1"># 1. Ask the user for settings (Single file vs Batch, filenames, etc).</span>
+<span class="c1"># 2. Find all the files to be imported.</span>
+<span class="c1"># 3. Save those settings to a temporary configuration file.</span>
+<span class="c1"># 4. Run a SECOND script (the &quot;Exchange&quot; script) in the background to do the heavy lifting.</span>
+<span class="c1">#</span>
+<span class="c1"># CONCEPTS FOR NOVICES:</span>
+<span class="c1"># 1. WSApplication: This is the &quot;bridge&quot; between Ruby and ICM. We use it to </span>
+<span class="c1">#    show pop-ups (message_box), ask for input (prompt), and get file paths (file_dialog).</span>
+<span class="c1"># 2. Variables: Containers for data. </span>
+<span class="c1">#    Example: &#39;file_path&#39; holds the text string &quot;C:\Projects\Model.inp&quot;.</span>
+<span class="c1"># 3. Conditionals (If/Else): Logic to decide what to do.</span>
+<span class="c1">#    Example: &quot;If the user clicked &#39;No&#39;, then exit the script.&quot;</span>
+<span class="c1"># 4. Loops (.each): Doing the same thing multiple times.</span>
+<span class="c1">#    Example: &quot;For each file in the folder, do this...&quot;</span>
+<span class="c1"># 5. The &quot;Exchange&quot; Concept: ICM has a background tool called ICMExchange.exe.</span>
+<span class="c1">#    This script builds a command line instruction to tell that tool what to do.</span>
+<span class="c1"># ==============================================================================</span>
+
+<span class="c1"># &#39;require&#39; tells Ruby to load extra toolkits.</span>
+<span class="c1"># YAML is a toolkit for saving data in a readable text format.</span>
+<span class="nb">require</span> <span class="s1">&#39;yaml&#39;</span> 
+<span class="nb">require</span> <span class="s1">&#39;open3&#39;</span> <span class="c1"># Toolkit for running external commands (like the Command Prompt)</span>
+
+<span class="c1"># Get the folder where THIS script is currently saved.</span>
+<span class="c1"># We need this so we can find the partner &quot;Exchange&quot; script later.</span>
+<span class="n">script_dir</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="no">WSApplication</span><span class="o">.</span><span class="n">script_file</span><span class="p">)</span>
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># HELPER FUNCTION: find_inp_files</span>
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># A &quot;def&quot; (method) is a reusable block of code. </span>
+<span class="c1"># This specific method is &quot;Recursive&quot; - meaning if it finds a folder, </span>
+<span class="c1"># it calls itself again to dig deeper into that folder.</span>
+<span class="c1">#</span>
+<span class="c1"># Inputs: </span>
+<span class="c1">#   directory: The folder to look in.</span>
+<span class="c1">#   recursive: True/False (should we look in sub-folders?)</span>
+<span class="c1"># Returns: A list (Array) of all .inp files found.</span>
+<span class="c1"># ==============================================================================</span>
+<span class="k">def</span> <span class="nf">find_inp_files</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">recursive</span> <span class="o">=</span> <span class="kp">true</span><span class="p">)</span>
+  <span class="n">files</span> <span class="o">=</span> <span class="o">[]</span> <span class="c1"># Start with an empty list</span>
+  
+  <span class="k">begin</span>
+    <span class="c1"># Loop through every item in the directory</span>
+    <span class="no">Dir</span><span class="o">.</span><span class="n">entries</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">entry</span><span class="o">|</span>
+      <span class="c1"># Skip the current folder (.) and parent folder (..) indicators</span>
+      <span class="k">next</span> <span class="k">if</span> <span class="n">entry</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span> <span class="o">||</span> <span class="n">entry</span> <span class="o">==</span> <span class="s1">&#39;..&#39;</span>
+      
+      <span class="c1"># Build the full path (e.g., &quot;C:\Data&quot; + &quot;file.inp&quot;)</span>
+      <span class="n">full_path</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">entry</span><span class="p">)</span>
+      
+      <span class="c1"># LOGIC: Is it a Folder or a File?</span>
+      <span class="k">if</span> <span class="no">File</span><span class="o">.</span><span class="n">directory?</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">recursive</span>
+        <span class="c1"># It&#39;s a folder, and we want to go deep. Call this function again!</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">find_inp_files</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">recursive</span><span class="p">))</span>
+        
+      <span class="k">elsif</span> <span class="no">File</span><span class="o">.</span><span class="n">file?</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">entry</span><span class="o">.</span><span class="n">downcase</span><span class="o">.</span><span class="n">end_with?</span><span class="p">(</span><span class="s1">&#39;.inp&#39;</span><span class="p">)</span>
+        <span class="c1"># It&#39;s a file, and it ends with .inp. Add it to our list.</span>
+        <span class="n">files</span> <span class="o">&lt;&lt;</span> <span class="n">full_path</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+    <span class="c1"># If something crashes (permission denied, etc.), print the error but don&#39;t stop entirely</span>
+    <span class="nb">puts</span> <span class="s2">&quot;ERROR scanning </span><span class="si">#{</span><span class="n">directory</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">end</span>
+  
+  <span class="k">return</span> <span class="n">files</span> <span class="c1"># Send the list back to whoever asked for it</span>
+<span class="k">end</span>
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># STEP 1: WELCOME SCREEN</span>
+<span class="c1"># ==============================================================================</span>
+
+<span class="c1"># WSApplication.message_box shows a popup.</span>
+<span class="c1"># Format: message_box(Text, ButtonType, IconType, ReturnsBoolean)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span>
+  <span class="s2">&quot;SWMM5 Import to ICM InfoWorks</span><span class="se">\n</span><span class="s2">Version 2</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+  <span class="s2">&quot;This script imports .inp files and cleans up label lists.</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+  <span class="s2">&quot;Continue?&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;YesNo&quot;</span><span class="p">,</span>       <span class="c1"># Buttons to show</span>
+  <span class="s2">&quot;Information&quot;</span><span class="p">,</span> <span class="c1"># Icon to show</span>
+  <span class="kp">false</span>          <span class="c1"># Return the text &quot;Yes&quot; or &quot;No&quot;, not a true/false value</span>
+<span class="p">)</span>
+
+<span class="c1"># If they clicked No, stop the script immediately.</span>
+<span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;No&quot;</span>
+  <span class="nb">puts</span> <span class="s2">&quot;Import cancelled by user&quot;</span>
+  <span class="nb">exit</span>
+<span class="k">end</span>
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># STEP 2: SELECT MODE (Single vs Batch)</span>
+<span class="c1"># ==============================================================================</span>
+
+<span class="c1"># Define the layout for the input form.</span>
+<span class="c1"># format: [&#39;Label&#39;, &#39;Type&#39;, DefaultValue]</span>
+<span class="n">layout</span> <span class="o">=</span> <span class="o">[</span>
+  <span class="o">[</span><span class="s1">&#39;Select Import Mode (check ONE):&#39;</span><span class="p">,</span> <span class="s1">&#39;READONLY&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;1. Single File&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOLEAN&#39;</span><span class="p">,</span> <span class="kp">true</span><span class="o">]</span><span class="p">,</span>                <span class="c1"># Checkbox</span>
+  <span class="o">[</span><span class="s1">&#39;2. Batch - Directory Only&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOLEAN&#39;</span><span class="p">,</span> <span class="kp">false</span><span class="o">]</span><span class="p">,</span>    <span class="c1"># Checkbox</span>
+  <span class="o">[</span><span class="s1">&#39;3. Batch - Include Subdirectories&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOLEAN&#39;</span><span class="p">,</span> <span class="kp">false</span><span class="o">]</span> <span class="c1"># Checkbox</span>
+<span class="o">]</span>
+
+<span class="c1"># Show the form to the user</span>
+<span class="n">result</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">prompt</span><span class="p">(</span><span class="s1">&#39;Import Mode Selection&#39;</span><span class="p">,</span> <span class="n">layout</span><span class="p">,</span> <span class="kp">false</span><span class="p">)</span>
+
+<span class="c1"># If user closed the window (result is nil), exit.</span>
+<span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">nil?</span>
+  <span class="nb">puts</span> <span class="s2">&quot;Import cancelled by user&quot;</span>
+  <span class="nb">exit</span>
+<span class="k">end</span>
+
+<span class="c1"># Figure out which checkbox they ticked.</span>
+<span class="c1"># result[1] corresponds to the second item in the layout list (Single File)</span>
+<span class="k">if</span> <span class="n">result</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span>
+  <span class="n">import_mode</span> <span class="o">=</span> <span class="s1">&#39;Single File&#39;</span>
+<span class="k">elsif</span> <span class="n">result</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span>
+  <span class="n">import_mode</span> <span class="o">=</span> <span class="s1">&#39;Batch - Directory Only&#39;</span>
+<span class="k">elsif</span> <span class="n">result</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span>
+  <span class="n">import_mode</span> <span class="o">=</span> <span class="s1">&#39;Batch - Include Subdirectories&#39;</span>
+<span class="k">else</span>
+  <span class="n">import_mode</span> <span class="o">=</span> <span class="s1">&#39;Single File&#39;</span> <span class="c1"># Default safety net</span>
+<span class="k">end</span>
+
+<span class="c1"># Print to the &quot;Output&quot; window in ICM so the user sees what&#39;s happening</span>
+<span class="nb">puts</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span>
+<span class="nb">puts</span> <span class="s2">&quot; Import Mode: </span><span class="si">#{</span><span class="n">import_mode</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nb">puts</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span>
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># STEP 3: SELECT FILES OR DIRECTORIES</span>
+<span class="c1"># ==============================================================================</span>
+
+<span class="n">file_paths</span> <span class="o">=</span> <span class="o">[]</span>      <span class="c1"># This will hold the list of files we need to process</span>
+<span class="n">base_directory</span> <span class="o">=</span> <span class="kp">nil</span> <span class="c1"># This will hold the folder path</span>
+
+<span class="c1"># A &#39;case&#39; statement is like a multi-option &quot;If&quot;</span>
+<span class="k">case</span> <span class="n">import_mode</span>
+<span class="k">when</span> <span class="s1">&#39;Single File&#39;</span>
+  <span class="c1"># Open a standard Windows file picker</span>
+  <span class="n">file_path</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">file_dialog</span><span class="p">(</span>
+    <span class="kp">true</span><span class="p">,</span>                 <span class="c1"># Open (not Save)</span>
+    <span class="s1">&#39;inp&#39;</span><span class="p">,</span>                <span class="c1"># File extension filter</span>
+    <span class="s1">&#39;SWMM5 Input File&#39;</span><span class="p">,</span>   <span class="c1"># Description</span>
+    <span class="s1">&#39;&#39;</span><span class="p">,</span>                   <span class="c1"># Default filename</span>
+    <span class="kp">false</span><span class="p">,</span>                <span class="c1"># Allow multi-select? (False here)</span>
+    <span class="kp">nil</span>
+  <span class="p">)</span>
+  
+  <span class="c1"># If they didn&#39;t pick a file, stop.</span>
+  <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">nil?</span>
+    <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span><span class="s2">&quot;Import cancelled.&quot;</span><span class="p">,</span> <span class="s2">&quot;OK&quot;</span><span class="p">,</span> <span class="s2">&quot;!&quot;</span><span class="p">,</span> <span class="kp">false</span><span class="p">)</span>
+    <span class="nb">exit</span>
+  <span class="k">end</span>
+  
+  <span class="c1"># Add the single file to our list array</span>
+  <span class="n">file_paths</span> <span class="o">&lt;&lt;</span> <span class="n">file_path</span>
+  <span class="n">base_directory</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="c1"># Get the folder that file sits in</span>
+
+<span class="k">when</span> <span class="s1">&#39;Batch - Directory Only&#39;</span><span class="p">,</span> <span class="s1">&#39;Batch - Include Subdirectories&#39;</span>
+  <span class="c1"># ICM doesn&#39;t have a &quot;Pick Folder&quot; dialog easily available.</span>
+  <span class="c1"># Workaround: Ask user to pick ANY file in the target folder.</span>
+  <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span>
+    <span class="s2">&quot;Select Directory</span><span class="se">\n\n</span><span class="s2">Please select ANY file inside the folder you want to import.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OK&quot;</span><span class="p">,</span> <span class="s2">&quot;Information&quot;</span><span class="p">,</span> <span class="kp">false</span>
+  <span class="p">)</span>
+  
+  <span class="n">sample_file</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">file_dialog</span><span class="p">(</span><span class="kp">true</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;Pick any file&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="kp">nil</span><span class="p">)</span>
+  
+  <span class="k">if</span> <span class="n">sample_file</span><span class="o">.</span><span class="n">nil?</span>
+    <span class="nb">exit</span>
+  <span class="k">end</span>
+  
+  <span class="c1"># Extract the folder path from that file</span>
+  <span class="n">base_directory</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sample_file</span><span class="p">)</span>
+  
+  <span class="nb">puts</span> <span class="s2">&quot;Scanning directory: </span><span class="si">#{</span><span class="n">base_directory</span><span class="si">}</span><span class="s2">&quot;</span>
+  
+  <span class="c1"># Decide whether to scan recursively based on mode</span>
+  <span class="n">is_recursive</span> <span class="o">=</span> <span class="p">(</span><span class="n">import_mode</span> <span class="o">==</span> <span class="s1">&#39;Batch - Include Subdirectories&#39;</span><span class="p">)</span>
+  
+  <span class="k">if</span> <span class="n">is_recursive</span>
+    <span class="c1"># Call our helper function defined at the top of the script</span>
+    <span class="n">file_paths</span> <span class="o">=</span> <span class="n">find_inp_files</span><span class="p">(</span><span class="n">base_directory</span><span class="p">,</span> <span class="kp">true</span><span class="p">)</span>
+  <span class="k">else</span>
+    <span class="c1"># Simple scan of just the top folder</span>
+    <span class="no">Dir</span><span class="o">.</span><span class="n">entries</span><span class="p">(</span><span class="n">base_directory</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">entry</span><span class="o">|</span>
+      <span class="k">next</span> <span class="k">if</span> <span class="n">entry</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span> <span class="o">||</span> <span class="n">entry</span> <span class="o">==</span> <span class="s1">&#39;..&#39;</span> <span class="c1"># Skip system folders</span>
+      <span class="n">full_path</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_directory</span><span class="p">,</span> <span class="n">entry</span><span class="p">)</span>
+      <span class="c1"># Only add if it is a file and ends in .inp</span>
+      <span class="k">if</span> <span class="no">File</span><span class="o">.</span><span class="n">file?</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="no">File</span><span class="o">.</span><span class="n">extname</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span><span class="o">.</span><span class="n">downcase</span> <span class="o">==</span> <span class="s1">&#39;.inp&#39;</span>
+        <span class="n">file_paths</span> <span class="o">&lt;&lt;</span> <span class="n">full_path</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  
+  <span class="c1"># Error check: Did we actually find anything?</span>
+  <span class="k">if</span> <span class="n">file_paths</span><span class="o">.</span><span class="n">empty?</span>
+    <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span><span class="s2">&quot;No .inp files found in that directory!&quot;</span><span class="p">,</span> <span class="s2">&quot;OK&quot;</span><span class="p">,</span> <span class="s2">&quot;!&quot;</span><span class="p">,</span> <span class="kp">false</span><span class="p">)</span>
+    <span class="nb">exit</span>
+  <span class="k">end</span>
+  
+  <span class="nb">puts</span> <span class="s2">&quot;Found </span><span class="si">#{</span><span class="n">file_paths</span><span class="o">.</span><span class="n">length</span><span class="si">}</span><span class="s2"> .inp file(s)&quot;</span>
+<span class="k">end</span>
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># STEP 4: SIZE CHECK (User Experience)</span>
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># Calculate total size to warn user if it&#39;s going to take a long time.</span>
+
+<span class="n">total_size_mb</span> <span class="o">=</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span>
+<span class="n">file_paths</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">file</span><span class="o">|</span>
+  <span class="c1"># Add size in bytes / 1024 / 1024 to get Megabytes</span>
+  <span class="n">total_size_mb</span> <span class="o">+=</span> <span class="no">File</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span><span class="o">.</span><span class="mi">0</span> <span class="o">*</span> <span class="mi">1024</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="k">if</span> <span class="n">total_size_mb</span> <span class="o">&gt;</span> <span class="mi">100</span>
+  <span class="n">response</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span>
+    <span class="s2">&quot;Large Import Warning: </span><span class="si">#{</span><span class="n">total_size_mb</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> MB total.</span><span class="se">\n</span><span class="s2">This might take a while. Continue?&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;YesNo&quot;</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="kp">false</span>
+  <span class="p">)</span>
+  <span class="nb">exit</span> <span class="k">if</span> <span class="n">response</span> <span class="o">==</span> <span class="s2">&quot;No&quot;</span>
+<span class="k">end</span>
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># STEP 5: NAMING CONVENTION</span>
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># We need to decide what to name the &quot;Model Group&quot; inside ICM.</span>
+
+<span class="n">model_group_names</span> <span class="o">=</span> <span class="o">[]</span> <span class="c1"># List of names corresponding to the list of files</span>
+
+<span class="k">if</span> <span class="n">import_mode</span> <span class="o">==</span> <span class="s1">&#39;Single File&#39;</span>
+  <span class="c1"># Default name is the filename without .inp</span>
+  <span class="n">default_name</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_paths</span><span class="o">.</span><span class="n">first</span><span class="p">,</span> <span class="s1">&#39;.inp&#39;</span><span class="p">)</span>
+  
+  <span class="n">result</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">prompt</span><span class="p">(</span>
+    <span class="s1">&#39;Import Settings&#39;</span><span class="p">,</span>
+    <span class="o">[[</span><span class="s1">&#39;Model Group Name:&#39;</span><span class="p">,</span> <span class="s1">&#39;STRING&#39;</span><span class="p">,</span> <span class="n">default_name</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="s1">&#39;Add Timestamp?&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOLEAN&#39;</span><span class="p">,</span> <span class="kp">true</span><span class="o">]]</span><span class="p">,</span>
+    <span class="kp">false</span>
+  <span class="p">)</span>
+  <span class="nb">exit</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">nil?</span>
+  
+  <span class="n">final_name</span> <span class="o">=</span> <span class="n">result</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+  <span class="c1"># Append timestamp if requested (e.g., &quot;_20231025_0930&quot;)</span>
+  <span class="n">final_name</span> <span class="o">+=</span> <span class="s2">&quot;_</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m%d_%H%M&quot;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">result</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span>
+  
+  <span class="n">model_group_names</span> <span class="o">&lt;&lt;</span> <span class="n">final_name</span>
+
+<span class="k">else</span>
+  <span class="c1"># Batch Mode Naming Logic</span>
+  <span class="c1"># Ask user if they want the Folder Name included in the Model Group Name</span>
+  <span class="n">use_dir_name</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span>
+    <span class="s2">&quot;Include directory name in Model Group names?&quot;</span><span class="p">,</span> <span class="s2">&quot;YesNo&quot;</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="kp">false</span>
+  <span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;Yes&quot;</span>
+  
+  <span class="c1"># Generate names for every file in the list</span>
+  <span class="n">file_paths</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">file_path</span><span class="o">|</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;.inp&#39;</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">use_dir_name</span>
+      <span class="c1"># logic: ParentFolder_Filename</span>
+      <span class="n">parent</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">file_path</span><span class="p">))</span>
+      <span class="nb">name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">parent</span><span class="si">}</span><span class="s2">_</span><span class="si">#{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">else</span>
+      <span class="nb">name</span> <span class="o">=</span> <span class="n">filename</span>
+    <span class="k">end</span>
+    
+    <span class="n">model_group_names</span> <span class="o">&lt;&lt;</span> <span class="nb">name</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># STEP 6: PREPARE CONFIGURATION FOR EXTERNAL SCRIPT</span>
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># The UI Script (this one) cannot import directly because we want to keep the </span>
+<span class="c1"># interface responsive or use specific Exchange features. </span>
+<span class="c1"># We pass data to the second script via a file.</span>
+
+<span class="c1"># Get the ID of the current database</span>
+<span class="n">db_guid</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">current_database</span><span class="o">.</span><span class="n">guid</span>
+
+<span class="c1"># Create a log folder</span>
+<span class="n">config_folder</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_directory</span><span class="p">,</span> <span class="s2">&quot;ICM Import Log Files&quot;</span><span class="p">)</span>
+<span class="no">Dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">config_folder</span><span class="p">)</span> <span class="k">unless</span> <span class="no">Dir</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">config_folder</span><span class="p">)</span>
+
+<span class="c1"># Create the list of work to do</span>
+<span class="n">file_configs</span> <span class="o">=</span> <span class="o">[]</span>
+<span class="n">file_paths</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">file_path</span><span class="p">,</span> <span class="n">index</span><span class="o">|</span>
+  <span class="n">file_configs</span> <span class="o">&lt;&lt;</span> <span class="p">{</span>
+    <span class="s1">&#39;file_path&#39;</span> <span class="o">=&gt;</span> <span class="n">file_path</span><span class="p">,</span>
+    <span class="s1">&#39;model_group_name&#39;</span> <span class="o">=&gt;</span> <span class="n">model_group_names</span><span class="o">[</span><span class="n">index</span><span class="o">]</span><span class="p">,</span>
+    <span class="s1">&#39;file_basename&#39;</span> <span class="o">=&gt;</span> <span class="no">File</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+  <span class="p">}</span>
+<span class="k">end</span>
+
+<span class="c1"># The main configuration object</span>
+<span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s1">&#39;import_mode&#39;</span> <span class="o">=&gt;</span> <span class="n">import_mode</span><span class="p">,</span>
+  <span class="s1">&#39;file_configs&#39;</span> <span class="o">=&gt;</span> <span class="n">file_configs</span><span class="p">,</span> <span class="c1"># The list of files and target names</span>
+  <span class="s1">&#39;database_guid&#39;</span> <span class="o">=&gt;</span> <span class="n">db_guid</span><span class="p">,</span>     <span class="c1"># The database to import into</span>
+  <span class="s1">&#39;timestamp&#39;</span> <span class="o">=&gt;</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">to_s</span>
+<span class="p">}</span>
+
+<span class="c1"># Write this data to &#39;import_config.yaml&#39;</span>
+<span class="n">config_file</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config_folder</span><span class="p">,</span> <span class="s1">&#39;import_config.yaml&#39;</span><span class="p">)</span>
+<span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">)</span> <span class="p">}</span>
+
+<span class="nb">puts</span> <span class="s2">&quot;Configuration saved for background process.&quot;</span>
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># STEP 7: LOCATE ICM EXCHANGE AND RUN</span>
+<span class="c1"># ==============================================================================</span>
+
+<span class="c1"># Verify the partner script exists in the same folder as this one</span>
+<span class="n">exchange_script</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">script_dir</span><span class="p">,</span> <span class="s1">&#39;SWMM5_Import_with_Cleanup_Exchange.rb&#39;</span><span class="p">)</span>
+<span class="k">unless</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">exchange_script</span><span class="p">)</span>
+  <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span><span class="s2">&quot;Error: Could not find companion script:</span><span class="se">\n</span><span class="si">#{</span><span class="n">exchange_script</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;OK&quot;</span><span class="p">,</span> <span class="s2">&quot;!&quot;</span><span class="p">,</span> <span class="kp">false</span><span class="p">)</span>
+  <span class="nb">exit</span>
+<span class="k">end</span>
+
+<span class="c1"># We need to find the ICMExchange.exe program.</span>
+<span class="c1"># It changes location based on the year version of the software.</span>
+<span class="c1"># We check a list of known locations.</span>
+<span class="n">icm_exchange</span> <span class="o">=</span> <span class="kp">nil</span>
+<span class="n">possible_paths</span> <span class="o">=</span> <span class="o">[</span>
+  <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Program Files</span><span class="se">\\</span><span class="s2">Autodesk</span><span class="se">\\</span><span class="s2">InfoWorks ICM Ultimate 2026</span><span class="se">\\</span><span class="s2">ICMExchange.exe&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Program Files</span><span class="se">\\</span><span class="s2">Autodesk</span><span class="se">\\</span><span class="s2">InfoWorks ICM Ultimate 2025</span><span class="se">\\</span><span class="s2">ICMExchange.exe&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Program Files</span><span class="se">\\</span><span class="s2">Autodesk</span><span class="se">\\</span><span class="s2">InfoWorks ICM Ultimate 2024.2</span><span class="se">\\</span><span class="s2">ICMExchange.exe&quot;</span>
+  <span class="c1"># Add other paths here if your installation is different</span>
+<span class="o">]</span>
+
+<span class="n">possible_paths</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">path</span><span class="o">|</span>
+  <span class="k">if</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">icm_exchange</span> <span class="o">=</span> <span class="n">path</span>
+    <span class="k">break</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">if</span> <span class="n">icm_exchange</span><span class="o">.</span><span class="n">nil?</span>
+  <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span><span class="s2">&quot;Error: Could not find ICMExchange.exe. Please update the script paths.&quot;</span><span class="p">,</span> <span class="s2">&quot;OK&quot;</span><span class="p">,</span> <span class="s2">&quot;!&quot;</span><span class="p">,</span> <span class="kp">false</span><span class="p">)</span>
+  <span class="nb">exit</span>
+<span class="k">end</span>
+
+<span class="c1"># Set an Environment Variable so the second script knows where to find the config file</span>
+<span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;ICM_IMPORT_CONFIG&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="n">config_file</span>
+
+<span class="c1"># Build the command line string:</span>
+<span class="c1"># &quot;Path\To\ICMExchange.exe&quot; &quot;Path\To\Script.rb&quot; /ICM</span>
+<span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="si">#{</span><span class="n">icm_exchange</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2"> </span><span class="se">\&quot;</span><span class="si">#{</span><span class="n">exchange_script</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2"> /ICM&quot;</span>
+
+<span class="nb">puts</span> <span class="s2">&quot;Launching background import process...&quot;</span>
+
+<span class="c1"># Open3.capture2 executes the command and waits for it to finish.</span>
+<span class="c1"># It captures the text output (output) and the success code (status).</span>
+<span class="n">output</span><span class="p">,</span> <span class="n">status</span> <span class="o">=</span> <span class="no">Open3</span><span class="o">.</span><span class="n">capture2</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># STEP 8: READ SUMMARY AND REPORT</span>
+<span class="c1"># ==============================================================================</span>
+
+<span class="c1"># The background script should have created a summary text file.</span>
+<span class="n">summary_file</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config_folder</span><span class="p">,</span> <span class="s2">&quot;batch_summary.txt&quot;</span><span class="p">)</span>
+<span class="n">files_processed</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">files_successful</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">if</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">summary_file</span><span class="p">)</span>
+  <span class="c1"># Read the text file line by line to find key=value pairs</span>
+  <span class="no">File</span><span class="o">.</span><span class="n">readlines</span><span class="p">(</span><span class="n">summary_file</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span>
+    <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+      <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+      <span class="c1"># Convert &quot;10&quot; to integer 10</span>
+      <span class="n">files_processed</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">to_i</span> <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;files_processed&#39;</span>
+      <span class="n">files_successful</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">to_i</span> <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;files_successful&#39;</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">else</span>
+  <span class="nb">puts</span> <span class="s2">&quot;Warning: No summary file generated.&quot;</span>
+<span class="k">end</span>
+
+<span class="c1"># Final Popup for the user</span>
+<span class="k">if</span> <span class="n">files_successful</span> <span class="o">&gt;</span> <span class="mi">0</span>
+  <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span>
+    <span class="s2">&quot;Import Complete!</span><span class="se">\n\n</span><span class="s2">Processed: </span><span class="si">#{</span><span class="n">files_processed</span><span class="si">}</span><span class="se">\n</span><span class="s2">Success: </span><span class="si">#{</span><span class="n">files_successful</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">Check logs in:</span><span class="se">\n</span><span class="si">#{</span><span class="n">config_folder</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OK&quot;</span><span class="p">,</span> <span class="s2">&quot;Information&quot;</span><span class="p">,</span> <span class="kp">false</span>
+  <span class="p">)</span>
+<span class="k">else</span>
+  <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span>
+    <span class="s2">&quot;Import Completed with Errors.</span><span class="se">\n</span><span class="s2">Check Output window and logs.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OK&quot;</span><span class="p">,</span> <span class="s2">&quot;!&quot;</span><span class="p">,</span> <span class="kp">false</span>
+  <span class="p">)</span>
+<span class="k">end</span>
+<span class="sb">```</span>
+</code></pre></div>
+</td></tr></table></div></section>
+  <footer>Auto-generated &middot; Original file unmodified</footer>
+</div>
+</body>
+</html>

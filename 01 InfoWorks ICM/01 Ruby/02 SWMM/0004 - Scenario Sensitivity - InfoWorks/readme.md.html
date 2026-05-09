@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>readme.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0004 - Scenario Sensitivity - InfoWorks</div>
+    <h1>readme.md</h1>
+    <div class="meta">Markdown document &middot; 0004 - Scenario Sensitivity - InfoWorks</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">306 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><p>markdown</p>
+<h1 id="folder-structure">Folder Structure</h1>
+<h2 id="open-source-support">OPEN-SOURCE-SUPPORT</h2>
+<ul>
+<li><strong>01 InfoWorks ICM</strong></li>
+<li><strong>01 Ruby</strong></li>
+<li><strong>01 InfoWorks</strong></li>
+<li><strong>02 SWMM</strong><ul>
+<li><strong>0001 - Element and Field Statistics</strong></li>
+<li><em>(Content omitted for brevity)</em></li>
+<li><strong>0002 - Tracing Tools</strong></li>
+<li><em>(Content omitted for brevity)</em></li>
+<li><strong>0003 - Scenario Tools</strong></li>
+<li><em>(Content omitted for brevity)</em></li>
+<li><strong>0004 - Scenario Sensitivity - InfoWorks</strong></li>
+<li><code>image.png</code></li>
+<li><code>readme.md</code></li>
+<li><code>Scenario_GIM.rb</code></li>
+<li><code>Scenario_Link_Data.rb</code></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="description">Description</h3>
+<p>This section focuses on the <strong>0004 - Scenario Sensitivity - InfoWorks</strong> directory under the <code>02 SWMM</code> folder, which contains Ruby scripts designed for scenario sensitivity analysis within InfoWorks:</p>
+<ul>
+<li><strong>Visual Aids:</strong> <code>image.png</code> likely provides visual support or examples for the scripts or concepts within this directory.</li>
+<li><strong>Documentation:</strong> <code>readme.md</code> contains detailed information or instructions on how to use the scripts in this folder.</li>
+<li><strong>Scenario Sensitivity Analysis:</strong> </li>
+<li><code>Scenario_GIM.rb</code> handles Global Importance Measures (GIM) for scenario sensitivity, which helps in understanding the impact of different parameters or scenarios on the model's outcomes.</li>
+<li><code>Scenario_Link_Data.rb</code> deals with analyzing data related to links in different scenarios, providing insights into how changes in scenarios affect network connectivity or flow.</li>
+</ul>
+<h3 id="usage">Usage</h3>
+<p>To use the scripts within the <code>0004 - Scenario Sensitivity - InfoWorks</code> directory:</p>
+<ol>
+<li><strong>Environment Setup:</strong> Ensure Ruby is installed on your system.</li>
+<li><strong>Navigation:</strong> Navigate to the <code>0004 - Scenario Sensitivity - InfoWorks</code> subdirectory under <code>02 SWMM</code>.</li>
+<li><strong>Execution:</strong> Run the Ruby scripts from the command line or integrate them into your InfoWorks workflow.</li>
+</ol>
+<p>For example, to run the GIM scenario analysis:</p>
+<pre><code class="language-sh">ruby Scenario_GIM.rb
+
+Note
+Always ensure you have the necessary permissions to run these scripts.
+Backup your data before running scripts that might alter or analyze extensive datasets.
+The readme.md file within this directory might contain specific instructions, notes, or prerequisites for running these sensitivity analysis scripts.
+
+
+This README now focuses exclusively on the `0004 - Scenario Sensitivity - InfoWorks` folder, detailing its contents and usage.  
+
+
+# Extended Markdown Summary for the “Scenario Sensitivity Parameter” Ruby Script
+
+Below is an extended documentation and commentary for a **Ruby script** that interacts with an InfoWorks ICM (or equivalent InfoWorks WS) network to **create and manage scenarios** based on adjusting infiltration parameters. This script:
+1. Prompts the user to choose between US or SI units (though currently, the script uses the prompt but does not apply it in subsequent logic).  
+2. Deletes all existing scenarios except for “Base.”  
+3. Creates new scenarios for various “percolation_coefficient” factors.  
+4. Updates infiltration parameters in each newly created scenario.  
+
+---
+
+## 1. Purpose of the Script
+
+This script’s **main goal** is to **automate scenario creation** for sensitivity testing. By applying different percentage factors (e.g., −25%, −10%, +10%, +25%) to a chosen parameter (`percolation_coefficient`), you can quickly evaluate how model results change under different infiltration assumptions.  
+
+It also provides a basic user prompt (to select US or SI units) and displays helpful messages about the operations performed.
+
+---
+
+## 2. Prerequisites / Assumptions
+
+1. You are **inside** InfoWorks ICM or a compatible Ruby environment that has access to `WSApplication` and the **current network** (`WSApplication.current_network`).  
+2. You have **write access** to the current network so you can delete and add scenarios.  
+3. Your infiltration parameters are stored in the **`hw_ground_infiltration`** table (or a similar table) for row objects.  
+4. There is an existing **Base** scenario that you want to preserve.
+
+---
+
+## 3. Code Explanation
+
+Below is the code with annotated comments to explain each section in detail:
+
+```ruby
+# Original Source https://github.com/ngerdts7/ICM_Tools123
+# RED + CoPilot edits 
+
+cn = WSApplication.current_network
+
+# Step 1: Prompt user for unit selection
+val = WSApplication.prompt &quot;Scenario Sensitivity Parameter Selection&quot;,
+[
+  ['USA Units','Boolean',false],
+  ['SI  Units','Boolean',true]
+], false
+
+THANK_YOU_MESSAGE1 = &quot;That's it! You've successfully added scenarios your ICM InfoWorks network. Thank you for using our Ruby script.&quot;
+THANK_YOU_MESSAGE2 = &quot;If you have any questions or need further assistance, don't hesitate to reach out to the Autodesk EBCS Team.&quot;
+THANK_YOU_MESSAGE3 = &quot;Happy Modeling! or Happy Modelling! (depending on your location)&quot;
+
+# Define the factors for sensitivity testing
+factors = [-0.25, -0.10, 0.10, 0.25]
+parameters = ['percolation_coefficient']
+
+# Generate scenario names for each (parameter, factor) combination
+scenarios = parameters.product(factors).map do |parameter, factor|
+  &quot;#{parameter}_factor_#{(factor*100).to_i}&quot;
+end
+
+# Step 2: Delete all existing scenarios except 'Base'
+cn.scenarios do |scenario|
+  if scenario != 'Base'
+    cn.delete_scenario(scenario)
+  end
+end
+
+puts &quot;Operation successful! All scenarios, except for the base scenario, have been deleted and new scenarios have been added.&quot;
+puts &quot;If this action was performed in error, don't worry! You can easily revert these changes.&quot;
+puts &quot;Just go to the ICM Explorer Window and select 'Revert Changes' to restore the deleted scenarios.&quot;
+puts
+
+# Step 3: Create and modify each scenario
+scenarios.zip(factors).each do |scenario, factor|
+  # Add the new scenario
+  cn.add_scenario(scenario, nil, '')
+  cn.current_scenario = scenario
+  cn.transaction_begin
+
+  puts &quot;The factor for scenario is #{factor}&quot;
+
+  # Step 4: Apply the factor to the infiltration row objects
+  ro = cn.row_objects('hw_ground_infiltration').each do |ro|
+    ro.percolation_coefficient = ro.percolation_coefficient * (1 + factor)
+    ro.write
+  end
+
+  cn.transaction_commit
+end
+
+# Summary of the operation
+puts &quot;Number of scenarios added: #{scenarios.length}&quot;
+puts
+puts THANK_YOU_MESSAGE1
+puts THANK_YOU_MESSAGE2
+puts THANK_YOU_MESSAGE3
+</code></pre>
+<h3 id="31-user-prompt-for-units">3.1. User Prompt for Units</h3>
+<pre><code class="language-ruby">val = WSApplication.prompt &quot;Scenario Sensitivity Parameter Selection&quot;,
+[
+  ['USA Units','Boolean',false],
+  ['SI  Units','Boolean',true]
+], false
+</code></pre>
+<ul>
+<li><strong>WSApplication.prompt</strong>: Displays a dialog with two checkboxes: “USA Units” and “SI Units.”  </li>
+<li>Currently, the returned value (<code>val</code>) is <strong>not</strong> used later in the script to branch logic or change parameters—this could be expanded in the future if you want different infiltration defaults or scenario naming based on units.</li>
+</ul>
+<h3 id="32-thank-you-messages">3.2. Thank-You Messages</h3>
+<pre><code class="language-ruby">THANK_YOU_MESSAGE1 = &quot;...(text)...&quot;
+THANK_YOU_MESSAGE2 = &quot;...(text)...&quot;
+THANK_YOU_MESSAGE3 = &quot;...(text)...&quot;
+</code></pre>
+<ul>
+<li>These are simple strings for the script’s final output, providing user-friendly confirmation of completed actions.</li>
+</ul>
+<h3 id="33-defining-factors-and-parameters">3.3. Defining Factors and Parameters</h3>
+<pre><code class="language-ruby">factors = [-0.25, -0.10, 0.10, 0.25]
+parameters = ['percolation_coefficient']
+</code></pre>
+<ul>
+<li><strong><code>factors</code></strong>: A numeric array representing the <strong>percentage changes</strong> you want to test.  </li>
+<li><code>-0.25</code> = <strong>–25%</strong>  </li>
+<li><code>-0.10</code> = <strong>–10%</strong>  </li>
+<li><code>0.10</code>  = <strong>+10%</strong>  </li>
+<li><code>0.25</code>  = <strong>+25%</strong>  </li>
+<li><strong><code>parameters</code></strong>: An array of <strong>strings</strong> referencing which fields (in infiltration row objects) you want to adjust. In this script, there’s only one: <code>percolation_coefficient</code>.  </li>
+</ul>
+<p>You could expand this array if you want to test multiple fields, e.g. <code>['percolation_coefficient', 'soil_infiltration_rate']</code>.</p>
+<h3 id="34-creating-scenario-names">3.4. Creating Scenario Names</h3>
+<pre><code class="language-ruby">scenarios = parameters.product(factors).map do |parameter, factor|
+  &quot;#{parameter}_factor_#{(factor*100).to_i}&quot;
+end
+</code></pre>
+<ul>
+<li><strong><code>parameters.product(factors)</code></strong>: Produces all combinations, e.g., <code>[("percolation_coefficient", -0.25), ("percolation_coefficient", -0.10), ...]</code>.</li>
+<li><strong><code>map</code></strong> block**: Converts each pair to a string like <code>"percolation_coefficient_factor_-25"</code>.  </li>
+<li><strong>Result</strong>: A list of scenario names.</li>
+</ul>
+<h3 id="35-deleting-existing-scenarios-except-base">3.5. Deleting Existing Scenarios Except “Base”</h3>
+<pre><code class="language-ruby">cn.scenarios do |scenario|
+  if scenario != 'Base'
+    cn.delete_scenario(scenario)
+  end
+end
+</code></pre>
+<ul>
+<li><strong>Iterates</strong> through all existing scenarios.  </li>
+<li>If the scenario name is not “Base,” it deletes it.  </li>
+<li>This ensures a “clean slate” before adding new scenarios.</li>
+</ul>
+<h3 id="36-creating-and-modifying-scenarios">3.6. Creating and Modifying Scenarios</h3>
+<pre><code class="language-ruby">scenarios.zip(factors).each do |scenario, factor|
+  cn.add_scenario(scenario, nil, '')
+  cn.current_scenario = scenario
+  cn.transaction_begin
+
+  # ...
+
+  cn.transaction_commit
+end
+</code></pre>
+<ul>
+<li><strong><code>scenarios.zip(factors)</code></strong>: Pairs up each scenario name with its corresponding factor.  </li>
+<li><strong><code>cn.add_scenario(scenario, nil, '')</code></strong>: Adds a new scenario.  </li>
+<li>The <code>nil</code> and <code>''</code> arguments indicate no “parent scenario” and an empty description, respectively.  </li>
+<li><strong><code>cn.current_scenario = scenario</code></strong>: Switches to the newly created scenario so changes affect this scenario’s row objects.  </li>
+<li><strong><code>cn.transaction_begin/commit</code></strong>: Wraps row object modifications in a database transaction.</li>
+</ul>
+<h4 id="361-applying-the-factor">3.6.1. Applying the Factor</h4>
+<pre><code class="language-ruby">ro = cn.row_objects('hw_ground_infiltration').each do |ro|
+  ro.percolation_coefficient = ro.percolation_coefficient * (1 + factor)
+  ro.write
+end
+</code></pre>
+<ul>
+<li><strong><code>cn.row_objects('hw_ground_infiltration')</code></strong>: Retrieves all infiltration row objects for the current scenario.  </li>
+<li><strong>Updates</strong> the <code>percolation_coefficient</code> by <code>(1 + factor)</code>.  </li>
+<li>Example: if factor = −0.25, each object’s coefficient becomes <code>coefficient * 0.75</code>. If factor = +0.25, it becomes <code>coefficient * 1.25</code>.  </li>
+<li><strong><code>ro.write</code></strong>: Saves each updated row object change.</li>
+</ul>
+<h3 id="37-final-output-and-summary">3.7. Final Output and Summary</h3>
+<pre><code class="language-ruby">puts &quot;Number of scenarios added: #{scenarios.length}&quot;
+puts
+puts THANK_YOU_MESSAGE1
+puts THANK_YOU_MESSAGE2
+puts THANK_YOU_MESSAGE3
+</code></pre>
+<ul>
+<li>Prints out how many scenarios were created and the thank-you messages to the console/log.</li>
+</ul>
+<hr>
+<h2 id="4-how-to-use-this-script">4. How to Use This Script</h2>
+<ol>
+<li><strong>Open</strong> InfoWorks ICM and <strong>load</strong> the desired <strong>ICM network</strong>.  </li>
+<li><strong>Ensure</strong> your infiltration parameters are set correctly in the “Base” scenario.  </li>
+<li><strong>Copy/Paste</strong> this Ruby script into the <strong>ICM Ruby Console</strong> or a <strong>.rb script file</strong>.  </li>
+<li><strong>Run</strong> the script.  </li>
+<li>A prompt will appear asking you to choose either “USA Units” or “SI Units.” (This doesn’t currently change the scenario logic, but might be a placeholder for future expansions.)  </li>
+<li>The script will <strong>delete</strong> all existing scenarios except “Base.”  </li>
+<li>The script will <strong>create</strong> new scenarios (e.g., <code>percolation_coefficient_factor_-25</code>, <code>percolation_coefficient_factor_-10</code>, etc.) and apply the infiltration multipliers.  </li>
+<li><strong>Check</strong> the scenario tree in ICM Explorer to see the newly created scenarios.  </li>
+<li><strong>Revert Changes</strong> if needed (to undo scenario deletions or changes).
+<img alt="alt text" src="image.png"></li>
+</ol>
+<hr>
+<h2 id="5-potential-customizations">5. Potential Customizations</h2>
+<ol>
+<li>
+<p><strong>Include Additional Parameters</strong><br>
+   - If you want to adjust other infiltration parameters (e.g., suction head, hydraulic conductivity), add them to the <code>parameters</code> array.<br>
+   - You’d then need to adjust how you apply the factor to each parameter.  </p>
+</li>
+<li>
+<p><strong>Different Factors</strong><br>
+   - Adjust <code>factors</code> if you want different percentage changes, e.g., <code>[0.05, 0.10, 0.20]</code>.  </p>
+</li>
+<li>
+<p><strong>Conditional Deletion</strong><br>
+   - You might not want to delete all existing scenarios except “Base” every time. You could comment out or remove the deletion portion and create new scenarios in addition to existing ones.  </p>
+</li>
+<li>
+<p><strong>Unit Selection</strong><br>
+   - The current script doesn’t do anything with the user’s choice of US vs. SI units. You could incorporate logic that, for example, multiplies infiltration rates by different factors or uses a different parameter name if the user selects US.  </p>
+</li>
+<li>
+<p><strong>Logging / Reporting</strong><br>
+   - Instead of printing to the console, you could write changes to a log file or generate a user-facing report.</p>
+</li>
+</ol>
+<hr>
+<h2 id="6-troubleshooting-tips">6. Troubleshooting Tips</h2>
+<ul>
+<li><strong>No “Base” scenario found</strong>: If your default scenario is named differently or you’re missing a “Base” scenario, you may need to adapt the deletion logic.  </li>
+<li><strong>No infiltration row objects</strong>: If <code>cn.row_objects('hw_ground_infiltration')</code> returns an empty array, confirm that infiltration objects exist and that you’re in the correct layer or scenario.  </li>
+<li><strong>Inadvertent Data Loss</strong>: Because the script deletes all non-“Base” scenarios, always make sure you want that action or create a <strong>backup</strong>. If you do it by mistake, use <strong>“Revert Changes”</strong> before saving.</li>
+</ul>
+<hr>
+<h2 id="7-conclusion">7. Conclusion</h2>
+<p>This Ruby script is a powerful illustration of <strong>programmatic scenario creation</strong> and <strong>parameter manipulation</strong> within InfoWorks ICM. It streamlines the process of running <strong>sensitivity analyses</strong> on infiltration parameters by:</p>
+<ul>
+<li><strong>Resetting</strong> the scenario list (except for “Base”).  </li>
+<li><strong>Creating</strong> new scenarios for each factor combination.  </li>
+<li><strong>Modifying</strong> infiltration row objects to reflect the factor changes.</li>
+</ul>
+<p>Through modest extensions (such as adding more parameters or using the unit selection prompt), you can adapt it to meet various <strong>hydraulic/hydrologic modeling</strong> needs. Happy modeling!</p>
+<p>The script is originally sourced from <a href="https://github.com/ngerdts7/ICM_Tools123">ICM_Tools123</a> and has been edited by RED + CoPilot.</p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

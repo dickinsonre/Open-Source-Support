@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>_Fixes.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0014 - InfoSewer to ICM Comparison Tools</div>
+    <h1>_Fixes.md</h1>
+    <div class="meta">Markdown document &middot; 0014 - InfoSewer to ICM Comparison Tools</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">41 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="0014-infosewer-to-icm-comparison-tools-fixed-scripts">0014 - InfoSewer to ICM Comparison Tools - Fixed Scripts</h1>
+<p>This folder contains hardened (<code>fix_*.rb</code>) versions of every Ruby script. Hardening applied to each: <code>frozen_string_literal</code>, top-level <code>begin/rescue/ensure</code>, timestamped <code>[HH:MM:SS]</code> progress logging, validation of network/selection/timesteps/files, nil-safe field access (<code>&amp;.</code>), per-row <code>rescue</code> so a single bad row does not abort the run, transactions committed only on success and cancelled on raise, and <code>File.open</code>/<code>CSV.open</code> block forms.</p>
+<hr>
+<h2 id="fix_peakingflowcalculatorrb">fix_PeakingFlowCalculator.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Calculate design flows with peakable/unpeakable flow separation; apply peaking formulas (Harmon, Modified Harmon, Babbitt, custom).</li>
+<li><strong>Hardening:</strong> transaction safety, parameter range validation, zero-division guards, progress logging, CSV with rescue.</li>
+<li><strong>How to run:</strong> open InfoWorks ICM network in edit mode, run script, supply parameters via prompt, check console for summary.</li>
+</ul>
+<h2 id="fix_hw_ui_script-infosewer-gravity-main-report-from-icm-infoworksrb">fix_hw_UI_script  InfoSewer Gravity Main Report, from ICM InfoWorks.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> For each selected hw_conduit, read us_depth/us_flow/ds_depth/ds_flow over all timesteps, compute means/min/max plus d/D and Q/Qfull, select top 10 by us_d/D and ds_d/D.</li>
+<li><strong>Hardening:</strong> validates timesteps (&gt;1) and capacity/conduit_height before division, per-link rescue, nil-safe row lookups, timestamped logging, ensures clear_selection runs.</li>
+<li><strong>How to run:</strong> open network with results loaded, select conduits, run.</li>
+</ul>
+<h2 id="fix_hw_ui_script-infosewer-peaking-factorsrb">fix_hw_UI_script InfoSewer Peaking Factors.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Apply InfoSewer-style peaking factor (k * Q^p or alternative curve) and write base_flow / trade_flow / additional_foul_flow / conduit_flow on selected links.</li>
+<li><strong>Hardening:</strong> detects read-only mode and skips Phase 2 cleanly, validates prompt cancellation, two-phase processing with per-link rescue, summary table printed at end.</li>
+<li><strong>How to run:</strong> open network with results in edit mode, select links, run, fill in dialog.</li>
+</ul>
+<h2 id="fix_hw_ui_script_-make_subcatchments_from_imported_infosewer_manholesrb">fix_hw_UI_Script_ Make_Subcatchments_From_Imported_InfoSewer_Manholes.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Create one hw_subcatchment per unique (x, y) coordinate of imported InfoSewer manhole nodes.</li>
+<li><strong>Hardening:</strong> validates collections, transaction rollback on raise, per-row rescue, default total_area=0.10 preserved.</li>
+<li><strong>How to run:</strong> import manholes into ICM InfoWorks, then run the script.</li>
+</ul>
+<h2 id="fix_read_infosewer_steady_staterb">fix_read_infosewer_steady_state.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Parse a single InfoSewer steady-state RPT file and print per-section statistics + CSV blocks for Loading Manholes / Pipes / Force Mains / Pumps.</li>
+<li><strong>Hardening:</strong> prompt cancellation guard, file existence check, <code>File.foreach</code> streaming, per-line rescue (malformed lines skipped), section-flag dispatch.</li>
+<li><strong>How to run:</strong> run script, pick RPT file, choose sections in dialog.</li>
+</ul>
+<h2 id="fix_sw_ui_script_-make_subcatchments_from_imported_infosewer_manholesrb">fix_sw_UI_Script_ Make_Subcatchments_From_Imported_InfoSewer_Manholes.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> SWMM-side equivalent: create one sw_subcatchment per unique (x, y) of imported manhole nodes.</li>
+<li><strong>Hardening:</strong> validates network/collections, transaction rollback on raise, per-row rescue, default area=0.10 preserved.</li>
+<li><strong>How to run:</strong> import manholes into ICM SWMM, then run.</li>
+</ul>
+<h2 id="fix_uiscript-read-infosewer-steady-state-report-filerb">fix_ui.script  Read InfoSewer Steady State Report File.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Batch parser; user picks any file in/near a folder, finds every *.rpt nearby, parses each, computes per-file and aggregate statistics, exports CSVs.</li>
+<li><strong>Hardening:</strong> prompt cancellation, smart root discovery, <code>File.foreach</code> streaming with per-line rescue, every CSV export wrapped in its own rescue so a single failure doesn't abort other exports.</li>
+<li><strong>How to run:</strong> run, pick any RPT (or any file in the folder), choose options, review console + CSV output dir.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 </li>
+</ul></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>InfoSewer Peaking Factors.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0014 - InfoSewer to ICM Comparison Tools</div>
+    <h1>InfoSewer Peaking Factors.md</h1>
+    <div class="meta">Markdown document &middot; 0014 - InfoSewer to ICM Comparison Tools</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">786 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="icm-infoworks-peaking-factor-calculator">ICM InfoWorks Peaking Factor Calculator</h1>
+<h2 id="script-information">Script Information</h2>
+<p><strong>Version:</strong> 3.0 (Fixed Variable Scoping &amp; Read-Only Detection)<br>
+<strong>Author:</strong> RD + AI Assistant<br>
+<strong>Last Updated:</strong> November 2025<br>
+<strong>Purpose:</strong> Calculate peaking factors for sanitary sewer flows in ICM InfoWorks</p>
+<hr>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#how-it-works">How It Works</a></li>
+<li><a href="#installation--usage">Installation &amp; Usage</a></li>
+<li><a href="#parameters">Parameters</a></li>
+<li><a href="#peaking-formulas">Peaking Formulas</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#technical-notes">Technical Notes</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>This Ruby script for ICM InfoWorks reads simulation results from selected links, calculates peaking factors using various formulas, and assigns flow components to link fields. It operates in two phases to ensure proper data handling and includes comprehensive error checking.</p>
+<h3 id="key-features">Key Features</h3>
+<ul>
+<li>✅ <strong>Two-phase processing</strong> (calculate, then assign)</li>
+<li>✅ <strong>Read-only network detection</strong> and handling</li>
+<li>✅ <strong>Multiple peaking formulas</strong> (standard, alternative Babbitt)</li>
+<li>✅ <strong>Comprehensive debug output</strong> for troubleshooting</li>
+<li>✅ <strong>Proper variable scoping</strong> (no scope errors!)</li>
+<li>✅ <strong>Results summary table</strong> even if network is read-only</li>
+</ul>
+<p><img alt="alt text" src="# ICM InfoWorks Peaking Factor Calculator - visual selection.png"></p>
+<h3 id="typical-use-cases">Typical Use Cases</h3>
+<ul>
+<li>Post-processing simulation results</li>
+<li>Applying design peaking factors to average flows</li>
+<li>Separating flow components for capacity analysis</li>
+<li>Preparing data for detailed hydraulic studies</li>
+<li>Converting between flow component methodologies</li>
+</ul>
+<hr>
+<h2 id="prerequisites">Prerequisites</h2>
+<h3 id="required-setup">Required Setup</h3>
+<p>Before running this script, ensure:</p>
+<ul>
+<li>✅ ICM InfoWorks network is open</li>
+<li>✅ Simulation has been run with results committed</li>
+<li>✅ Network is opened in <strong>EDIT mode</strong> (not read-only)</li>
+<li>✅ Simulation has at least <strong>2 timesteps</strong></li>
+<li>✅ Results include <code>us_flow</code> field data</li>
+</ul>
+<h3 id="selection-requirements">Selection Requirements</h3>
+<p><strong>CRITICAL:</strong> You must select <strong>LINKS</strong> (conduits/pipes), not nodes!</p>
+<h4 id="how-to-select-links">How to Select Links</h4>
+<p><strong>Option 1: Manual Selection</strong></p>
+<pre><code>1. Open GeoPlan view
+2. Click in empty space to deselect all
+3. Use selection tools to draw box around pipes
+4. Status bar should show &quot;N links selected&quot;
+</code></pre>
+<p><strong>Option 2: SQL Selection</strong></p>
+<pre><code>1. Go to Selection &gt; SQL Selection
+2. Enter query, for example:
+   - SELECT * FROM _links
+   - SELECT * FROM _links WHERE diameter &gt; 300
+   - SELECT * FROM _links WHERE us_node_id LIKE 'MH%'
+3. Click Execute
+4. Verify &quot;N links selected&quot; in status bar
+</code></pre>
+<h3 id="common-mistakes">Common Mistakes</h3>
+<table>
+<thead>
+<tr>
+<th>❌ Wrong</th>
+<th>✅ Correct</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Selecting nodes (manholes)</td>
+<td>Selecting links (pipes)</td>
+</tr>
+<tr>
+<td>Opening network read-only</td>
+<td>Opening in edit mode</td>
+</tr>
+<tr>
+<td>No simulation results</td>
+<td>Simulation run and committed</td>
+</tr>
+<tr>
+<td>Steady-state (1 timestep)</td>
+<td>Dynamic (2+ timesteps)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="how-it-works">How It Works</h2>
+<h3 id="two-phase-process">Two-Phase Process</h3>
+<p>The script uses a two-phase approach to prevent variable scoping issues:</p>
+<h4 id="phase-1-calculate-store">Phase 1: Calculate &amp; Store</h4>
+<p>For each selected link:
+1. Read <code>us_flow</code> results from all timesteps
+2. Calculate statistics:
+   - Total flow (sum of all timestep values)
+   - Mean flow (average across timesteps)
+   - Minimum flow
+   - Maximum flow
+   - Peak flow (using selected formula)
+3. Store ALL values in <code>link_data</code> hash</p>
+<pre><code class="language-ruby">link_data[link_id] = {
+  total_flow: 1234.56,
+  mean_flow: 51.44,
+  min_flow: 12.34,
+  max_flow: 98.76,
+  mean_peak: 123.45,
+  count: 24
+}
+</code></pre>
+<h4 id="phase-2-assign-values">Phase 2: Assign Values</h4>
+<p>For each selected link:
+1. Retrieve stored data from <code>link_data</code> hash
+2. Calculate flow components:
+   - <code>base_flow = total_flow - peakable_coverage_load</code>
+   - <code>trade_flow = peakable_coverage_load</code>
+   - <code>additional_foul_flow = x_coverage * y_peaking_multiplier</code>
+   - <code>conduit_flow = mean_peak</code> (if enabled)
+3. Write values to link fields
+4. Commit changes to database</p>
+<h3 id="read-only-detection">Read-Only Detection</h3>
+<p>The script automatically detects if the network is opened in read-only mode:</p>
+<ul>
+<li><strong>If read-only detected:</strong></li>
+<li>Shows prominent warning</li>
+<li>Offers to continue (calculate only, no save)</li>
+<li>Provides instructions to open in edit mode</li>
+<li>
+<p>Displays results table for reference</p>
+</li>
+<li>
+<p><strong>If editable:</strong></p>
+</li>
+<li>Proceeds normally</li>
+<li>Saves results to network fields</li>
+</ul>
+<hr>
+<h2 id="installation-usage">Installation &amp; Usage</h2>
+<h3 id="step-by-step-procedure">Step-by-Step Procedure</h3>
+<h4 id="step-1-prepare-network">Step 1: Prepare Network</h4>
+<pre><code>1. Open ICM InfoWorks
+2. Load your network model
+3. Verify model is valid (no errors)
+</code></pre>
+<h4 id="step-2-run-simulation">Step 2: Run Simulation</h4>
+<pre><code>1. Go to Run &gt; Run Simulation (F5)
+2. Select simulation profile
+3. Wait for completion
+4. IMPORTANT: Commit results to network
+   - Right-click simulation results
+   - Select &quot;Commit to Network&quot;
+</code></pre>
+<h4 id="step-3-verify-results">Step 3: Verify Results</h4>
+<pre><code>1. Open a link in Grid View
+2. Check for 'us_flow' in results section
+3. Verify values are present (not blank)
+4. Note number of timesteps (need ≥ 2)
+</code></pre>
+<h4 id="step-4-select-links">Step 4: Select Links</h4>
+<pre><code>1. Go to GeoPlan view
+2. Deselect all (click empty space)
+3. Select links using selection tools
+4. Verify: &quot;N links selected&quot; in status bar
+</code></pre>
+<h4 id="step-5-run-script">Step 5: Run Script</h4>
+<pre><code>1. Network &gt; Run Ruby Script
+2. Browse to script file (.rb)
+3. Click Open/Run
+4. Parameter dialog will appear
+</code></pre>
+<h4 id="step-6-configure-parameters">Step 6: Configure Parameters</h4>
+<pre><code>See Parameters section below for details
+</code></pre>
+<h4 id="step-7-monitor-execution">Step 7: Monitor Execution</h4>
+<pre><code>Watch Output window for:
+- Phase 1: Statistics for each link
+- Phase 2: Field assignments
+- Any error messages
+- Completion summary
+</code></pre>
+<h4 id="step-8-verify-results">Step 8: Verify Results</h4>
+<pre><code>1. Open Grid View
+2. Select _links table
+3. Check new field values:
+   - base_flow
+   - trade_flow
+   - additional_foul_flow
+   - conduit_flow (if enabled)
+</code></pre>
+<h4 id="step-9-save-work">Step 9: Save Work</h4>
+<pre><code>1. File &gt; Save Network (Ctrl+S)
+2. Consider backup:
+   - File &gt; Save As
+   - Add date: &quot;MyNetwork_PeakFlows_2025-11-03.icm&quot;
+</code></pre>
+<hr>
+<h2 id="parameters">Parameters</h2>
+<h3 id="unit-selection">Unit Selection</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Use USA Units (GPM)</strong></td>
+<td>Boolean</td>
+<td><code>false</code></td>
+<td>Display results in Gallons Per Minute</td>
+</tr>
+<tr>
+<td><strong>Use SI Units (L/s)</strong></td>
+<td>Boolean</td>
+<td><code>true</code></td>
+<td>Display results in Liters Per Second</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> ICM internally uses m³/s. Unit selection affects display only.</p>
+</blockquote>
+<h3 id="calculation-options">Calculation Options</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Save Peak Flow to Inflow Conduit Field</strong></td>
+<td>Boolean</td>
+<td><code>true</code></td>
+<td>Saves calculated peak to <code>conduit_flow</code></td>
+</tr>
+<tr>
+<td><strong>Include Peak Flow Calculation</strong></td>
+<td>Boolean</td>
+<td><code>true</code></td>
+<td>Enables peaking calculations</td>
+</tr>
+</tbody>
+</table>
+<h3 id="flow-component-assignments">Flow Component Assignments</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Unpeakable Flow as Base Flow</strong></td>
+<td>Boolean</td>
+<td><code>true</code></td>
+<td>Assigns to <code>base_flow</code> field</td>
+</tr>
+<tr>
+<td><strong>Peakable Point Flow as Trade Flow</strong></td>
+<td>Boolean</td>
+<td><code>true</code></td>
+<td>Assigns to <code>trade_flow</code> field</td>
+</tr>
+<tr>
+<td><strong>Peakable Coverage as Additional Foul Flow</strong></td>
+<td>Boolean</td>
+<td><code>true</code></td>
+<td>Assigns to <code>additional_foul_flow</code> field</td>
+</tr>
+</tbody>
+</table>
+<h3 id="formula-parameters">Formula Parameters</h3>
+<h4 id="standard-formula-peak-k-qp">Standard Formula: <code>peak = k × Q^p</code></h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Range</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>k (Peaking Factor)</strong></td>
+<td>Float</td>
+<td><code>1.0</code></td>
+<td>1.0 - 4.0</td>
+<td>Base multiplier</td>
+</tr>
+<tr>
+<td><strong>p (Exponent)</strong></td>
+<td>Float</td>
+<td><code>2.0</code></td>
+<td>-1.0 - 2.0</td>
+<td>Controls peaking curve</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Common Values:</strong>
+- Residential: <code>k=3.0, p=0.16</code> (high peaking)
+- Commercial: <code>k=2.0, p=0.25</code> (moderate peaking)
+- Industrial: <code>k=1.5, p=0.40</code> (low peaking)</p>
+<h4 id="alternative-formula-babbitt-pf-a-q-bp">Alternative Formula (Babbitt): <code>PF = a / (Q × b)^p</code></h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Typical</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alternative Peaking Curve</strong></td>
+<td>Boolean</td>
+<td><code>false</code></td>
+<td>-</td>
+<td>Enable alternative formula</td>
+</tr>
+<tr>
+<td><strong>a (Coefficient)</strong></td>
+<td>Float</td>
+<td><code>0.0</code></td>
+<td><code>2.6</code></td>
+<td>Numerator coefficient</td>
+</tr>
+<tr>
+<td><strong>b (Multiplier)</strong></td>
+<td>Float</td>
+<td><code>0.0</code></td>
+<td><code>1.547</code></td>
+<td>Denominator multiplier</td>
+</tr>
+</tbody>
+</table>
+<h3 id="coverage-parameters">Coverage Parameters</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Use Peakable Coverage Load</strong></td>
+<td>Boolean</td>
+<td><code>true</code></td>
+<td>Enable coverage load</td>
+</tr>
+<tr>
+<td><strong>Peakable Coverage Load</strong></td>
+<td>Float</td>
+<td><code>0.0</code></td>
+<td>Point load value</td>
+</tr>
+<tr>
+<td><strong>X Coverage</strong></td>
+<td>Float</td>
+<td><code>23</code></td>
+<td>Coverage area/population</td>
+</tr>
+<tr>
+<td><strong>Y Peaking Multiplier</strong></td>
+<td>Float</td>
+<td><code>23</code></td>
+<td>Multiplier for coverage</td>
+</tr>
+</tbody>
+</table>
+<h3 id="reserved-parameters">Reserved Parameters</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>c, d, e</strong></td>
+<td>Float</td>
+<td><code>0.0</code></td>
+<td>Reserved for future use</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="peaking-formulas">Peaking Formulas</h2>
+<h3 id="standard-formula">Standard Formula</h3>
+<p><strong>Formula:</strong> <code>peak = k × Q^p</code></p>
+<p><strong>Where:</strong>
+- <code>Q</code> = Average flow rate (L/s or GPM)
+- <code>k</code> = Peaking factor coefficient
+- <code>p</code> = Exponent</p>
+<p><strong>Example Calculation:</strong></p>
+<p>Given: <code>Q=100 L/s, k=2.6, p=0.16</code></p>
+<pre><code>peak = 2.6 × (100)^0.16
+peak = 2.6 × 1.585
+peak = 4.12
+actual peak = 100 × 4.12 = 412 L/s
+</code></pre>
+<h3 id="alternative-formula-babbitt">Alternative Formula (Babbitt)</h3>
+<p><strong>Formula:</strong> </p>
+<pre><code>PF = a / (Q × b)^p
+peak = Q × PF
+</code></pre>
+<p><strong>Where:</strong>
+- <code>Q</code> = Average flow rate
+- <code>a</code> = Coefficient (typically 2.6)
+- <code>b</code> = Multiplier (typically 1.547)
+- <code>p</code> = Exponent (typically 0.16)</p>
+<p><strong>Example Calculation:</strong></p>
+<p>Given: <code>Q=100 L/s, a=2.6, b=1.547, p=0.16</code></p>
+<pre><code>Step 1: Calculate PF
+  PF = 2.6 / (100 × 1.547)^0.16
+  PF = 2.6 / (154.7)^0.16
+  PF = 2.6 / 1.641
+  PF = 1.585
+
+Step 2: Calculate peak
+  peak = 100 × 1.585
+  peak = 158.5 L/s
+</code></pre>
+<h3 id="flow-component-formulas">Flow Component Formulas</h3>
+<pre><code>base_flow = total_flow - peakable_coverage_load
+trade_flow = peakable_coverage_load
+additional_foul_flow = x_coverage × y_peaking_multiplier
+</code></pre>
+<h3 id="common-engineering-formulas">Common Engineering Formulas</h3>
+<table>
+<thead>
+<tr>
+<th>Formula</th>
+<th>Equation</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Babbitt (1928)</strong></td>
+<td><code>PF = 5 / P^0.2</code></td>
+<td>Small residential (P in thousands)</td>
+</tr>
+<tr>
+<td><strong>Harmon (1918)</strong></td>
+<td><code>PF = (14 + √P) / (4 + √P)</code></td>
+<td>General residential</td>
+</tr>
+<tr>
+<td><strong>Ten States Standards</strong></td>
+<td><code>PF = (18 + √P) / (4 + √P)</code></td>
+<td>Design standards (max 4.0)</td>
+</tr>
+<tr>
+<td><strong>Gifft</strong></td>
+<td><code>PF = 5.0 / Q^0.2</code></td>
+<td>Based on flow (Q in MGD)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="output-fields">Output Fields</h2>
+<h3 id="fields-written-by-script">Fields Written by Script</h3>
+<table>
+<thead>
+<tr>
+<th>Field Name</th>
+<th>Type</th>
+<th>Units</th>
+<th>Formula</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>base_flow</strong></td>
+<td>Double</td>
+<td>m³/s</td>
+<td><code>total_flow - peakable_coverage_load</code></td>
+<td>Background/unpeakable flow (I/I)</td>
+</tr>
+<tr>
+<td><strong>trade_flow</strong></td>
+<td>Double</td>
+<td>m³/s</td>
+<td><code>peakable_coverage_load</code></td>
+<td>Commercial/industrial point loads</td>
+</tr>
+<tr>
+<td><strong>additional_foul_flow</strong></td>
+<td>Double</td>
+<td>m³/s</td>
+<td><code>x_coverage × y_peaking_multiplier</code></td>
+<td>Population-based residential flow</td>
+</tr>
+<tr>
+<td><strong>conduit_flow</strong></td>
+<td>Double</td>
+<td>m³/s</td>
+<td><code>mean(k × Q^p)</code></td>
+<td>Calculated peak flow</td>
+</tr>
+</tbody>
+</table>
+<h3 id="field-descriptions">Field Descriptions</h3>
+<h4 id="base_flow-unpeakable">base_flow (Unpeakable)</h4>
+<ul>
+<li>Constant background flow</li>
+<li>Infiltration/Inflow (I/I)</li>
+<li>Groundwater seepage</li>
+<li>Does NOT vary with time of day</li>
+</ul>
+<h4 id="trade_flow-peakable-point-sources">trade_flow (Peakable - Point Sources)</h4>
+<ul>
+<li>Commercial establishments</li>
+<li>Industrial facilities</li>
+<li>Institutional buildings</li>
+<li>Peaks during business hours</li>
+</ul>
+<h4 id="additional_foul_flow-peakable-area-sources">additional_foul_flow (Peakable - Area Sources)</h4>
+<ul>
+<li>Residential population</li>
+<li>Per-capita contributions</li>
+<li>Peaks morning and evening</li>
+</ul>
+<h4 id="conduit_flow-peak-flow">conduit_flow (Peak Flow)</h4>
+<ul>
+<li>Calculated design peak</li>
+<li>For comparison with simulation</li>
+<li>Can be used in capacity analysis</li>
+</ul>
+<h3 id="viewing-results-in-icm">Viewing Results in ICM</h3>
+<pre><code>1. Window &gt; Grid View
+2. Select table: _links
+3. Right-click column header &gt; Choose Columns
+4. Enable fields:
+   - base_flow
+   - trade_flow
+   - additional_foul_flow
+   - conduit_flow
+5. View calculated values
+</code></pre>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-errors">Common Errors</h3>
+<h4 id="error-not-enough-timesteps-available-found-0">Error: "Not enough timesteps available! (Found: 0)"</h4>
+<p><strong>Cause:</strong> No simulation results or not committed</p>
+<p><strong>Solutions:</strong>
+1. Run a simulation: <code>Run &gt; Run Simulation</code>
+2. Wait for completion
+3. Commit results: Right-click simulation → "Commit to Network"
+4. Verify results exist in link grid view</p>
+<hr>
+<h4 id="error-only-tags-may-be-set-in-read-only-networks">Error: "Only tags may be set in read only networks"</h4>
+<p><strong>Cause:</strong> Network opened in read-only mode</p>
+<p><strong>Solutions:</strong>
+1. Close the network
+2. File &gt; Open
+3. <strong>UNCHECK "Read Only" box</strong>
+4. Click Open
+5. Re-run script</p>
+<p><strong>Alternative checks:</strong>
+- Another user viewing network?
+- Another ICM instance open?
+- File marked as read-only in Windows?</p>
+<hr>
+<h4 id="error-undefined-local-variable-or-method-total_flow">Error: "undefined local variable or method 'total_flow'"</h4>
+<p><strong>Cause:</strong> Using old version (v1.0-v2.0) with scoping bug</p>
+<p><strong>Solution:</strong> Use current version (v3.0+) which fixes this issue</p>
+<hr>
+<h4 id="warning-could-not-get-link-object-for-id">Warning: "Could not get link object for [ID]"</h4>
+<p><strong>Cause:</strong> Selected object is not a link</p>
+<p><strong>Solutions:</strong>
+1. Verify selection: Status bar should say "N links selected"
+2. NOT "N nodes selected"
+3. Deselect all (click empty space)
+4. Select CONDUITS/PIPES only
+5. Check link exists in _links table</p>
+<hr>
+<h4 id="error-mismatch-in-timestep-count">Error: "Mismatch in timestep count"</h4>
+<p><strong>Cause:</strong> Link's results don't match expected timesteps</p>
+<p><strong>Solutions:</strong>
+1. Re-run simulation
+2. Check link included in simulation
+3. Verify link has valid geometry
+4. Check for corrupted results</p>
+<hr>
+<h3 id="unexpected-results">Unexpected Results</h3>
+<h4 id="peak-flows-way-too-high">Peak flows way too high</h4>
+<p><strong>Problem:</strong> <code>peak = 1000×</code> when <code>average = 10</code></p>
+<p><strong>Causes:</strong>
+- Wrong formula (p value too high with k &gt; 1)
+- If <code>p=2.0</code> and <code>k=3.0</code>: <code>peak = 3 × 100 = 300×</code> too high!</p>
+<p><strong>Solutions:</strong>
+- Use <code>p=0.16</code> for Babbitt-style
+- Use <code>p=1.0</code> for direct multiplication
+- Check if alternative formula should be enabled</p>
+<hr>
+<h4 id="peak-flows-barely-different-from-average">Peak flows barely different from average</h4>
+<p><strong>Problem:</strong> <code>peak ≈ average</code> (no peaking)</p>
+<p><strong>Causes:</strong>
+- <code>k=1.0</code> (no peaking applied)
+- "Include Peak Flow Calculation" disabled</p>
+<p><strong>Solutions:</strong>
+- Increase k value (try 2.0-3.5)
+- Verify checkbox is enabled
+- Check alternative formula parameters</p>
+<hr>
+<h4 id="negative-flow-values">Negative flow values</h4>
+<p><strong>Problem:</strong> <code>base_flow</code> shows negative values</p>
+<p><strong>Cause:</strong> <code>peakable_coverage_load &gt; total_flow</code></p>
+<p><strong>Formula:</strong> <code>base_flow = total_flow - peakable_coverage_load</code></p>
+<p><strong>Solutions:</strong>
+- Reduce <code>peakable_coverage_load</code> value
+- Check if <code>total_flow</code> is reasonable
+- Verify flow units are consistent</p>
+<hr>
+<h4 id="all-values-are-zero">All values are zero</h4>
+<p><strong>Problem:</strong> All assigned values near zero</p>
+<p><strong>Causes:</strong>
+- Simulation had no flow
+- Wrong units conversion
+- Very small base flows</p>
+<p><strong>Solutions:</strong>
+- Check simulation setup
+- Verify boundary conditions
+- Review <code>us_flow</code> results in grid
+- Verify simulation converged</p>
+<hr>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="workflow-recommendations">Workflow Recommendations</h3>
+<ol>
+<li>✅ <strong>Always backup network</strong> before running scripts</li>
+</ol>
+<pre><code>   File &gt; Save As
+   Add date: &quot;MyNetwork_2025-11-03.icm&quot;
+</code></pre>
+<ol start="2">
+<li>
+<p>✅ <strong>Test on small selection</strong> first (5-10 links)
+   - Verify results make sense
+   - Check values are reasonable
+   - Then process entire network</p>
+</li>
+<li>
+<p>✅ <strong>Document parameter choices</strong>
+   - Keep notes on k and p values
+   - Record reasoning for selections
+   - Save for project documentation</p>
+</li>
+<li>
+<p>✅ <strong>Verify results after processing</strong>
+   - Spot-check random links
+   - Compare peak-to-average ratios
+   - Ensure no negative values
+   - Check magnitude is reasonable</p>
+</li>
+<li>
+<p>✅ <strong>Compare against hand calculations</strong>
+   - Pick a typical link
+   - Calculate peak manually
+   - Verify formula is correct</p>
+</li>
+</ol>
+<h3 id="parameter-selection-guidelines">Parameter Selection Guidelines</h3>
+<h4 id="for-residential-areas">For RESIDENTIAL Areas</h4>
+<pre><code>k = 2.5 to 3.5
+p = 0.14 to 0.20
+Higher peaking for smaller populations
+</code></pre>
+<h4 id="for-commercial-areas">For COMMERCIAL Areas</h4>
+<pre><code>k = 2.0 to 2.5
+p = 0.20 to 0.30
+Moderate peaking during business hours
+</code></pre>
+<h4 id="for-industrial-areas">For INDUSTRIAL Areas</h4>
+<pre><code>k = 1.2 to 1.8
+p = 0.30 to 0.50
+Low peaking (continuous operation)
+</code></pre>
+<h4 id="for-mixed-use-areas">For MIXED USE Areas</h4>
+<pre><code>k = 2.0 to 2.8
+p = 0.16 to 0.25
+Run script multiple times for different zones
+</code></pre>
+<h3 id="quality-assurance-checklist">Quality Assurance Checklist</h3>
+<p>After running script, verify:</p>
+<ul>
+<li>✅ Peak flows ≥ average flows</li>
+<li>✅ Magnitudes are reasonable (not 1000× or 0.01× average)</li>
+<li>✅ Residential areas peak higher than industrial</li>
+<li>✅ No unexpected negative values</li>
+<li>✅ Results match engineering judgment</li>
+</ul>
+<h3 id="reporting">Reporting</h3>
+<p>Include in technical reports:</p>
+<ul>
+<li>Script version used (v3.0)</li>
+<li>Date and time of execution</li>
+<li>Parameter values (k, p, etc.)</li>
+<li>Number of links processed</li>
+<li>Sample calculations</li>
+<li>Before/after comparison table</li>
+<li>Methodology explanation</li>
+<li>Assumptions and limitations</li>
+</ul>
+<hr>
+<h2 id="technical-notes">Technical Notes</h2>
+<h3 id="script-version-history">Script Version History</h3>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>v1.0</strong></td>
+<td>Original implementation</td>
+<td>❌ Variable scoping error</td>
+</tr>
+<tr>
+<td><strong>v2.0</strong></td>
+<td>Added debug output</td>
+<td>❌ Still had scoping issue</td>
+</tr>
+<tr>
+<td><strong>v3.0</strong></td>
+<td>Two-phase processing, read-only detection</td>
+<td>✅ All issues fixed</td>
+</tr>
+</tbody>
+</table>
+<h3 id="key-fix-in-v30">Key Fix in v3.0</h3>
+<p><strong>Old Way (v1.0-v2.0):</strong></p>
+<pre><code class="language-ruby">Loop 1: Calculate total_flow (local variable)
+Loop 2: Try to use total_flow (ERROR - out of scope!)
+</code></pre>
+<p><strong>New Way (v3.0):</strong></p>
+<pre><code class="language-ruby">Phase 1: Calculate and store in link_data hash
+Phase 2: Retrieve from link_data hash and assign
+</code></pre>
+<h3 id="performance">Performance</h3>
+<table>
+<thead>
+<tr>
+<th>Network Size</th>
+<th>Processing Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>100 links</td>
+<td>~10 seconds</td>
+</tr>
+<tr>
+<td>1,000 links</td>
+<td>~1-2 minutes</td>
+</tr>
+<tr>
+<td>10,000 links</td>
+<td>~10-15 minutes</td>
+</tr>
+<tr>
+<td>50,000+ links</td>
+<td>Process in batches</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Factors affecting speed:</strong>
+- Number of timesteps
+- Number of links
+- Network complexity
+- Computer performance</p>
+<h3 id="memory-usage">Memory Usage</h3>
+<pre><code class="language-ruby">link_data structure ≈ 150 bytes per link
+10,000 links ≈ 1.5 MB (negligible)
+</code></pre>
+<h3 id="ruby-details">Ruby Details</h3>
+<ul>
+<li><strong>Ruby version:</strong> Typically 2.x (embedded in ICM)</li>
+<li><strong>Required library:</strong> <code>date</code> (standard)</li>
+<li><strong>API used:</strong> WSApplication (ICM-specific)</li>
+<li><strong>Data structure:</strong> Ruby Hash</li>
+<li><strong>Float precision:</strong> Double precision</li>
+</ul>
+<h3 id="known-limitations">Known Limitations</h3>
+<ol>
+<li>❌ Requires simulation results (cannot work on unsimulated networks)</li>
+<li>❌ Link-based only (does not process nodes directly)</li>
+<li>❌ Simple formulas only (c, d, e parameters not yet implemented)</li>
+<li>❌ No table-based peaking curve interpolation</li>
+<li>❌ Unit selection affects display only (no actual conversion)</li>
+</ol>
+<h3 id="future-enhancements">Future Enhancements</h3>
+<p>Planned improvements:
+- ✨ Full polynomial formulas (c, d, e parameters)
+- ✨ Table-based peaking curve interpolation
+- ✨ CSV import/export of parameters
+- ✨ Graphical peaking curve output
+- ✨ Node population data integration
+- ✨ Batch processing by attribute
+- ✨ Parameter optimization tools</p>
+<hr>
+<h2 id="support-resources">Support &amp; Resources</h2>
+<h3 id="for-script-help">For Script Help</h3>
+<ol>
+<li>Review this documentation completely</li>
+<li>Check Troubleshooting section</li>
+<li>Examine debug output</li>
+<li>Verify inputs and selection</li>
+<li>Test with small subset</li>
+</ol>
+<h3 id="icm-infoworks-resources">ICM InfoWorks Resources</h3>
+<ul>
+<li>ICM Help System (F1 in application)</li>
+<li>Ruby Scripting Guide</li>
+<li>Autodesk support portal</li>
+<li>ICM user forums</li>
+</ul>
+<h3 id="engineering-references">Engineering References</h3>
+<ul>
+<li>Metcalf &amp; Eddy: <em>Wastewater Engineering</em></li>
+<li><em>Ten States Standards</em></li>
+<li>ASCE Manuals and Reports</li>
+<li>State/local design guidelines</li>
+</ul>
+<hr>
+<h2 id="quick-reference">Quick Reference</h2>
+<h3 id="formula-cheat-sheet">Formula Cheat Sheet</h3>
+<pre><code class="language-ruby"># Standard Formula
+peak = k × (Q)^p
+
+# Alternative (Babbitt)
+PF = a / (Q × b)^p
+peak = Q × PF
+
+# Flow Components
+base_flow = total_flow - peakable_coverage_load
+trade_flow = peakable_coverage_load
+additional_foul_flow = x_coverage × y_peaking_multiplier
+</code></pre>
+<h3 id="typical-parameter-sets">Typical Parameter Sets</h3>
+<pre><code class="language-ruby"># Small Residential
+k = 3.5, p = 0.16
+
+# Large Residential
+k = 2.6, p = 0.16
+
+# Commercial
+k = 2.0, p = 0.25
+
+# Industrial
+k = 1.5, p = 0.40
+
+# Babbitt Alternative
+a = 2.6, b = 1.547, p = 0.16
+</code></pre>
+<h3 id="file-locations">File Locations</h3>
+<p><strong>Script file:</strong> <code>InfoSewerPeakingFactor.rb</code><br>
+<strong>Fields modified:</strong> <code>_links</code> table<br>
+<strong>Results from:</strong> <code>us_flow</code> field</p>
+<hr>
+<h2 id="license-disclaimer">License &amp; Disclaimer</h2>
+<p>This script is provided "as is" for use with ICM InfoWorks. Always backup your network before running any scripts. Verify results before using in production models.</p>
+<p><strong>Author:</strong> Robert Dickinson + AI Assistant<br>
+<strong>Contact:</strong> [Your contact information]<br>
+<strong>Repository:</strong> [Link to repository if applicable]</p>
+<hr>
+<p><em>Last updated: November 2025</em></p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

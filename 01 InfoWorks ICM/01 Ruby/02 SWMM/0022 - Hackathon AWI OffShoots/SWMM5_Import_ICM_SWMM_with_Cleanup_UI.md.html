@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SWMM5_Import_ICM_SWMM_with_Cleanup_UI.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0022 - Hackathon AWI OffShoots</div>
+    <h1>SWMM5_Import_ICM_SWMM_with_Cleanup_UI.md</h1>
+    <div class="meta">Markdown document &middot; 0022 - Hackathon AWI OffShoots</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">261 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="swmm5-import-to-icm-ui-script-documentation">SWMM5 Import to ICM - UI Script Documentation</h1>
+<p><strong>Version:</strong> 3.1<br>
+<strong>Purpose:</strong> User-facing script to configure and launch the import of SWMM5 <code>.inp</code> file(s) into ICM SWMM Networks</p>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>This Ruby script provides a graphical user interface for importing EPA SWMM5 input files (<code>.inp</code>) into Autodesk InfoWorks ICM. It serves as a front-end configuration tool that prepares import settings and then launches the actual import process via ICMExchange.</p>
+<p>The script handles everything from single-file imports to large batch operations with hundreds of files, including automatic network naming, duplicate detection, and post-import cleanup.</p>
+<hr>
+<h2 id="key-features">Key Features</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Multiple Import Modes</strong></td>
+<td>Single file, batch (directory only), or recursive batch (include subdirectories)</td>
+</tr>
+<tr>
+<td><strong>Automatic Network Naming</strong></td>
+<td>Configurable naming conventions with optional prefixes and timestamps</td>
+</tr>
+<tr>
+<td><strong>Duplicate Detection</strong></td>
+<td>Pre-validates network names against existing database objects</td>
+</tr>
+<tr>
+<td><strong>Empty Label Cleanup</strong></td>
+<td>Automatically removes empty visualization labels after import</td>
+</tr>
+<tr>
+<td><strong>Connectivity Validation</strong></td>
+<td>Post-import validation of network connectivity</td>
+</tr>
+<tr>
+<td><strong>Live Progress Streaming</strong></td>
+<td>Real-time output display during import operations</td>
+</tr>
+<tr>
+<td><strong>Time Estimation</strong></td>
+<td>Heuristic-based import duration estimates</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="prerequisites">Prerequisites</h2>
+<ol>
+<li><strong>InfoWorks ICM</strong> must be installed (2025.2 or later recommended)</li>
+<li>An <strong>ICM database must be open</strong> before running the script</li>
+<li>The companion <strong>Exchange script</strong> (<code>SWMM5_Import_ICM_SWMM_with_Cleanup_Exchange.rb</code>) must be in the same directory</li>
+</ol>
+<hr>
+<h2 id="how-to-use">How to Use</h2>
+<ol>
+<li>Open your ICM database</li>
+<li>Navigate to <strong>Network menu → Run Ruby Script</strong></li>
+<li>Select this script file</li>
+<li>Follow the interactive prompts:
+   - Choose import mode (single/batch/recursive)
+   - Select file(s) or directory
+   - Configure naming options
+   - Confirm and launch import</li>
+</ol>
+<hr>
+<h2 id="script-workflow">Script Workflow</h2>
+<p>The script operates in 10 sequential steps:</p>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│  STEP 1: Initialization                                         │
+│  - Verify database is open                                      │
+│  - Display welcome message with feature summary                 │
+├─────────────────────────────────────────────────────────────────┤
+│  STEP 2: Import Mode Selection                                  │
+│  - Single File                                                  │
+│  - Batch - Directory Only                                       │
+│  - Batch - Include Subdirectories                               │
+├─────────────────────────────────────────────────────────────────┤
+│  STEP 3: File/Directory Selection                               │
+│  - File dialog for single file or directory selection           │
+│  - Automatic .inp file discovery for batch modes                │
+├─────────────────────────────────────────────────────────────────┤
+│  STEP 4: Size Check &amp; Time Estimation                           │
+│  - Calculate total file size                                    │
+│  - Estimate import duration using heuristics                    │
+│  - Warn user if estimated time exceeds 10 minutes               │
+├─────────────────────────────────────────────────────────────────┤
+│  STEP 5: Naming Configuration                                   │
+│  - Single: Custom name with optional timestamp                  │
+│  - Batch: Naming convention, prefix, and timestamp options      │
+├─────────────────────────────────────────────────────────────────┤
+│  STEP 6: Pre-Validation                                         │
+│  - Check for duplicate network names in database                │
+│  - Check for self-duplicates in generated names                 │
+├─────────────────────────────────────────────────────────────────┤
+│  STEP 7: Configuration File Generation                          │
+│  - Create YAML config file with all import settings             │
+│  - Store in &quot;ICM Import Log Files&quot; subfolder                    │
+├─────────────────────────────────────────────────────────────────┤
+│  STEP 8: Final Confirmation                                     │
+│  - Display summary and request user confirmation                │
+├─────────────────────────────────────────────────────────────────┤
+│  STEP 9: Launch ICMExchange                                     │
+│  - Locate ICMExchange.exe automatically                         │
+│  - Execute with live output streaming                           │
+├─────────────────────────────────────────────────────────────────┤
+│  STEP 10: Results Summary                                       │
+│  - Parse batch_summary.txt from Exchange script                 │
+│  - Display import statistics and element counts                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr>
+<h2 id="naming-conventions-batch-mode">Naming Conventions (Batch Mode)</h2>
+<p>When importing multiple files, three naming conventions are available:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Example Input</th>
+<th>Example Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Filename Only</strong></td>
+<td><code>C:/Models/Site1/model.inp</code></td>
+<td><code>model</code></td>
+</tr>
+<tr>
+<td><strong>Directory + Filename</strong></td>
+<td><code>C:/Models/Site1/model.inp</code></td>
+<td><code>Site1_model</code></td>
+</tr>
+<tr>
+<td><strong>Relative Path</strong></td>
+<td><code>C:/Models/Site1/Sub/model.inp</code></td>
+<td><code>Site1_Sub_model</code></td>
+</tr>
+</tbody>
+</table>
+<p>Additional options:
+- <strong>Prefix:</strong> Prepended to all names (e.g., <code>SWMM_Import_</code>)
+- <strong>Timestamp:</strong> Appends <code>_YYYYMMDD_HHMM</code> to prevent duplicates</p>
+<hr>
+<h2 id="icmexchange-discovery">ICMExchange Discovery</h2>
+<p>The script automatically locates <code>ICMExchange.exe</code> using this priority:</p>
+<ol>
+<li><strong>Hardcoded paths</strong> for known ICM versions (2025.2–2027)</li>
+<li><strong>Dynamic search</strong> in <code>Program Files\Autodesk\</code> and <code>Program Files\Innovyze\</code></li>
+<li><strong>User fallback</strong> dialog if automatic detection fails</li>
+</ol>
+<hr>
+<h2 id="time-estimation-heuristic">Time Estimation Heuristic</h2>
+<pre><code>Estimated Time = (Number of Files × 0.5 min) + (Total Size MB ÷ 25)
+</code></pre>
+<p>This accounts for:
+- Fixed overhead per file (~30 seconds)
+- Processing time proportional to file size (~1 minute per 25 MB)</p>
+<hr>
+<h2 id="configuration-file-structure">Configuration File Structure</h2>
+<p>The script generates a YAML configuration file (<code>import_config.yaml</code>) with this structure:</p>
+<pre><code class="language-yaml">import_mode: &quot;Batch - Include Subdirectories&quot;
+base_directory: &quot;C:/SWMM_Models&quot;
+cleanup_empty_label_lists: true
+validate_after_import: true
+file_configs:
+  - file_path: &quot;C:/SWMM_Models/site1.inp&quot;
+    network_name: &quot;SWMM_Import_site1_20241205_1430&quot;
+    file_basename: &quot;site1.inp&quot;
+  - file_path: &quot;C:/SWMM_Models/sub/site2.inp&quot;
+    network_name: &quot;SWMM_Import_sub_site2_20241205_1430&quot;
+    file_basename: &quot;site2.inp&quot;
+</code></pre>
+<hr>
+<h2 id="output-files">Output Files</h2>
+<p>All outputs are stored in an <code>ICM Import Log Files</code> folder within the base directory:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>import_config.yaml</code></td>
+<td>Configuration passed to Exchange script</td>
+</tr>
+<tr>
+<td><code>batch_summary.txt</code></td>
+<td>Machine-readable import statistics</td>
+</tr>
+<tr>
+<td>Individual log files</td>
+<td>Per-file import details (generated by Exchange script)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="summary-statistics">Summary Statistics</h2>
+<p>After import, the script displays:</p>
+<ul>
+<li><strong>Duration</strong> (formatted as seconds)</li>
+<li><strong>Files processed/successful/failed</strong> (batch mode)</li>
+<li><strong>Total elements imported:</strong></li>
+<li>Nodes</li>
+<li>Links</li>
+<li>Subcatchments</li>
+<li><strong>Empty labels cleaned</strong> (if any)</li>
+</ul>
+<hr>
+<h2 id="version-31-changes">Version 3.1 Changes</h2>
+<p>This version includes several important fixes and improvements:</p>
+<ol>
+<li>
+<p><strong>Fixed WSApplication.prompt RuntimeError</strong>
+   - Implemented robust 4-element format <code>[Label, Type, Attributes, DefaultValue]</code> for all prompt definitions
+   - Resolved "attributes parameter item 0 invalid type" errors</p>
+</li>
+<li>
+<p><strong>Improved Relative Path Naming</strong>
+   - Better handling of files in root directories
+   - Cleaner path separator replacement</p>
+</li>
+<li>
+<p><strong>Enhanced Duration Formatting</strong>
+   - Proper float parsing for accurate time display
+   - Improved summary report formatting</p>
+</li>
+</ol>
+<hr>
+<h2 id="error-handling">Error Handling</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No database open</td>
+<td>Displays error and exits</td>
+</tr>
+<tr>
+<td>No <code>.inp</code> files found</td>
+<td>Displays warning and exits</td>
+</tr>
+<tr>
+<td>Duplicate network names in DB</td>
+<td>Lists conflicts and exits</td>
+</tr>
+<tr>
+<td>Duplicate names generated</td>
+<td>Lists duplicates, suggests timestamp, exits</td>
+</tr>
+<tr>
+<td>ICMExchange not found</td>
+<td>Prompts user to locate manually</td>
+</tr>
+<tr>
+<td>Exchange script missing</td>
+<td>Displays error and exits</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="dependencies">Dependencies</h2>
+<pre><code class="language-ruby">require 'yaml'       # Configuration file serialization
+require 'open3'      # Process execution with live streaming
+require 'fileutils'  # Directory creation
+</code></pre>
+<hr>
+<h2 id="related-files">Related Files</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SWMM5_Import_ICM_SWMM_with_Cleanup_Exchange.rb</code></td>
+<td>Companion Exchange script that performs the actual import</td>
+</tr>
+<tr>
+<td><code>import_config.yaml</code></td>
+<td>Generated configuration file</td>
+</tr>
+<tr>
+<td><code>batch_summary.txt</code></td>
+<td>Generated results file</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="technical-notes">Technical Notes</h2>
+<ul>
+<li><strong>Target Network Type:</strong> <code>SWMM network</code> (not InfoWorks network)</li>
+<li><strong>File Pattern Matching:</strong> Case-insensitive (<code>.inp</code>, <code>.INP</code>, <code>.Inp</code>)</li>
+<li><strong>Character Sanitization:</strong> Invalid characters replaced with underscores</li>
+<li><strong>Path Normalization:</strong> Windows backslashes converted to forward slashes</li>
+</ul>
+<hr>
+<h2 id="author-notes">Author Notes</h2>
+<p>This script is designed for water/wastewater engineers working with SWMM5 models who need to migrate or import data into InfoWorks ICM. It emphasizes:</p>
+<ul>
+<li><strong>User-friendly prompts</strong> with sensible defaults</li>
+<li><strong>Robust error handling</strong> to prevent partial imports</li>
+<li><strong>Transparency</strong> through live progress streaming</li>
+<li><strong>Automation</strong> of repetitive cleanup tasks</li>
+</ul>
+<p>For questions or issues, check the Ruby output window for detailed diagnostic messages.</p>
+<p>Nano Banana Diagrams of the UI and EX Ruby Code</p>
+<p><img alt="alt text" src="Gemini_Generated_Image_yugmv8yugmv8yugm (1)-1.jpeg"></p>
+<p><img alt="alt text" src="Gemini_Generated_Image_gpznzggpznzggpzn.jpeg"></p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0009 - Polygon Subcatchment Boundary Tools</title>
+<style>
+:root {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-2: #0b1220;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-2: #f472b6;
+  --good: #22c55e;
+  --border: #334155;
+  --code-bg: #0b1220;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: linear-gradient(180deg, #0a1226 0%, #0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+header.hero {
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(244,114,182,0.06));
+  padding: 28px 28px 24px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+header.hero .crumbs {
+  font-size: 12px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+header.hero h1 {
+  font-size: 26px; margin: 0 0 6px 0; color: #fff;
+}
+header.hero p.lede {
+  margin: 0 0 14px 0; color: var(--muted);
+}
+.stats {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 13px;
+  background: rgba(56,189,248,0.10);
+  border: 1px solid rgba(56,189,248,0.35);
+  color: var(--accent);
+}
+.chip.alt { background: rgba(34,197,94,0.10); border-color: rgba(34,197,94,0.35); color: var(--good); }
+.chip.pink { background: rgba(244,114,182,0.10); border-color: rgba(244,114,182,0.35); color: var(--accent-2); }
+.content {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 6px 28px 24px;
+}
+.content h2 {
+  margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border);
+  font-size: 18px; color: #fff;
+}
+.content h2:first-of-type { border-top: none; padding-top: 6px; }
+.content h3 { font-size: 15px; color: var(--accent); margin: 16px 0 6px; }
+.content p, .content li { color: var(--text); }
+.content code {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 4px; font-size: 13px;
+  color: #fbbf24;
+}
+.content pre {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 14px; border-radius: 8px; overflow-x: auto;
+  font-size: 13px; line-height: 1.5;
+}
+.content pre code { background: transparent; border: 0; padding: 0; color: var(--text); }
+.content ul { padding-left: 22px; }
+.content li { margin: 4px 0; }
+.content a { color: var(--accent); text-decoration: none; }
+.content a:hover { text-decoration: underline; }
+.content blockquote {
+  margin: 12px 0; padding: 8px 16px;
+  border-left: 3px solid var(--accent); background: rgba(56,189,248,0.06);
+  color: var(--muted);
+}
+.content table {
+  width: 100%; border-collapse: collapse; margin: 12px 0;
+  font-size: 14px;
+}
+.content th, .content td {
+  border: 1px solid var(--border); padding: 8px 12px; text-align: left;
+}
+.content th { background: var(--panel-2); }
+footer {
+  margin-top: 28px; color: var(--muted); font-size: 12px; text-align: center;
+}
+.toc {
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--panel-2); padding: 14px 18px; margin-bottom: 16px;
+}
+.toc strong { color: var(--accent); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.toc ol { columns: 2; margin: 6px 0 0; padding-left: 22px; }
+.toc a { color: var(--text); text-decoration: none; font-size: 13px; }
+.toc a:hover { color: var(--accent); }
+@media (max-width: 720px) {
+  .toc ol { columns: 1; }
+  header.hero h1 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">SWMM &rsaquo; Ruby Fixes</div>
+    <h1>0009 - Polygon Subcatchment Boundary Tools</h1>
+    <p class="lede">Polygon ops: result points, generic-sided shapes, create subs/nodes from polygons.</p>
+    <div class="stats">
+      <span class="chip">6 originals</span>
+      <span class="chip alt">6 fix_ versions</span>
+      <span class="chip pink">Robustness pass</span>
+    </div>
+  </header>
+
+<style>
+  .file-table-wrap { background:#0b1220; border:1px solid #334155; border-radius:12px; padding:14px 18px; margin:18px 0; }
+  .file-table-wrap h2 { color:#fff; font-size:16px; margin:0 0 10px; }
+  .file-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .file-table th, .file-table td { border-bottom:1px solid #1f2937; padding:6px 10px; text-align:left; vertical-align:top; }
+  .file-table th { color:#94a3b8; font-weight:500; font-size:12px; letter-spacing:0.04em; text-transform:uppercase; }
+  .file-table a { color:#38bdf8; text-decoration:none; }
+  .file-table a:hover { text-decoration:underline; }
+  .file-table .pair { font-family:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace; }
+  .file-table tr:last-child td { border-bottom:0; }
+  .file-table .miss { color:#64748b; font-style:italic; }
+  .md-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .md-list a { padding:4px 10px; border:1px solid #334155; border-radius:8px; background:#0b1220; color:#38bdf8; text-decoration:none; font-size:13px; }
+  .md-list a:hover { border-color:#38bdf8; }
+</style>
+<div class="file-table-wrap"><h2>Files in this folder</h2><table class="file-table"><thead><tr><th>Original (.rb)</th><th>Hardened (fix_*.rb)</th></tr></thead><tbody><tr><td class="pair"><a href="UI_2DMesh_Result_Points.rb.html">UI_2DMesh_Result_Points.rb</a></td><td class="pair"><a href="fix_UI_2DMesh_Result_Points.rb.html">fix_UI_2DMesh_Result_Points.rb</a></td></tr><tr><td class="pair"><a href="UI_Other_2D_Generic_Sides%20copy.rb.html">UI_Other_2D_Generic_Sides copy.rb</a></td><td class="pair"><a href="fix_UI_Other_2D_Generic_Sides%20copy.rb.html">fix_UI_Other_2D_Generic_Sides copy.rb</a></td></tr><tr><td class="pair"><a href="UI_Polygon_Generic_Sides.rb.html">UI_Polygon_Generic_Sides.rb</a></td><td class="pair"><a href="fix_UI_Polygon_Generic_Sides.rb.html">fix_UI_Polygon_Generic_Sides.rb</a></td></tr><tr><td class="pair"><a href="UI_script.rb.html">UI_script.rb</a></td><td class="pair"><a href="fix_UI_script.rb.html">fix_UI_script.rb</a></td></tr><tr><td class="pair"><a href="UI_script_Create%20nodes%20from%20polygon%20subcatchment%20boundary.rb.html">UI_script_Create nodes from polygon subcatchment boundary.rb</a></td><td class="pair"><a href="fix_UI_script_Create%20nodes%20from%20polygon%20subcatchment%20boundary.rb.html">fix_UI_script_Create nodes from polygon subcatchment boundary.rb</a></td></tr><tr><td class="pair"><a href="UI_script_Create%20Subs%20from%20polygon.rb.html">UI_script_Create Subs from polygon.rb</a></td><td class="pair"><a href="fix_UI_script_Create%20Subs%20from%20polygon.rb.html">fix_UI_script_Create Subs from polygon.rb</a></td></tr></tbody></table><h2 style="margin-top:14px;">Markdown</h2><div class="md-list"><a href="_Fixes.md.html">_Fixes.md</a><a href="readme.md.html">readme.md</a></div></div>
+  <nav class="toc"><strong>Scripts in this folder</strong><ol><li><a href="#overview">Overview</a></li><li><a href="#key-hardening-applied-to-all-files">Key Hardening Applied to All Files</a></li><li><a href="#per-script-summary">Per-Script Summary</a></li><li><a href="#how-to-run">How to Run</a></li><li><a href="#common-issues-troubleshooting">Common Issues & Troubleshooting</a></li><li><a href="#original-issues-addressed">Original Issues Addressed</a></li></ol></nav>
+  <section class="content">
+    <h1 id="folder-0009-hardening-report-polygon-subcatchment-boundary-tools">Folder 0009 Hardening Report: Polygon Subcatchment Boundary Tools</h1>
+<h2 id="overview">Overview</h2>
+<p>6 geometry manipulation UI scripts for 2D mesh/infiltration/permeable zone polygons and subcatchment boundary creation.</p>
+<h2 id="key-hardening-applied-to-all-files">Key Hardening Applied to All Files</h2>
+<ul>
+<li><strong>Frozen string literals</strong> (<code># frozen_string_literal: true</code>)</li>
+<li><strong>begin/rescue/ensure</strong> error handling with explicit rollback</li>
+<li><strong>Network nil-checks</strong></li>
+<li><strong>Boundary array validation</strong> (not nil, not empty, minimum 2 coordinates)</li>
+<li><strong>Zero-guard on division</strong> (centroid calculation, polygon extent)</li>
+<li><strong>Math.cos/sin guards</strong> against invalid angle calculations</li>
+<li><strong>Transaction begin/commit/rollback</strong> with error handling</li>
+<li><strong>Selected polygon filtering</strong> (if polygon.selected?)</li>
+<li><strong>Progress logging</strong> with timestamps</li>
+<li><strong>Coordinate slicing safety</strong> (.each_slice(2) with bounds checking)</li>
+</ul>
+<h2 id="per-script-summary">Per-Script Summary</h2>
+<h3 id="fix_ui_2dmesh_result_pointsrb">fix_UI_2DMesh_Result_Points.rb</h3>
+<ul>
+<li><strong>Purpose</strong>: Generate grid result points inside selected polygons</li>
+<li><strong>Inputs</strong>: Selected 2D mesh/infiltration/permeable/roughness polygons, point count (100)</li>
+<li><strong>Outputs</strong>: hw_2d_results_point objects with grid coordinates</li>
+<li><strong>Hardening</strong>:</li>
+<li>Boundary validation (non-empty, &gt;= 2 coords)</li>
+<li>Extent validation (width &gt; 0, height &gt; 0)</li>
+<li>Point ID generation: <code>#{polygon_id}_#{point_id}</code></li>
+<li>Grid step calculation with zero-guard</li>
+<li>Transaction with rollback on error</li>
+<li>Per-polygon error reporting</li>
+</ul>
+<h3 id="fix_ui_polygon_generic_sidesrb">fix_UI_Polygon_Generic_Sides.rb</h3>
+<ul>
+<li><strong>Purpose</strong>: Reshape selected polygons into regular N-sided (9-sided default) polygons</li>
+<li><strong>Inputs</strong>: Selected polygons, sides count (configurable, default 9)</li>
+<li><strong>Outputs</strong>: Polygon boundary_array replaced with regular polygon vertices</li>
+<li><strong>Hardening</strong>:</li>
+<li>Boundary validation (&gt;= 2 coords)</li>
+<li>Sides validation (&gt;= 3)</li>
+<li>Extent validation (width &gt; 0, height &gt; 0)</li>
+<li>Center/radius calculations with zero-guard</li>
+<li>Angle-based vertex generation (Math.cos/sin)</li>
+<li>Boundary closure (first vertex repeated)</li>
+<li>Transaction with rollback</li>
+</ul>
+<h3 id="fix_ui_script_create-nodes-from-polygon-subcatchment-boundaryrb">fix_UI_script_Create nodes from polygon subcatchment boundary.rb</h3>
+<ul>
+<li><strong>Purpose</strong>: Create hw_node objects at polygon centroid and vertices</li>
+<li><strong>Inputs</strong>: Selected hw_2d_infiltration_zone polygons</li>
+<li><strong>Outputs</strong>: centroid node + vertex nodes (one per boundary coordinate)</li>
+<li><strong>Hardening</strong>:</li>
+<li>Boundary validation (non-empty, &gt;= 2 coords)</li>
+<li>Centroid calculation with coordinate count guard (&gt; 0)</li>
+<li>Coordinate safety in slice/with_index loop</li>
+<li>Node ID generation: <code>#{polygon_id}_centroid</code>, <code>#{polygon_id}_vertex_#{index}</code></li>
+<li>Per-polygon error isolation</li>
+<li>Total node count tracking</li>
+<li>Transaction with rollback</li>
+</ul>
+<h3 id="fix_ui_script_create-subs-from-polygonrb">fix_UI_script_Create Subs from polygon.rb</h3>
+<ul>
+<li><strong>Purpose</strong>: Create hw_subcatchment objects from selected polygon boundaries</li>
+<li><strong>Inputs</strong>: Selected polygons (any 2D type)</li>
+<li><strong>Outputs</strong>: hw_subcatchment objects with geometry from polygon</li>
+<li><strong>Hardening</strong>:</li>
+<li>Boundary validation (non-empty)</li>
+<li>Supports multiple polygon types</li>
+<li>Subcatchment ID generation: <code>Sub_#{polygon_id}</code></li>
+<li>Geometry assignment from boundary_array</li>
+<li>Transaction with rollback</li>
+<li>Per-type error handling</li>
+</ul>
+<h3 id="fix_ui_other_2d_generic_sides-copyrb">fix_UI_Other_2D_Generic_Sides copy.rb</h3>
+<ul>
+<li><strong>Purpose</strong>: Reshape selected 2D zone/IC/result polygons into regular N-sided</li>
+<li><strong>Inputs</strong>: Selected 2D polygons (hw_2d_zone, hw_2d_boundary_line, etc.), sides count (9)</li>
+<li><strong>Outputs</strong>: Polygon boundary_array updated</li>
+<li><strong>Hardening</strong>:</li>
+<li>Boundary validation (&gt;= 2 coords)</li>
+<li>Sides validation (&gt;= 3)</li>
+<li>Extent validation (width &gt; 0, height &gt; 0)</li>
+<li>Regular polygon vertex calculation</li>
+<li>Per-type error isolation</li>
+<li>Transaction with rollback</li>
+<li>Compact error reporting</li>
+</ul>
+<h3 id="fix_ui_scriptrb">fix_UI_script.rb</h3>
+<ul>
+<li><strong>Purpose</strong>: Generic template for polygon boundary operations</li>
+<li><strong>Inputs</strong>: Network only</li>
+<li><strong>Outputs</strong>: Console feedback</li>
+<li><strong>Hardening</strong>:</li>
+<li>Nil-safety on network</li>
+<li>Placeholder for custom polygon operations</li>
+</ul>
+<h2 id="how-to-run">How to Run</h2>
+<ol>
+<li><strong>Open InfoWorks ICM</strong> with network/project</li>
+<li><strong>Select target polygons</strong> in the UI (filter by type as needed)</li>
+<li><strong>Tools → Ruby Scripts</strong> → select fix_* file</li>
+<li><strong>Review console output</strong> for progress and success count</li>
+</ol>
+<h3 id="example-workflows">Example Workflows</h3>
+<p><strong>Generate result points in mesh:</strong>
+- Select hw_mesh_zone polygons
+- Run fix_UI_2DMesh_Result_Points.rb
+- 100 points generated per polygon in grid pattern</p>
+<p><strong>Reshape to regular polygon:</strong>
+- Select target polygons (infiltration zones, mesh zones, etc.)
+- Run fix_UI_Polygon_Generic_Sides.rb
+- Reshapes to 9-sided regular polygon (edit sides = X to change)</p>
+<p><strong>Create boundary nodes:</strong>
+- Select hw_2d_infiltration_zone polygons
+- Run fix_UI_script_Create nodes from polygon subcatchment boundary.rb
+- Creates centroid + vertex nodes at all boundary coordinates</p>
+<p><strong>Create subcatchments from polygons:</strong>
+- Select any polygon type
+- Run fix_UI_script_Create Subs from polygon.rb
+- Creates hw_subcatchment objects mapped to polygon geometry</p>
+<h2 id="common-issues-troubleshooting">Common Issues &amp; Troubleshooting</h2>
+<ul>
+<li><strong>"Network is nil"</strong>: Ensure network open in InfoWorks</li>
+<li><strong>No polygons created</strong>: Verify .selected? filter matches your selection</li>
+<li><strong>"Invalid boundary_array"</strong>: Polygon missing geometry data or corrupted</li>
+<li><strong>"Invalid extent"</strong>: Zero-width or zero-height polygon (degenerate case)</li>
+<li><strong>Node creation fails</strong>: Check hw_node table exists and is writable</li>
+<li><strong>Transaction rollback</strong>: Occurs on any error; check console for specific cause</li>
+</ul>
+<h2 id="original-issues-addressed">Original Issues Addressed</h2>
+<ul>
+<li>Missing null checks on boundary_array, polygon.selected?, coordinates</li>
+<li>Unguarded division on centroid calculation (coord_count could be 0)</li>
+<li>No validation on polygon extent (width/height could be zero or negative)</li>
+<li>Silent failures on new_row_object creation</li>
+<li>No transaction rollback on error (partial state corrupted)</li>
+<li>Missing iteration error isolation (one failed polygon stops all)</li>
+<li>No progress feedback or timestamp logging</li>
+<li>Math.cos/sin assumptions about valid angle inputs</li>
+<li>Missing coordinate slicing bounds checking</li>
+</ul>
+  </section>
+  <footer>
+    Auto-generated from _Fixes.md &middot; InfoWorks ICM Ruby scripts hardened with begin/rescue/ensure, input validation, block-form file I/O, progress logging.
+  </footer>
+</div>
+</body>
+</html>

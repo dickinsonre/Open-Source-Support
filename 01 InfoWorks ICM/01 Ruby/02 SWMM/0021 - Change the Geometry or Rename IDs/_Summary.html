@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0021 - Change the Geometry or Rename IDs</title>
+<style>
+:root {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-2: #0b1220;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-2: #f472b6;
+  --good: #22c55e;
+  --border: #334155;
+  --code-bg: #0b1220;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: linear-gradient(180deg, #0a1226 0%, #0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+header.hero {
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(244,114,182,0.06));
+  padding: 28px 28px 24px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+header.hero .crumbs {
+  font-size: 12px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+header.hero h1 {
+  font-size: 26px; margin: 0 0 6px 0; color: #fff;
+}
+header.hero p.lede {
+  margin: 0 0 14px 0; color: var(--muted);
+}
+.stats {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 13px;
+  background: rgba(56,189,248,0.10);
+  border: 1px solid rgba(56,189,248,0.35);
+  color: var(--accent);
+}
+.chip.alt { background: rgba(34,197,94,0.10); border-color: rgba(34,197,94,0.35); color: var(--good); }
+.chip.pink { background: rgba(244,114,182,0.10); border-color: rgba(244,114,182,0.35); color: var(--accent-2); }
+.content {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 6px 28px 24px;
+}
+.content h2 {
+  margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border);
+  font-size: 18px; color: #fff;
+}
+.content h2:first-of-type { border-top: none; padding-top: 6px; }
+.content h3 { font-size: 15px; color: var(--accent); margin: 16px 0 6px; }
+.content p, .content li { color: var(--text); }
+.content code {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 4px; font-size: 13px;
+  color: #fbbf24;
+}
+.content pre {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 14px; border-radius: 8px; overflow-x: auto;
+  font-size: 13px; line-height: 1.5;
+}
+.content pre code { background: transparent; border: 0; padding: 0; color: var(--text); }
+.content ul { padding-left: 22px; }
+.content li { margin: 4px 0; }
+.content a { color: var(--accent); text-decoration: none; }
+.content a:hover { text-decoration: underline; }
+.content blockquote {
+  margin: 12px 0; padding: 8px 16px;
+  border-left: 3px solid var(--accent); background: rgba(56,189,248,0.06);
+  color: var(--muted);
+}
+.content table {
+  width: 100%; border-collapse: collapse; margin: 12px 0;
+  font-size: 14px;
+}
+.content th, .content td {
+  border: 1px solid var(--border); padding: 8px 12px; text-align: left;
+}
+.content th { background: var(--panel-2); }
+footer {
+  margin-top: 28px; color: var(--muted); font-size: 12px; text-align: center;
+}
+.toc {
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--panel-2); padding: 14px 18px; margin-bottom: 16px;
+}
+.toc strong { color: var(--accent); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.toc ol { columns: 2; margin: 6px 0 0; padding-left: 22px; }
+.toc a { color: var(--text); text-decoration: none; font-size: 13px; }
+.toc a:hover { color: var(--accent); }
+@media (max-width: 720px) {
+  .toc ol { columns: 1; }
+  header.hero h1 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">SWMM &rsaquo; Ruby Fixes</div>
+    <h1>0021 - Change the Geometry or Rename IDs</h1>
+    <p class="lede">Split links, change subcatchment polygon shapes, add 1D results points, rename objects.</p>
+    <div class="stats">
+      <span class="chip">12 originals</span>
+      <span class="chip alt">12 fix_ versions</span>
+      <span class="chip pink">Robustness pass</span>
+    </div>
+  </header>
+
+<style>
+  .file-table-wrap { background:#0b1220; border:1px solid #334155; border-radius:12px; padding:14px 18px; margin:18px 0; }
+  .file-table-wrap h2 { color:#fff; font-size:16px; margin:0 0 10px; }
+  .file-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .file-table th, .file-table td { border-bottom:1px solid #1f2937; padding:6px 10px; text-align:left; vertical-align:top; }
+  .file-table th { color:#94a3b8; font-weight:500; font-size:12px; letter-spacing:0.04em; text-transform:uppercase; }
+  .file-table a { color:#38bdf8; text-decoration:none; }
+  .file-table a:hover { text-decoration:underline; }
+  .file-table .pair { font-family:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace; }
+  .file-table tr:last-child td { border-bottom:0; }
+  .file-table .miss { color:#64748b; font-style:italic; }
+  .md-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .md-list a { padding:4px 10px; border:1px solid #334155; border-radius:8px; background:#0b1220; color:#38bdf8; text-decoration:none; font-size:13px; }
+  .md-list a:hover { border-color:#38bdf8; }
+</style>
+<div class="file-table-wrap"><h2>Files in this folder</h2><table class="file-table"><thead><tr><th>Original (.rb)</th><th>Hardened (fix_*.rb)</th></tr></thead><tbody><tr><td class="pair"><a href="1_split_link_into_chunks.rb.html">1_split_link_into_chunks.rb</a></td><td class="pair"><a href="fix_1_split_link_into_chunks.rb.html">fix_1_split_link_into_chunks.rb</a></td></tr><tr><td class="pair"><a href="2_split_links_around_node.rb.html">2_split_links_around_node.rb</a></td><td class="pair"><a href="fix_2_split_links_around_node.rb.html">fix_2_split_links_around_node.rb</a></td></tr><tr><td class="pair"><a href="Get%20Minimum%20X%2CY%20for%20All%20Nodes.rb.html">Get Minimum X,Y for All Nodes.rb</a></td><td class="pair"><a href="fix_Get%20Minimum%20X%2CY%20for%20All%20Nodes.rb.html">fix_Get Minimum X,Y for All Nodes.rb</a></td></tr><tr><td class="pair"><a href="hw_UI_script_Add%20Nine%201D%20Results%20Points.rb.html">hw_UI_script_Add Nine 1D Results Points.rb</a></td><td class="pair"><a href="fix_hw_UI_script_Add%20Nine%201D%20Results%20Points.rb.html">fix_hw_UI_script_Add Nine 1D Results Points.rb</a></td></tr><tr><td class="pair"><a href="pudgy%20penguin%20subs.rb.html">pudgy penguin subs.rb</a></td><td class="pair"><a href="fix_pudgy%20penguin%20subs.rb.html">fix_pudgy penguin subs.rb</a></td></tr><tr><td class="pair"><a href="spatial.rb.html">spatial.rb</a></td><td class="pair"><a href="fix_spatial.rb.html">fix_spatial.rb</a></td></tr><tr><td class="pair"><a href="swmm_UI_script_%20Change%20Subcatchment%20Boundaries.rb.html">swmm_UI_script_ Change Subcatchment Boundaries.rb</a></td><td class="pair"><a href="fix_swmm_UI_script_%20Change%20Subcatchment%20Boundaries.rb.html">fix_swmm_UI_script_ Change Subcatchment Boundaries.rb</a></td></tr><tr><td class="pair"><a href="UI-RenameNodeLinks.rb.html">UI-RenameNodeLinks.rb</a></td><td class="pair"><a href="fix_UI-RenameNodeLinks.rb.html">fix_UI-RenameNodeLinks.rb</a></td></tr><tr><td class="pair"><a href="UI_4_Sides_script_%20Change%20Subcatchment%20Boundaries.rb.html">UI_4_Sides_script_ Change Subcatchment Boundaries.rb</a></td><td class="pair"><a href="fix_UI_4_Sides_script_%20Change%20Subcatchment%20Boundaries.rb.html">fix_UI_4_Sides_script_ Change Subcatchment Boundaries.rb</a></td></tr><tr><td class="pair"><a href="UI_5_Sides_script_%20Change%20Subcatchment%20Boundaries.rb.html">UI_5_Sides_script_ Change Subcatchment Boundaries.rb</a></td><td class="pair"><a href="fix_UI_5_Sides_script_%20Change%20Subcatchment%20Boundaries.rb.html">fix_UI_5_Sides_script_ Change Subcatchment Boundaries.rb</a></td></tr><tr><td class="pair"><a href="UI_Generic_Sides_%20Change%20Subcatchment%20Boundaries.rb.html">UI_Generic_Sides_ Change Subcatchment Boundaries.rb</a></td><td class="pair"><a href="fix_UI_Generic_Sides_%20Change%20Subcatchment%20Boundaries.rb.html">fix_UI_Generic_Sides_ Change Subcatchment Boundaries.rb</a></td></tr><tr><td class="pair"><a href="UI_script_%20Change%20Subcatchment%20Boundaries.rb.html">UI_script_ Change Subcatchment Boundaries.rb</a></td><td class="pair"><a href="fix_UI_script_%20Change%20Subcatchment%20Boundaries.rb.html">fix_UI_script_ Change Subcatchment Boundaries.rb</a></td></tr></tbody></table><h2 style="margin-top:14px;">Markdown</h2><div class="md-list"><a href="_Fixes.md.html">_Fixes.md</a><a href="Get%20Minimum%20X%2CY%20for%20All%20Nodes.md.html">Get Minimum X,Y for All Nodes.md</a><a href="pudgy%20penguin%20subs.md.html">pudgy penguin subs.md</a><a href="ras.md.html">ras.md</a><a href="readme.md.html">readme.md</a><a href="readme_%20Change%20Subcatchment%20Boundaries.md.html">readme_ Change Subcatchment Boundaries.md</a><a href="UI_Generic_Sides_%20Change%20Subcatchment%20Boundaries.md.html">UI_Generic_Sides_ Change Subcatchment Boundaries.md</a></div></div>
+  <nav class="toc"><strong>Scripts in this folder</strong><ol><li><a href="#fix-1-split-link-into-chunksrb">fix_1_split_link_into_chunks.rb</a></li><li><a href="#fix-2-split-links-around-noderb">fix_2_split_links_around_node.rb</a></li><li><a href="#fix-get-minimum-xy-for-all-nodesrb">fix_Get Minimum X,Y for All Nodes.rb</a></li><li><a href="#fix-ui-renamenodelinksrb">fix_UI-RenameNodeLinks.rb</a></li><li><a href="#fix-ui-4-sides-script-change-subcatchment-boundariesrb">fix_UI_4_Sides_script_ Change Subcatchment Boundaries.rb</a></li><li><a href="#fix-ui-5-sides-script-change-subcatchment-boundariesrb">fix_UI_5_Sides_script_ Change Subcatchment Boundaries.rb</a></li><li><a href="#fix-ui-generic-sides-change-subcatchment-boundariesrb">fix_UI_Generic_Sides_ Change Subcatchment Boundaries.rb</a></li><li><a href="#fix-hw-ui-script-add-nine-1d-results-pointsrb">fix_hw_UI_script_Add Nine 1D Results Points.rb</a></li><li><a href="#fix-ui-script-change-subcatchment-boundariesrb">fix_UI_script_ Change Subcatchment Boundaries.rb</a></li><li><a href="#fix-pudgy-penguin-subsrb">fix_pudgy penguin subs.rb</a></li><li><a href="#fix-spatialrb">fix_spatial.rb</a></li><li><a href="#fix-swmm-ui-script-change-subcatchment-boundariesrb">fix_swmm_UI_script_ Change Subcatchment Boundaries.rb</a></li></ol></nav>
+  <section class="content">
+    <h1 id="folder-0021-change-the-geometry-or-rename-ids">Folder 0021 - Change the Geometry or Rename IDs</h1>
+<p>Hardened <code>fix_*.rb</code> versions of every original script. All add
+<code># frozen_string_literal: true</code>, a header block, begin/rescue/ensure,
+validation of network/selection/prompt input, polygon vertex count &gt;= 3,
+link bends &gt;= 2 vertices, transaction-rollback on error, per-row rescue,
+and timestamped progress logging.</p>
+<h2 id="fix_1_split_link_into_chunksrb">fix_1_split_link_into_chunks.rb</h2>
+<p>Splits each selected wn_pipe into evenly sized chunks of length
+<code>DEFAULT_CHUNK_SIZE</code> using <code>InnoSpatial.split_link_into_chunks</code>.</p>
+<p>Hardening:
+- Validates network and selection
+- Validates <code>bends</code> length &gt;= 4 (&gt;= 2 vertices) before splitting
+- Transaction wrapped in rescue with <code>transaction_rollback</code>
+- Per-link rescue</p>
+<p>How to run: select wn_pipe rows, optionally edit <code>DEFAULT_CHUNK_SIZE</code>, then run.</p>
+<h2 id="fix_2_split_links_around_noderb">fix_2_split_links_around_node.rb</h2>
+<p>For every selected node, splits each us/ds link a configurable distance away.</p>
+<p>Hardening:
+- Prompts and validates the distance (not nil, not empty, &gt; 0)
+- Validates network and selection
+- Transaction-rollback on error; per-node rescue</p>
+<p>How to run: select nodes, run, enter distance.</p>
+<h2 id="fix_get-minimum-xy-for-all-nodesrb">fix_Get Minimum X,Y for All Nodes.rb</h2>
+<p>Compute and print min/max X/Y over every node and the ICM version string.</p>
+<p>Hardening:
+- Validates network and node collection
+- Skips nodes with nil x/y, prints considered/skipped counts</p>
+<p>How to run: open the network and execute as a UI script.</p>
+<h2 id="fix_ui-renamenodelinksrb">fix_UI-RenameNodeLinks.rb</h2>
+<p>Auto-rename every selected node and selected link via <code>autoname</code>.</p>
+<p>Hardening:
+- Validates network and that the selection is not empty
+- Transaction wrapped in rescue with <code>transaction_rollback</code>
+- Per-row rescue, separate node/link counters in log</p>
+<p>How to run: select nodes/links and run as a UI script.</p>
+<h2 id="fix_ui_4_sides_script_-change-subcatchment-boundariesrb">fix_UI_4_Sides_script_ Change Subcatchment Boundaries.rb</h2>
+<p>Replace each selected hw_2d_infiltration_zone polygon with a rectangle.</p>
+<p>Hardening:
+- Validates network and collection
+- Validates polygon has &gt;= 3 vertices
+- Transaction-rollback on error; per-polygon rescue</p>
+<p>How to run: select hw_2d_infiltration_zone rows and run.</p>
+<h2 id="fix_ui_5_sides_script_-change-subcatchment-boundariesrb">fix_UI_5_Sides_script_ Change Subcatchment Boundaries.rb</h2>
+<p>Replace each selected hw_subcatchment polygon with a regular pentagon.</p>
+<p>Hardening: same vertex / transaction guards as the rectangle script.</p>
+<p>How to run: select hw_subcatchment rows and run.</p>
+<h2 id="fix_ui_generic_sides_-change-subcatchment-boundariesrb">fix_UI_Generic_Sides_ Change Subcatchment Boundaries.rb</h2>
+<p>Replace each selected hw_subcatchment polygon with a regular N-sided polygon
+(default 19).</p>
+<p>Hardening: same vertex / transaction guards as the other shape scripts.</p>
+<p>How to run: edit <code>NUMBER_OF_SIDES</code>, select rows, run.</p>
+<h2 id="fix_hw_ui_script_add-nine-1d-results-pointsrb">fix_hw_UI_script_Add Nine 1D Results Points.rb</h2>
+<p>For each selected hw_conduit, add nine <code>hw_1d_results_point</code> rows at 10/20/.../90%.</p>
+<p>Hardening:
+- Validates network and required collections
+- Validates us/ds node lookups returned non-nil and have valid coordinates
+- Per-conduit rescue
+- Transaction-rollback on error</p>
+<p>How to run: select hw_conduit rows and run.</p>
+<h2 id="fix_ui_script_-change-subcatchment-boundariesrb">fix_UI_script_ Change Subcatchment Boundaries.rb</h2>
+<p>Sequentially reshape every selected hw_subcatchment polygon through five
+geometries: rectangle -&gt; hexagon -&gt; pentagon -&gt; nonagon -&gt; 7-gon.</p>
+<p>Hardening:
+- Validates network and collection
+- Each pass uses its own <code>transaction_begin</code>/<code>commit</code> with rollback on error
+- Per-polygon rescue inside each pass</p>
+<p>How to run: select hw_subcatchment rows and run.</p>
+<h2 id="fix_pudgy-penguin-subsrb">fix_pudgy penguin subs.rb</h2>
+<p>Universal Polygon Geometry &amp; ID Changer.  Auto-detects hw/sw network and
+reshapes selected subcatchments to RECTANGLE / regular POLYGON / CUSTOM
+(penguin) shape.</p>
+<p>Hardening:
+- Validates network and subcatchment table
+- Validates polygon has &gt;= 3 vertices and area-preservation math handles
+  zero-area templates
+- Transaction-rollback on error; per-polygon rescue</p>
+<p>How to run: edit constants at top (SHAPE_TYPE etc), select rows, run.</p>
+<h2 id="fix_spatialrb">fix_spatial.rb</h2>
+<p>Hardened InnoSpatial helpers (split_link_into_chunks,
+split_links_around_node, split_link_at_distance, link_length, distance,
+lerp).  Library only - required by the split-link scripts.</p>
+<p>Hardening:
+- Nil-safety on <code>bends</code>, <code>us_node</code>, <code>ds_node</code>
+- Validates link has &gt;= 2 vertices and positive length before splitting
+- Rejects zero/negative distance and chunk_size
+- <code>lerp</code> clamped to [0,1]
+- Catches and logs per-link errors so a batch run continues</p>
+<p>How to run: required automatically by the split scripts via
+<code>require_relative 'spatial'</code> (filename of the original).  This fix file
+preserves the same module name (<code>InnoSpatial</code>) so callers can be pointed
+at it by editing their <code>require_relative</code> line.</p>
+<h2 id="fix_swmm_ui_script_-change-subcatchment-boundariesrb">fix_swmm_UI_script_ Change Subcatchment Boundaries.rb</h2>
+<p>Prompt-driven version: asks for SWMM/InfoWorks and number of sides, then
+reshapes selected subcatchments.</p>
+<p>Hardening:
+- Validates the prompt was not cancelled
+- Validates the chosen sides count (3..50)
+- Resolves and validates the subcatchment table
+- Transaction-rollback on error; per-polygon rescue</p>
+<p>How to run: select subcatchments and run; answer the prompt.</p>
+  </section>
+  <footer>
+    Auto-generated from _Fixes.md &middot; InfoWorks ICM Ruby scripts hardened with begin/rescue/ensure, input validation, block-form file I/O, progress logging.
+  </footer>
+</div>
+</body>
+</html>

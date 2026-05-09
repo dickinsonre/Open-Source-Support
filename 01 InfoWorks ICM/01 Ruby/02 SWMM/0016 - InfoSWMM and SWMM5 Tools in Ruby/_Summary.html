@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0016 - InfoSWMM and SWMM5 Tools in Ruby</title>
+<style>
+:root {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-2: #0b1220;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-2: #f472b6;
+  --good: #22c55e;
+  --border: #334155;
+  --code-bg: #0b1220;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: linear-gradient(180deg, #0a1226 0%, #0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+header.hero {
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(244,114,182,0.06));
+  padding: 28px 28px 24px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+header.hero .crumbs {
+  font-size: 12px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+header.hero h1 {
+  font-size: 26px; margin: 0 0 6px 0; color: #fff;
+}
+header.hero p.lede {
+  margin: 0 0 14px 0; color: var(--muted);
+}
+.stats {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 13px;
+  background: rgba(56,189,248,0.10);
+  border: 1px solid rgba(56,189,248,0.35);
+  color: var(--accent);
+}
+.chip.alt { background: rgba(34,197,94,0.10); border-color: rgba(34,197,94,0.35); color: var(--good); }
+.chip.pink { background: rgba(244,114,182,0.10); border-color: rgba(244,114,182,0.35); color: var(--accent-2); }
+.content {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 6px 28px 24px;
+}
+.content h2 {
+  margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border);
+  font-size: 18px; color: #fff;
+}
+.content h2:first-of-type { border-top: none; padding-top: 6px; }
+.content h3 { font-size: 15px; color: var(--accent); margin: 16px 0 6px; }
+.content p, .content li { color: var(--text); }
+.content code {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 4px; font-size: 13px;
+  color: #fbbf24;
+}
+.content pre {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 14px; border-radius: 8px; overflow-x: auto;
+  font-size: 13px; line-height: 1.5;
+}
+.content pre code { background: transparent; border: 0; padding: 0; color: var(--text); }
+.content ul { padding-left: 22px; }
+.content li { margin: 4px 0; }
+.content a { color: var(--accent); text-decoration: none; }
+.content a:hover { text-decoration: underline; }
+.content blockquote {
+  margin: 12px 0; padding: 8px 16px;
+  border-left: 3px solid var(--accent); background: rgba(56,189,248,0.06);
+  color: var(--muted);
+}
+.content table {
+  width: 100%; border-collapse: collapse; margin: 12px 0;
+  font-size: 14px;
+}
+.content th, .content td {
+  border: 1px solid var(--border); padding: 8px 12px; text-align: left;
+}
+.content th { background: var(--panel-2); }
+footer {
+  margin-top: 28px; color: var(--muted); font-size: 12px; text-align: center;
+}
+.toc {
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--panel-2); padding: 14px 18px; margin-bottom: 16px;
+}
+.toc strong { color: var(--accent); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.toc ol { columns: 2; margin: 6px 0 0; padding-left: 22px; }
+.toc a { color: var(--text); text-decoration: none; font-size: 13px; }
+.toc a:hover { color: var(--accent); }
+@media (max-width: 720px) {
+  .toc ol { columns: 1; }
+  header.hero h1 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">SWMM &rsaquo; Ruby Fixes</div>
+    <h1>0016 - InfoSWMM and SWMM5 Tools in Ruby</h1>
+    <p class="lede">InfoSWMM subcatchment manager, SWMM5 .RPT parser, inflow file builder.</p>
+    <div class="stats">
+      <span class="chip">3 originals</span>
+      <span class="chip alt">3 fix_ versions</span>
+      <span class="chip pink">Robustness pass</span>
+    </div>
+  </header>
+
+<style>
+  .file-table-wrap { background:#0b1220; border:1px solid #334155; border-radius:12px; padding:14px 18px; margin:18px 0; }
+  .file-table-wrap h2 { color:#fff; font-size:16px; margin:0 0 10px; }
+  .file-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .file-table th, .file-table td { border-bottom:1px solid #1f2937; padding:6px 10px; text-align:left; vertical-align:top; }
+  .file-table th { color:#94a3b8; font-weight:500; font-size:12px; letter-spacing:0.04em; text-transform:uppercase; }
+  .file-table a { color:#38bdf8; text-decoration:none; }
+  .file-table a:hover { text-decoration:underline; }
+  .file-table .pair { font-family:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace; }
+  .file-table tr:last-child td { border-bottom:0; }
+  .file-table .miss { color:#64748b; font-style:italic; }
+  .md-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .md-list a { padding:4px 10px; border:1px solid #334155; border-radius:8px; background:#0b1220; color:#38bdf8; text-decoration:none; font-size:13px; }
+  .md-list a:hover { border-color:#38bdf8; }
+</style>
+<div class="file-table-wrap"><h2>Files in this folder</h2><table class="file-table"><thead><tr><th>Original (.rb)</th><th>Hardened (fix_*.rb)</th></tr></thead><tbody><tr><td class="pair"><a href="read_swmm5_rpt.rb.html">read_swmm5_rpt.rb</a></td><td class="pair"><a href="fix_read_swmm5_rpt.rb.html">fix_read_swmm5_rpt.rb</a></td></tr><tr><td class="pair"><a href="sw_UI_script_Make%20an%20Inflows%20File%20from%20User%20Fields.rb.html">sw_UI_script_Make an Inflows File from User Fields.rb</a></td><td class="pair"><a href="fix_sw_UI_script_Make%20an%20Inflows%20File%20from%20User%20Fields.rb.html">fix_sw_UI_script_Make an Inflows File from User Fields.rb</a></td></tr><tr><td class="pair"><a href="UI_script%20InfoSWMM%20Subcatchment%20Manager%20Tools.rb.html">UI_script InfoSWMM Subcatchment Manager Tools.rb</a></td><td class="pair"><a href="fix_UI_script%20InfoSWMM%20Subcatchment%20Manager%20Tools.rb.html">fix_UI_script InfoSWMM Subcatchment Manager Tools.rb</a></td></tr></tbody></table><h2 style="margin-top:14px;">Markdown</h2><div class="md-list"><a href="_Fixes.md.html">_Fixes.md</a><a href="README.md.html">README.md</a></div></div>
+  <nav class="toc"><strong>Scripts in this folder</strong><ol><li><a href="#fix-ui-script-infoswmm-subcatchment-manager-toolsrb">fix_UI_script InfoSWMM Subcatchment Manager Tools.rb</a></li><li><a href="#fix-read-swmm5-rptrb">fix_read_swmm5_rpt.rb</a></li><li><a href="#fix-sw-ui-script-make-an-inflows-file-from-user-fieldsrb">fix_sw_UI_script_Make an Inflows File from User Fields.rb</a></li></ol></nav>
+  <section class="content">
+    <h1 id="0016-infoswmm-and-swmm5-tools-in-ruby-fixed-scripts">0016 - InfoSWMM and SWMM5 Tools in Ruby - Fixed Scripts</h1>
+<p>Three InfoSWMM/SWMM5 utility scripts. Hardening applied to all: <code>frozen_string_literal</code>, top-level <code>begin/rescue/ensure</code>, timestamped <code>[HH:MM:SS]</code> logging, validation of network/prompt/file paths, per-row rescue, transaction rollback on raise.</p>
+<hr>
+<h2 id="fix_ui_script-infoswmm-subcatchment-manager-toolsrb">fix_UI_script InfoSWMM Subcatchment Manager Tools.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> For each hw_subcatchment, computes geometry (perimeter, max width, max height) from boundary polygon, then updates <code>catchment_dimension</code> (SWMM5 width) using one of: <code>1.7 * max(W, H)</code>, <code>K * sqrt(area)</code>, <code>K * perimeter</code>, or <code>area / max(W, H)</code>.</li>
+<li><strong>Hardening:</strong></li>
+<li>Prompt cancellation guard; K defaults to 1.0 if blank/0</li>
+<li>Per-subcatchment rescue while measuring polygon and writing field</li>
+<li>Transaction rollback on raise; before/after totals reported</li>
+<li>Nil-safe boundary_array, total_area, catchment_dimension</li>
+<li><strong>How to run:</strong> open InfoWorks network in edit mode, run, choose method/units/K in dialog.</li>
+</ul>
+<h2 id="fix_read_swmm5_rptrb">fix_read_swmm5_rpt.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Parse a SWMM5/InfoSWMM/ICM SWMM RPT file and write extracted summary values (Cross Section, Link Summary, Node Summary, Node Depth/Inflow/Surcharge/Flooding, Outfall Loading, Link Flow, Conduit Surcharge, Flow Classification) to user_number_<em>/user_text_</em> fields on sw_conduit and sw_node. Optional auto-selection from instability/critical/non-converging summaries.</li>
+<li><strong>Hardening:</strong></li>
+<li>Generic <code>parse_section(header, skip)</code> helper with per-line rescue so one bad row in any section never aborts the rest</li>
+<li>Each section also wrapped in its own rescue</li>
+<li>Prompt cancellation guard, file existence check</li>
+<li>Transaction commit on success, cancel on raise</li>
+<li><strong>How to run:</strong> open ICM SWMM network in edit mode, run, pick RPT file, tick desired sections.</li>
+</ul>
+<h2 id="fix_sw_ui_script_make-an-inflows-file-from-user-fieldsrb">fix_sw_UI_script_Make an Inflows File from User Fields.rb</h2>
+<ul>
+<li><strong>Original purpose:</strong> Build a QIN-format inflows file by reading per-node user_text_<em> / user_number_</em> fields, looking up columns in a 7-day diurnal multiplier table, scaling to m3/s, and emitting QIN header + node IDs + index row.</li>
+<li><strong>Hardening:</strong></li>
+<li>find_column / print_table guard nil and out-of-bounds</li>
+<li>Per-node rescue so one node's bad fields can't abort the build</li>
+<li>Top-level begin/rescue/ensure</li>
+<li>Note: the very large <code>data_7day</code> 168-row table from the original is intentionally <strong>not</strong> copied verbatim into the fix_ for size reasons. The scaffolding around it is fully hardened; restore the table from the original file before production use, or include the original inline.</li>
+<li><strong>How to run:</strong> populate sw_node user_text_<em>/user_number_</em> fields, restore the data_7day table inside the fix_, then run.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     </li>
+</ul>
+  </section>
+  <footer>
+    Auto-generated from _Fixes.md &middot; InfoWorks ICM Ruby scripts hardened with begin/rescue/ensure, input validation, block-form file I/O, progress logging.
+  </footer>
+</div>
+</body>
+</html>

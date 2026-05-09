@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0020 - All Node, Subs and Link IDs Tools</title>
+<style>
+:root {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-2: #0b1220;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-2: #f472b6;
+  --good: #22c55e;
+  --border: #334155;
+  --code-bg: #0b1220;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: linear-gradient(180deg, #0a1226 0%, #0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+header.hero {
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(244,114,182,0.06));
+  padding: 28px 28px 24px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+header.hero .crumbs {
+  font-size: 12px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+header.hero h1 {
+  font-size: 26px; margin: 0 0 6px 0; color: #fff;
+}
+header.hero p.lede {
+  margin: 0 0 14px 0; color: var(--muted);
+}
+.stats {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 13px;
+  background: rgba(56,189,248,0.10);
+  border: 1px solid rgba(56,189,248,0.35);
+  color: var(--accent);
+}
+.chip.alt { background: rgba(34,197,94,0.10); border-color: rgba(34,197,94,0.35); color: var(--good); }
+.chip.pink { background: rgba(244,114,182,0.10); border-color: rgba(244,114,182,0.35); color: var(--accent-2); }
+.content {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 6px 28px 24px;
+}
+.content h2 {
+  margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border);
+  font-size: 18px; color: #fff;
+}
+.content h2:first-of-type { border-top: none; padding-top: 6px; }
+.content h3 { font-size: 15px; color: var(--accent); margin: 16px 0 6px; }
+.content p, .content li { color: var(--text); }
+.content code {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 4px; font-size: 13px;
+  color: #fbbf24;
+}
+.content pre {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 14px; border-radius: 8px; overflow-x: auto;
+  font-size: 13px; line-height: 1.5;
+}
+.content pre code { background: transparent; border: 0; padding: 0; color: var(--text); }
+.content ul { padding-left: 22px; }
+.content li { margin: 4px 0; }
+.content a { color: var(--accent); text-decoration: none; }
+.content a:hover { text-decoration: underline; }
+.content blockquote {
+  margin: 12px 0; padding: 8px 16px;
+  border-left: 3px solid var(--accent); background: rgba(56,189,248,0.06);
+  color: var(--muted);
+}
+.content table {
+  width: 100%; border-collapse: collapse; margin: 12px 0;
+  font-size: 14px;
+}
+.content th, .content td {
+  border: 1px solid var(--border); padding: 8px 12px; text-align: left;
+}
+.content th { background: var(--panel-2); }
+footer {
+  margin-top: 28px; color: var(--muted); font-size: 12px; text-align: center;
+}
+.toc {
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--panel-2); padding: 14px 18px; margin-bottom: 16px;
+}
+.toc strong { color: var(--accent); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.toc ol { columns: 2; margin: 6px 0 0; padding-left: 22px; }
+.toc a { color: var(--text); text-decoration: none; font-size: 13px; }
+.toc a:hover { color: var(--accent); }
+@media (max-width: 720px) {
+  .toc ol { columns: 1; }
+  header.hero h1 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">SWMM &rsaquo; Ruby Fixes</div>
+    <h1>0020 - All Node, Subs and Link IDs Tools</h1>
+    <p class="lede">Bulk rename of node/subcatchment/link IDs with collision detection; duplicate ID reporting.</p>
+    <div class="stats">
+      <span class="chip">5 originals</span>
+      <span class="chip alt">5 fix_ versions</span>
+      <span class="chip pink">Robustness pass</span>
+    </div>
+  </header>
+
+<style>
+  .file-table-wrap { background:#0b1220; border:1px solid #334155; border-radius:12px; padding:14px 18px; margin:18px 0; }
+  .file-table-wrap h2 { color:#fff; font-size:16px; margin:0 0 10px; }
+  .file-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .file-table th, .file-table td { border-bottom:1px solid #1f2937; padding:6px 10px; text-align:left; vertical-align:top; }
+  .file-table th { color:#94a3b8; font-weight:500; font-size:12px; letter-spacing:0.04em; text-transform:uppercase; }
+  .file-table a { color:#38bdf8; text-decoration:none; }
+  .file-table a:hover { text-decoration:underline; }
+  .file-table .pair { font-family:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace; }
+  .file-table tr:last-child td { border-bottom:0; }
+  .file-table .miss { color:#64748b; font-style:italic; }
+  .md-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .md-list a { padding:4px 10px; border:1px solid #334155; border-radius:8px; background:#0b1220; color:#38bdf8; text-decoration:none; font-size:13px; }
+  .md-list a:hover { border-color:#38bdf8; }
+</style>
+<div class="file-table-wrap"><h2>Files in this folder</h2><table class="file-table"><thead><tr><th>Original (.rb)</th><th>Hardened (fix_*.rb)</th></tr></thead><tbody><tr><td class="pair"><a href="DuplicateLinkIDs.rb.html">DuplicateLinkIDs.rb</a></td><td class="pair"><a href="fix_DuplicateLinkIDs.rb.html">fix_DuplicateLinkIDs.rb</a></td></tr><tr><td class="pair"><a href="hw_change%20All%20Node%20and%20Sub%20ID.rb.html">hw_change All Node and Sub ID.rb</a></td><td class="pair"><a href="fix_hw_change%20All%20Node%20and%20Sub%20ID.rb.html">fix_hw_change All Node and Sub ID.rb</a></td></tr><tr><td class="pair"><a href="hw_change%20All%20Node%2C%20Subs%20and%20Link%20ID.rb.html">hw_change All Node, Subs and Link ID.rb</a></td><td class="pair"><a href="fix_hw_change%20All%20Node%2C%20Subs%20and%20Link%20ID.rb.html">fix_hw_change All Node, Subs and Link ID.rb</a></td></tr><tr><td class="pair"><a href="sw_change%20All%20Node%2C%20Link%20%20and%20Subs%20ID.rb.html">sw_change All Node, Link  and Subs ID.rb</a></td><td class="pair"><a href="fix_sw_change%20All%20Node%2C%20Link%20%20and%20Subs%20ID.rb.html">fix_sw_change All Node, Link  and Subs ID.rb</a></td></tr><tr><td class="pair"><a href="sw_change%20All%20Node%2C%20Subs%20and%20Link%20ID.rb.html">sw_change All Node, Subs and Link ID.rb</a></td><td class="pair"><a href="fix_sw_change%20All%20Node%2C%20Subs%20and%20Link%20ID.rb.html">fix_sw_change All Node, Subs and Link ID.rb</a></td></tr></tbody></table><h2 style="margin-top:14px;">Markdown</h2><div class="md-list"><a href="_Fixes.md.html">_Fixes.md</a><a href="readme.md.html">readme.md</a></div></div>
+  <nav class="toc"><strong>Scripts in this folder</strong><ol><li><a href="#fix-duplicatelinkidsrb">fix_DuplicateLinkIDs.rb</a></li><li><a href="#fix-hw-change-all-node-and-sub-idrb">fix_hw_change All Node and Sub ID.rb</a></li><li><a href="#fix-hw-change-all-node-subs-and-link-idrb">fix_hw_change All Node, Subs and Link ID.rb</a></li><li><a href="#fix-sw-change-all-node-link-and-subs-idrb">fix_sw_change All Node, Link  and Subs ID.rb</a></li><li><a href="#fix-sw-change-all-node-subs-and-link-idrb">fix_sw_change All Node, Subs and Link ID.rb</a></li></ol></nav>
+  <section class="content">
+    <h1 id="folder-0020-all-node-subs-and-link-ids-tools">Folder 0020 - All Node, Subs and Link IDs Tools</h1>
+<p>Hardened <code>fix_*.rb</code> versions of every original script. All add
+<code># frozen_string_literal: true</code>, a header block, begin/rescue/ensure with
+transaction rollback on error, pre-flight collision detection for ID
+renames, and timestamped progress logging.</p>
+<h2 id="fix_duplicatelinkidsrb">fix_DuplicateLinkIDs.rb</h2>
+<p>Detect and report duplicate link ids across all link sub-tables.</p>
+<p>Hardening:
+- Validates network and link collection
+- Nil-safe on id/table
+- Final summary with duplicate count</p>
+<p>How to run: open the network and execute as a UI script.</p>
+<h2 id="fix_hw_change-all-node-and-sub-idrb">fix_hw_change All Node and Sub ID.rb</h2>
+<p>Sequentially rename every node and subcatchment in an InfoWorks (hw_*)
+network (N_1, S_1, ...). Link rename is intentionally disabled to mirror
+the original.</p>
+<p>Hardening:
+- Pre-flight collision detection - any proposed N_ / S_ id that conflicts
+  with an existing id (excluding rows being renamed) aborts the run before
+  any writes
+- transaction_begin/commit wrapped in rescue with <code>transaction_rollback</code>
+  on error
+- Timestamped per-table count log</p>
+<p>How to run: open an hw_* network and execute as a UI script. Read the log -
+abort messages indicate manual cleanup is required.</p>
+<h2 id="fix_hw_change-all-node-subs-and-link-idrb">fix_hw_change All Node, Subs and Link ID.rb</h2>
+<p>Same as above but renames links too (L_n).</p>
+<p>Hardening: identical strategy to the sister script with the addition of
+link-id collision detection.</p>
+<p>How to run: open an hw_* network and execute as a UI script.</p>
+<h2 id="fix_sw_change-all-node-link-and-subs-idrb">fix_sw_change All Node, Link  and Subs ID.rb</h2>
+<p>SWMM equivalent: rename every node, link and subcatchment in an sw_*
+network using N_/L_/S_ prefixes.</p>
+<p>Hardening: same pre-flight collision detection and transaction-rollback as
+the hw_ variants.</p>
+<p>How to run: open an sw_* network and execute as a UI script.</p>
+<h2 id="fix_sw_change-all-node-subs-and-link-idrb">fix_sw_change All Node, Subs and Link ID.rb</h2>
+<p>Functional duplicate of the previous script (kept for parity with the
+original folder layout).</p>
+<p>Hardening: identical to the sister script.</p>
+<p>How to run: open an sw_* network and execute as a UI script.</p>
+  </section>
+  <footer>
+    Auto-generated from _Fixes.md &middot; InfoWorks ICM Ruby scripts hardened with begin/rescue/ensure, input validation, block-form file I/O, progress logging.
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>README_SWMM.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM</div>
+    <h1>README_SWMM.md</h1>
+    <div class="meta">Markdown document &middot; .</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">128 lines</span></div>
+    <div class="toolbar"><a href="./index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="icm-swmm-networks">ICM SWMM Networks</h1>
+<p>In InfoWorks SWMM, the data representing the stormwater network (such as pipes, nodes, and subcatchments) is organized into tables. These tables often have names beginning with <code>sw_</code>, for example <code>sw_pipe</code>, <code>sw_node</code>, etc. The different attributes of these elements (such as their dimensions, materials, and locations) are represented as fields within these tables.</p>
+<p>The comment suggests that while these Ruby scripts are intended for use with InfoWorks SWMM, they may also work with Autodesk Innovyze's InfoWorks ICM (Integrated Catchment Modeling) to some extent, because the code structure is often very similar. However, there are important differences to be aware of.</p>
+<p>In particular, the naming convention for tables in InfoWorks ICM is different. Instead of starting with <code>sw_</code>, tables in ICM usually start with <code>hw_</code> (for "HydroWorks", a predecessor of InfoWorks ICM). The field names within these tables can also be different between SWMM and InfoWorks.</p>
+<p>This means that if you're trying to use these Ruby scripts with Autodesk Innovyze's InfoWorks ICM, you may need to modify the code to account for these differences in table and field names. Without such modifications, the scripts might not work as intended or might produce errors.</p>
+<h2 id="icm-swmm-ruby-folders-composite-2025">ICM SWMM Ruby Folders (Composite 2025)</h2>
+<ul>
+<li><strong>0001 - Element and Field Statistics</strong></li>
+<li><strong>0002 - Tracing Tools</strong></li>
+<li><strong>0003 - Scenario Tools</strong></li>
+<li><strong>0004 - Scenario Sensitivity - InfoWorks</strong></li>
+<li><strong>0005 - Import Export of Data Tables</strong></li>
+<li><strong>0006 - ICM SWMM vs ICM InfoWorks All Tables</strong></li>
+<li><strong>0007 - Hydraulic Comparison Tools for ICM InfoWorks and SWMM</strong></li>
+<li><strong>0008 - Database Field Tools for Elements and Results</strong></li>
+<li><strong>0009 - Polygon Subcatchment Boundary Tools</strong></li>
+<li><strong>0010 - List all results fields with Stats</strong></li>
+<li><strong>0011 - Get results from all timesteps in the IWR File</strong></li>
+<li><strong>0012 - ICM InfoWorks Results to SWMM5 Summary Tables</strong></li>
+<li><strong>0013 - SUDS or LID Tools</strong></li>
+<li><strong>0014 - InfoSewer to ICM Comparison Tools</strong></li>
+<li><strong>0015 - Export SWMM5 Calibration Files</strong></li>
+<li><strong>0016 - InfoSWMM and SWMM5 Tools in Ruby</strong></li>
+<li><strong>0017 - Subcatchment Grid and Tabs Tools</strong></li>
+<li><strong>0018 - Create Selection list using a SQL query</strong></li>
+<li><strong>0019 - Node Connection Tools</strong></li>
+<li><strong>0020 - All Node, Subs and Link IDs Tools</strong></li>
+<li><strong>0021 - Change the Geometry or Rename IDs</strong></li>
+<li><strong>0022 - TBA</strong></li>
+<li><strong>0023 - TBA</strong></li>
+<li><strong>0024 - Utilities</strong></li>
+<li><strong>0025 - Miscellaneous</strong></li>
+</ul>
+<h2 id="swmm5-versions">SWMM5 Versions</h2>
+<table>
+<thead>
+<tr>
+<th>Release Date</th>
+<th>Versions</th>
+<th>Developers</th>
+<th>FEMA Approval</th>
+<th>LID Controls</th>
+<th>Major Release</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>08/07/2023</td>
+<td>SWMM 5.2.4</td>
+<td>EPA</td>
+<td>Yes</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>03/03/2023</td>
+<td>SWMM 5.2.3</td>
+<td>EPA</td>
+<td>Yes</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>12/01/2022</td>
+<td>SWMM 5.2.2</td>
+<td>EPA</td>
+<td>Yes</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>08/11/2022</td>
+<td>SWMM 5.2.1</td>
+<td>EPA</td>
+<td>Yes</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>02/01/2022</td>
+<td>SWMM 5.2</td>
+<td>EPA</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>07/20/2020</td>
+<td>SWMM 5.1.015</td>
+<td>EPA</td>
+<td>Yes</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>02/18/2020</td>
+<td>SWMM 5.1.014</td>
+<td>EPA</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>08/09/2018</td>
+<td>SWMM 5.1.013</td>
+<td>EPA</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>03/14/2017</td>
+<td>SWMM 5.1.012</td>
+<td>EPA</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>08/22/2016</td>
+<td>SWMM 5.1.011</td>
+<td>EPA</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>08/20/2015</td>
+<td>SWMM 5.1.010</td>
+<td>EPA</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>04/30/2015</td>
+<td>SWMM 5.1.009</td>
+<td>EPA</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>04/17/2015</td>
+<td>SWMM 5.1.008</td>
+<td>EPA</td>
+<td>Yes</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>10/09/2014</td>
+<td>SWMM 5.1.007</td>
+<td>EPA</td>
+<td>Yes</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>06/02/2014</td>
+<td>SWMM 5.1.006</td>
+<td>EPA</td>
+<td>Yes</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>03/27/2014</td>
+<td>SWMM 5.1.001</td>
+<td>EPA</td>
+<td>Yes</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>04/21/2011</td>
+<td>SWMM 5.0.022</td>
+<td>EPA</td>
+<td>Yes</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>08/20/2010</td>
+<td>SWMM 5.0.019</td>
+<td>EPA</td>
+<td>Yes</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>03/19/2008</td>
+<td>SWMM 5.0.013</td>
+<td>EPA</td>
+<td>Yes</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>08/17/2005</td>
+<td>SWMM 5.0.005</td>
+<td>EPA, CDM</td>
+<td>Yes</td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td>11/30/2004</td>
+<td>SWMM 5.0.004</td>
+<td>EPA, CDM</td>
+<td>No</td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td>11/25/2004</td>
+<td>SWMM 5.0.003</td>
+<td>EPA, CDM</td>
+<td>No</td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td>10/26/2004</td>
+<td>SWMM 5.0.001</td>
+<td>EPA, CDM</td>
+<td>No</td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td>2001–2004</td>
+<td>SWMM5</td>
+<td>EPA, CDM</td>
+<td>No</td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td>1988–2004</td>
+<td>SWMM4</td>
+<td>UF, OSU, CDM</td>
+<td>No</td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td>1981–1988</td>
+<td>SWMM3</td>
+<td>UF, CDM</td>
+<td>No</td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td>1975–1981</td>
+<td>SWMM2</td>
+<td>UF</td>
+<td>No</td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td>1969–1971</td>
+<td>SWMM1</td>
+<td>UF, CDM, M&amp;E</td>
+<td>No</td>
+<td>No</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="name-notes-on-the-meaning-of-the-prefixes">Name notes on the meaning of the prefixes</h2>
+<ul>
+<li>
+<p>The Ruby script says "hw_Upstream Subcatchments from an Outfall.rb" is designed to work specifically with ICM InfoWorks, indicated by the "hw_" prefix in its name. It focuses on identifying and managing upstream subcatchments from an outfall point within the ICM InfoWorks environment. Similarly, when you see a "sw_" prefix in a Ruby script's name, it means that script is intended for use with ICM SWMM only.</p>
+</li>
+<li>
+<p>However, for scripts with the "hw_sw" prefix, it means they are versatile and can be applied to both ICM InfoWorks (hw) and ICM SWMM (sw) modeling environments. These versatile scripts provide flexibility and convenience, allowing users to work seamlessly across both platforms to perform various tasks related to water management, drainage, and modeling.</p>
+</li>
+<li>
+<p>By using appropriate prefixes in the script names, users can easily identify which scripts are compatible with their specific modeling software, ensuring a smooth and efficient workflow when working with ICM InfoWorks or ICM SWMM projects.</p>
+</li>
+</ul>
+<h3 id="descriptions">Descriptions</h3>
+<ul>
+<li>Field <code>Type</code>:<ul>
+<li><code>UI &amp; EX</code> - Script can be ran in either UI or ICM Exchange</li>
+<li><code>UI</code> - Script is designed to run in the UI only</li>
+<li><code>EX</code> - Script is designed to run in the ICM Exchange only</li>
+<li><code>TBC</code> - Requires assessment from a maintainer</li>
+</ul>
+</li>
+<li>
+<p>Field <code>Category</code>:</p>
+<ul>
+<li><code>Network Data Bin</code>      - Reading raw binary data from the network. Makes no attempt to parse data.</li>
+<li><code>Network Data Get</code>      - Reading useful data from a network</li>
+<li><code>Network Data Set</code>      - Writing data to a network</li>
+<li><code>Network Data Export</code>   - Export network data to a file</li>
+<li><code>Network Data Import</code>   - Import network data from a file</li>
+<li><code>Network Data Analysis</code> - Related to tracing through a network or checking for specific conditions. These examples are more like final products.</li>
+<li><code>Database Data Bin</code>     - Reading raw binary data from the database. Makes no attempt to parse data.</li>
+<li><code>Database Data Get</code>     - Reading useful data from a database</li>
+<li><code>Database Data Set</code>     - Writing data to a database</li>
+<li><code>Database Data Export</code>  - Export database data to a file</li>
+<li><code>Database Data Import</code>  - Import database data from a file</li>
+<li><code>Network RTC Bin</code>       - Reading raw binary data from the network RTC data. Makes no attempt to parse data.</li>
+<li><code>Network RTC Get</code>       - Reading useful data from the network RTC data</li>
+<li><code>Network RTC Set</code>       - Writing data to the network RTC data</li>
+<li><code>Simulations Run</code>       - Creating and Running simulations</li>
+<li><code>Simulations Data Get</code>  - Obtaining simulation data</li>
+<li><code>System Automation</code>     - Misc system tasks</li>
+<li><code>Developer Tools</code>       - Tools that can help you make / learn how to make Ruby scripts.</li>
+</ul>
+<h1 id="infoworks-icm-ruby-integration-exchange-vs-ui">InfoWorks ICM Ruby Integration: Exchange vs UI</h1>
+</li>
+</ul>
+<p>InfoWorks ICM provides two main ways to integrate with Ruby: Exchange and UI. Each of these has its own strengths and limitations, and they are intended for different use cases.</p>
+<h2 id="exchange">Exchange</h2>
+<p>Exchange is a powerful tool for manipulating tree objects 🗂, creating and opening databases 💽, running simulations 🏁, and more. It provides a lower-level access to the database, allowing you to control and manipulate the data directly.</p>
+<p>However, Exchange does not have access to UI elements like graphs 📊 and dialogs 💬. This means that you cannot use Exchange to interact with the user interface of InfoWorks ICM. Exchange scripts are typically run from the command line and do not require the InfoWorks ICM user interface to be open.</p>
+<h2 id="ui">UI</h2>
+<p>UI, on the other hand, allows you to manipulate the currently open network(s) 🌐. You can import and export data 💾, select objects 👉, and run scripts that produce output in the UI 💻.</p>
+<p>However, the UI integration does not allow you to open or close databases, access tree objects directly, or run simulations. It is limited to working on the current open network 🌐.</p>
+<h2 id="summary">Summary</h2>
+<p>In summary, Exchange gives you more low-level database control 🤓 but no UI access 🚫💻, while UI allows you to manipulate the current network with some UI interactions 💻 but with less low-level control ⚙️.</p>
+<p>The Exchange products are intended for command line or automated tasks ⚙️, while the UI Ruby integration allows some scripting on open networks with UI interaction 💻. So they provide different levels of access tailored to their intended use cases.</p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

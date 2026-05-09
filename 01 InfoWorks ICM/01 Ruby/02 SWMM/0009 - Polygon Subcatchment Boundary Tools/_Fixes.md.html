@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>_Fixes.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0009 - Polygon Subcatchment Boundary Tools</div>
+    <h1>_Fixes.md</h1>
+    <div class="meta">Markdown document &middot; 0009 - Polygon Subcatchment Boundary Tools</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">141 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="folder-0009-hardening-report-polygon-subcatchment-boundary-tools">Folder 0009 Hardening Report: Polygon Subcatchment Boundary Tools</h1>
+<h2 id="overview">Overview</h2>
+<p>6 geometry manipulation UI scripts for 2D mesh/infiltration/permeable zone polygons and subcatchment boundary creation.</p>
+<h2 id="key-hardening-applied-to-all-files">Key Hardening Applied to All Files</h2>
+<ul>
+<li><strong>Frozen string literals</strong> (<code># frozen_string_literal: true</code>)</li>
+<li><strong>begin/rescue/ensure</strong> error handling with explicit rollback</li>
+<li><strong>Network nil-checks</strong></li>
+<li><strong>Boundary array validation</strong> (not nil, not empty, minimum 2 coordinates)</li>
+<li><strong>Zero-guard on division</strong> (centroid calculation, polygon extent)</li>
+<li><strong>Math.cos/sin guards</strong> against invalid angle calculations</li>
+<li><strong>Transaction begin/commit/rollback</strong> with error handling</li>
+<li><strong>Selected polygon filtering</strong> (if polygon.selected?)</li>
+<li><strong>Progress logging</strong> with timestamps</li>
+<li><strong>Coordinate slicing safety</strong> (.each_slice(2) with bounds checking)</li>
+</ul>
+<h2 id="per-script-summary">Per-Script Summary</h2>
+<h3 id="fix_ui_2dmesh_result_pointsrb">fix_UI_2DMesh_Result_Points.rb</h3>
+<ul>
+<li><strong>Purpose</strong>: Generate grid result points inside selected polygons</li>
+<li><strong>Inputs</strong>: Selected 2D mesh/infiltration/permeable/roughness polygons, point count (100)</li>
+<li><strong>Outputs</strong>: hw_2d_results_point objects with grid coordinates</li>
+<li><strong>Hardening</strong>:</li>
+<li>Boundary validation (non-empty, &gt;= 2 coords)</li>
+<li>Extent validation (width &gt; 0, height &gt; 0)</li>
+<li>Point ID generation: <code>#{polygon_id}_#{point_id}</code></li>
+<li>Grid step calculation with zero-guard</li>
+<li>Transaction with rollback on error</li>
+<li>Per-polygon error reporting</li>
+</ul>
+<h3 id="fix_ui_polygon_generic_sidesrb">fix_UI_Polygon_Generic_Sides.rb</h3>
+<ul>
+<li><strong>Purpose</strong>: Reshape selected polygons into regular N-sided (9-sided default) polygons</li>
+<li><strong>Inputs</strong>: Selected polygons, sides count (configurable, default 9)</li>
+<li><strong>Outputs</strong>: Polygon boundary_array replaced with regular polygon vertices</li>
+<li><strong>Hardening</strong>:</li>
+<li>Boundary validation (&gt;= 2 coords)</li>
+<li>Sides validation (&gt;= 3)</li>
+<li>Extent validation (width &gt; 0, height &gt; 0)</li>
+<li>Center/radius calculations with zero-guard</li>
+<li>Angle-based vertex generation (Math.cos/sin)</li>
+<li>Boundary closure (first vertex repeated)</li>
+<li>Transaction with rollback</li>
+</ul>
+<h3 id="fix_ui_script_create-nodes-from-polygon-subcatchment-boundaryrb">fix_UI_script_Create nodes from polygon subcatchment boundary.rb</h3>
+<ul>
+<li><strong>Purpose</strong>: Create hw_node objects at polygon centroid and vertices</li>
+<li><strong>Inputs</strong>: Selected hw_2d_infiltration_zone polygons</li>
+<li><strong>Outputs</strong>: centroid node + vertex nodes (one per boundary coordinate)</li>
+<li><strong>Hardening</strong>:</li>
+<li>Boundary validation (non-empty, &gt;= 2 coords)</li>
+<li>Centroid calculation with coordinate count guard (&gt; 0)</li>
+<li>Coordinate safety in slice/with_index loop</li>
+<li>Node ID generation: <code>#{polygon_id}_centroid</code>, <code>#{polygon_id}_vertex_#{index}</code></li>
+<li>Per-polygon error isolation</li>
+<li>Total node count tracking</li>
+<li>Transaction with rollback</li>
+</ul>
+<h3 id="fix_ui_script_create-subs-from-polygonrb">fix_UI_script_Create Subs from polygon.rb</h3>
+<ul>
+<li><strong>Purpose</strong>: Create hw_subcatchment objects from selected polygon boundaries</li>
+<li><strong>Inputs</strong>: Selected polygons (any 2D type)</li>
+<li><strong>Outputs</strong>: hw_subcatchment objects with geometry from polygon</li>
+<li><strong>Hardening</strong>:</li>
+<li>Boundary validation (non-empty)</li>
+<li>Supports multiple polygon types</li>
+<li>Subcatchment ID generation: <code>Sub_#{polygon_id}</code></li>
+<li>Geometry assignment from boundary_array</li>
+<li>Transaction with rollback</li>
+<li>Per-type error handling</li>
+</ul>
+<h3 id="fix_ui_other_2d_generic_sides-copyrb">fix_UI_Other_2D_Generic_Sides copy.rb</h3>
+<ul>
+<li><strong>Purpose</strong>: Reshape selected 2D zone/IC/result polygons into regular N-sided</li>
+<li><strong>Inputs</strong>: Selected 2D polygons (hw_2d_zone, hw_2d_boundary_line, etc.), sides count (9)</li>
+<li><strong>Outputs</strong>: Polygon boundary_array updated</li>
+<li><strong>Hardening</strong>:</li>
+<li>Boundary validation (&gt;= 2 coords)</li>
+<li>Sides validation (&gt;= 3)</li>
+<li>Extent validation (width &gt; 0, height &gt; 0)</li>
+<li>Regular polygon vertex calculation</li>
+<li>Per-type error isolation</li>
+<li>Transaction with rollback</li>
+<li>Compact error reporting</li>
+</ul>
+<h3 id="fix_ui_scriptrb">fix_UI_script.rb</h3>
+<ul>
+<li><strong>Purpose</strong>: Generic template for polygon boundary operations</li>
+<li><strong>Inputs</strong>: Network only</li>
+<li><strong>Outputs</strong>: Console feedback</li>
+<li><strong>Hardening</strong>:</li>
+<li>Nil-safety on network</li>
+<li>Placeholder for custom polygon operations</li>
+</ul>
+<h2 id="how-to-run">How to Run</h2>
+<ol>
+<li><strong>Open InfoWorks ICM</strong> with network/project</li>
+<li><strong>Select target polygons</strong> in the UI (filter by type as needed)</li>
+<li><strong>Tools → Ruby Scripts</strong> → select fix_* file</li>
+<li><strong>Review console output</strong> for progress and success count</li>
+</ol>
+<h3 id="example-workflows">Example Workflows</h3>
+<p><strong>Generate result points in mesh:</strong>
+- Select hw_mesh_zone polygons
+- Run fix_UI_2DMesh_Result_Points.rb
+- 100 points generated per polygon in grid pattern</p>
+<p><strong>Reshape to regular polygon:</strong>
+- Select target polygons (infiltration zones, mesh zones, etc.)
+- Run fix_UI_Polygon_Generic_Sides.rb
+- Reshapes to 9-sided regular polygon (edit sides = X to change)</p>
+<p><strong>Create boundary nodes:</strong>
+- Select hw_2d_infiltration_zone polygons
+- Run fix_UI_script_Create nodes from polygon subcatchment boundary.rb
+- Creates centroid + vertex nodes at all boundary coordinates</p>
+<p><strong>Create subcatchments from polygons:</strong>
+- Select any polygon type
+- Run fix_UI_script_Create Subs from polygon.rb
+- Creates hw_subcatchment objects mapped to polygon geometry</p>
+<h2 id="common-issues-troubleshooting">Common Issues &amp; Troubleshooting</h2>
+<ul>
+<li><strong>"Network is nil"</strong>: Ensure network open in InfoWorks</li>
+<li><strong>No polygons created</strong>: Verify .selected? filter matches your selection</li>
+<li><strong>"Invalid boundary_array"</strong>: Polygon missing geometry data or corrupted</li>
+<li><strong>"Invalid extent"</strong>: Zero-width or zero-height polygon (degenerate case)</li>
+<li><strong>Node creation fails</strong>: Check hw_node table exists and is writable</li>
+<li><strong>Transaction rollback</strong>: Occurs on any error; check console for specific cause</li>
+</ul>
+<h2 id="original-issues-addressed">Original Issues Addressed</h2>
+<ul>
+<li>Missing null checks on boundary_array, polygon.selected?, coordinates</li>
+<li>Unguarded division on centroid calculation (coord_count could be 0)</li>
+<li>No validation on polygon extent (width/height could be zero or negative)</li>
+<li>Silent failures on new_row_object creation</li>
+<li>No transaction rollback on error (partial state corrupted)</li>
+<li>Missing iteration error isolation (one failed polygon stops all)</li>
+<li>No progress feedback or timestamp logging</li>
+<li>Math.cos/sin assumptions about valid angle inputs</li>
+<li>Missing coordinate slicing bounds checking</li>
+</ul></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

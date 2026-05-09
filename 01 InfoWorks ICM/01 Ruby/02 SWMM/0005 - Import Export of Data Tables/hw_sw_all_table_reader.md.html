@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>hw_sw_all_table_reader.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0005 - Import Export of Data Tables</div>
+    <h1>hw_sw_all_table_reader.md</h1>
+    <div class="meta">Markdown document &middot; 0005 - Import Export of Data Tables</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">120 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><p>markdown</p>
+<h1 id="generic-infoworksswmm-object-data-exporter-with-statistics">Generic Infoworks/SWMM Object Data Exporter with Statistics</h1>
+<h2 id="overview">Overview</h2>
+<p>This Ruby script facilitates the export of selected object types (e.g., <code>hw_node</code>, <code>sw_subcatchment</code>) and their fields from a network in a WSApplication environment to a CSV file. It also calculates basic statistics for numeric fields based on a user-provided <code>parameters.rb</code> file (<code>hw_parameters.rb</code> or <code>sw_parameters.rb</code>).</p>
+<h2 id="key-features">Key Features</h2>
+<ul>
+<li><strong>Dynamic Object and Field Selection</strong>: Users can select object types and specific fields for export.</li>
+<li><strong>Statistics Calculation</strong>: Computes mean, standard deviation, min, and max for numeric fields.</li>
+<li><strong>CSV Export</strong>: Writes selected data to CSV files with timestamps.</li>
+<li><strong>Error Handling</strong>: Robust error handling for file operations, network access, and data processing.</li>
+<li><strong>User Interaction</strong>: Utilizes WSApplication dialogs for file and field selection.</li>
+</ul>
+<h2 id="dependencies">Dependencies</h2>
+<ul>
+<li>Ruby libraries: <code>csv</code>, <code>fileutils</code></li>
+<li>WSApplication environment for network access and UI prompts.</li>
+</ul>
+<h2 id="script-structure">Script Structure</h2>
+<h3 id="helper-functions">Helper Functions</h3>
+<ol>
+<li>
+<p><strong>calculate_mean(arr)</strong>:
+   - Computes the mean of an array of numbers.
+   - Returns <code>nil</code> if the array is empty or <code>nil</code>.</p>
+</li>
+<li>
+<p><strong>calculate_std_dev(arr, mean)</strong>:
+   - Calculates the sample standard deviation of an array given its mean.
+   - Returns <code>nil</code> if the array is empty, mean is <code>nil</code>, or array length is less than 2.</p>
+</li>
+<li>
+<p><strong>parse_parameters_file(file_path)</strong>:
+   - Parses a <code>parameters.rb</code> file to extract table names and their fields.
+   - Uses regex to identify table names (<code>****hw_node</code>, <code>****sw_node</code>) and fields.
+   - Excludes fields ending with <code>_flag</code>.
+   - Returns a hash: <code>{ "table_name" =&gt; ["field1", "field2", ...], ... }</code>.
+   - Handles errors for missing or malformed files.</p>
+</li>
+</ol>
+<h3 id="main-logic-run_export_script">Main Logic (<code>run_export_script</code>)</h3>
+<ol>
+<li>
+<p><strong>Initialization</strong>:
+   - Starts the script, logs the start time, and connects to the current WSApplication network.
+   - Exits if no network is loaded or WSApplication is unavailable.</p>
+</li>
+<li>
+<p><strong>Parameters File Selection</strong>:
+   - Prompts the user to select a <code>parameters.rb</code> file using <code>WSApplication.file_dialog</code>.
+   - Validates file existence and parses it to retrieve available tables and fields.</p>
+</li>
+<li>
+<p><strong>Object Type Selection</strong>:
+   - Displays a dialog for users to select object types (tables) from the parsed parameters file.
+   - Exits if no tables are selected or available.</p>
+</li>
+<li>
+<p><strong>Per-Table Processing</strong>:
+   - For each selected table:</p>
+<ul>
+<li>Prompts for field selection, export folder, and whether to calculate statistics.</li>
+<li>Creates a timestamped CSV file in the specified folder.</li>
+<li>Iterates through selected objects in the network, writing data for chosen fields to the CSV.</li>
+<li>Handles special cases for array-type fields (e.g., <code>treatment</code>, <code>pollutant_inflows</code>, <code>additional_dwf</code>, <code>hyperlinks</code>) with custom formatting.</li>
+<li>Collects numeric data for statistics if enabled.</li>
+</ul>
+</li>
+<li>
+<p><strong>CSV Export</strong>:
+   - Writes a header row based on selected fields.
+   - Processes each selected object, extracting field values and handling errors (e.g., missing attributes).
+   - Writes data rows to the CSV, converting arrays to semicolon-separated strings.</p>
+</li>
+<li>
+<p><strong>Statistics Calculation</strong>:
+   - For numeric fields, calculates count, min, max, mean, and standard deviation.
+   - Filters out likely non-numeric fields (e.g., IDs, names, text fields) based on naming conventions.
+   - Outputs a formatted table of statistics if applicable.</p>
+</li>
+<li>
+<p><strong>Summary and Cleanup</strong>:
+   - Displays a summary dialog for each table, showing the export file path, objects written, and fields exported.
+   - Deletes empty CSV files (containing only headers).
+   - Logs processing time and any warnings (e.g., missing attributes).</p>
+</li>
+<li>
+<p><strong>Script Completion</strong>:
+   - Logs total execution time and displays a completion message via <code>WSApplication.message_box</code>.</p>
+</li>
+</ol>
+<h3 id="string-helper">String Helper</h3>
+<ul>
+<li><strong>String#singularize</strong>:</li>
+<li>Basic method to singularize table names (e.g., <code>nodes</code> to <code>node</code>, <code>categories</code> to <code>category</code>).</li>
+<li>Used to identify ID fields.</li>
+</ul>
+<h2 id="error-handling">Error Handling</h2>
+<ul>
+<li>Handles file access errors (<code>Errno::ENOENT</code>, <code>Errno::EACCES</code>, <code>Errno::ENOSPC</code>).</li>
+<li>Catches invalid field access (<code>NoMethodError</code>) and logs warnings.</li>
+<li>Manages user cancellations during dialogs.</li>
+<li>Provides detailed error messages with backtraces for unexpected failures.</li>
+</ul>
+<h2 id="output">Output</h2>
+<ul>
+<li><strong>CSV Files</strong>: One per selected table, named <code>selected_[table_name]_export_[timestamp].csv</code>.</li>
+<li><strong>Console Output</strong>: Logs progress, errors, warnings, and statistics.</li>
+<li><strong>UI Dialogs</strong>: Prompts for file/field selection and displays summaries.</li>
+</ul>
+<h2 id="usage-notes">Usage Notes</h2>
+<ul>
+<li>Run within a WSApplication environment with a loaded network.</li>
+<li>Requires a valid <code>parameters.rb</code> file with table and field definitions.</li>
+<li>Uncomment DEBUG blocks (not shown in the provided code) to troubleshoot field name issues.</li>
+<li>Statistics are calculated only for fields deemed numeric (excluding IDs, names, etc.).</li>
+</ul>
+<h2 id="example-workflow">Example Workflow</h2>
+<ol>
+<li>User selects <code>hw_parameters.rb</code> via file dialog.</li>
+<li>Script parses file, identifying tables like <code>hw_node</code>, <code>sw_subcatchment</code>.</li>
+<li>User selects tables and fields, specifies an export folder, and opts for statistics.</li>
+<li>For each table, a CSV is generated with selected fields, and statistics are printed for numeric fields.</li>
+<li>Summary dialogs confirm the export details.</li>
+</ol>
+<h2 id="limitations">Limitations</h2>
+<ul>
+<li>Relies on WSApplication-specific methods (<code>current_network</code>, <code>file_dialog</code>, <code>prompt</code>, <code>message_box</code>).</li>
+<li>Assumes <code>parameters.rb</code> follows a specific format with <code>****table_name</code> and numbered field definitions.</li>
+<li>Statistics exclude fields likely to be non-numeric based on heuristic naming rules.</li>
+<li>No built-in validation for field data types beyond basic checks.</li>
+</ul>
+<h2 id="future-improvements">Future Improvements</h2>
+<ul>
+<li>Add support for custom field type definitions in <code>parameters.rb</code>.</li>
+<li>Enhance array field formatting with user-configurable separators.</li>
+<li>Include advanced statistics (e.g., median, quartiles).</li>
+<li>Add logging to a file in addition to console output.</li>
+</ul>
+<h2 id="execution">Execution</h2>
+<ul>
+<li>Call <code>run_export_script</code> to start the process.</li>
+<li>Script execution time is tracked and reported.</li>
+</ul>
+<p><strong>Last Updated</strong>: June 9, 2025</p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

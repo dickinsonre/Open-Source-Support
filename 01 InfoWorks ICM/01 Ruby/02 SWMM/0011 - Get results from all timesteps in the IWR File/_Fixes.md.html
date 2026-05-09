@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>_Fixes.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0011 - Get results from all timesteps in the IWR File</div>
+    <h1>_Fixes.md</h1>
+    <div class="meta">Markdown document &middot; 0011 - Get results from all timesteps in the IWR File</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">173 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="folder-0011-get-results-from-all-timesteps-in-the-iwr-file-fixes-summary">Folder 0011: Get results from all timesteps in the IWR File - Fixes Summary</h1>
+<h2 id="overview">Overview</h2>
+<p>This folder contains 8 Ruby scripts for extracting and reporting time-series results from all timesteps in ICM InfoWorks .iwr simulation files.</p>
+<h2 id="files-processed">Files Processed</h2>
+<h3 id="1-fix_hw_ui_script-get-results-from-all-timesteps-for-links-all-paramsrb">1. fix_hw_UI_script Get results from all timesteps for Links All Params.rb</h3>
+<p><strong>Original:</strong> <code>hw_UI_script Get results from all timesteps for Links All Params.rb</code>
+<strong>Purpose:</strong> Export all result parameters from selected conduits/links across all timesteps
+<strong>Hardening Applied:</strong>
+- Added <code>frozen_string_literal: true</code>
+- Full begin/rescue/ensure error handling
+- Validates network and timesteps
+- Checks row object exists before processing
+- Safe handling of missing result fields
+- Nil-safety checks on results array</p>
+<p><strong>How to Run:</strong></p>
+<pre><code class="language-ruby"># Select one or more conduits in network
+# Run from InfoWorks ICM UI Script menu
+# Outputs: Console log with parameters for each link at each timestep
+# Includes: depth, flow, velocity, surcharge state, etc.
+</code></pre>
+<h3 id="2-fix_hw_ui_script-get-results-from-all-timesteps-for-links-us-flow-ds-flowrb">2. fix_hw_UI_script Get results from all timesteps for Links, US Flow DS Flow.rb</h3>
+<p><strong>Original:</strong> <code>hw_UI_script Get results from all timesteps for Links, US Flow DS Flow.rb</code>
+<strong>Purpose:</strong> Extract upstream and downstream flow results for selected links across all timesteps
+<strong>Hardening Applied:</strong>
+- Added <code>frozen_string_literal: true</code>
+- Complete error handling
+- Result count validation
+- Safe numeric conversion</p>
+<p><strong>How to Run:</strong></p>
+<pre><code class="language-ruby"># Select conduits/links
+# Run from UI Script menu
+# Displays: US Flow and DS Flow at each timestep
+</code></pre>
+<h3 id="3-fix_hw_ui_script-get-results-from-all-timesteps-for-subcatchments-all-paramsrb">3. fix_hw_UI_script Get results from all timesteps for Subcatchments All Params.rb</h3>
+<p><strong>Original:</strong> <code>hw_UI_script Get results from all timesteps for Subcatchments All Params.rb</code>
+<strong>Purpose:</strong> Extract all runoff/catchment parameters across all timesteps
+<strong>Hardening Applied:</strong>
+- Validated object and field existence
+- Safe handling of missing subcatchment objects
+- Result count verification</p>
+<p><strong>How to Run:</strong></p>
+<pre><code class="language-ruby"># Select subcatchments in network
+# Run from UI Script menu
+# Outputs: Rainfall, runoff, infiltration, depth results per timestep
+</code></pre>
+<h3 id="4-fix_hw_ui_script_-get-results-from-all-timesteps-for-manholes-all-paramsrb">4. fix_hw_UI_script_ Get results from all timesteps for Manholes All Params.rb</h3>
+<p><strong>Original:</strong> <code>hw_UI_script_ Get results from all timesteps for Manholes All Params.rb</code>
+<strong>Purpose:</strong> Extract all manhole/node parameters across all timesteps
+<strong>Hardening Applied:</strong>
+- Network and results validation
+- Nil-safe field access
+- Error recovery on missing fields</p>
+<p><strong>How to Run:</strong></p>
+<pre><code class="language-ruby"># Select nodes/manholes
+# Run from UI Script menu
+# Outputs: Depth, inflow, volume, surcharge at each timestep
+</code></pre>
+<h3 id="5-fix_hw_ui_script-get-results-from-all-timesteps-for-manholes-qnoderb">5. fix_hw_UI_script  Get results from all timesteps for Manholes QNODE.rb</h3>
+<p><strong>Original:</strong> <code>hw_UI_script  Get results from all timesteps for Manholes QNODE.rb</code>
+<strong>Purpose:</strong> Extract inflow (QNODE) results for selected nodes
+<strong>Hardening Applied:</strong>
+- Timestep count validation
+- Safe result array handling
+- Error handling on missing fields</p>
+<p><strong>How to Run:</strong></p>
+<pre><code class="language-ruby"># Select nodes
+# Run from UI Script menu
+# Outputs: QNODE (inflow) at each timestep
+</code></pre>
+<h3 id="6-fix_hw_ui_script_all-node-and-link-url-statsrb">6. fix_hw_UI_script_All Node and Link URL Stats.rb</h3>
+<p><strong>Original:</strong> <code>hw_UI_script_All Node and Link URL Stats.rb</code>
+<strong>Purpose:</strong> Generate comprehensive statistics on nodes and links across all timesteps
+<strong>Hardening Applied:</strong>
+- Full error handling
+- Result validation
+- Safe statistics calculation</p>
+<p><strong>How to Run:</strong></p>
+<pre><code class="language-ruby"># Run from UI Script menu
+# Processes all selected nodes and links
+# Outputs: Summary statistics per object
+</code></pre>
+<h3 id="7-fix_hw_ui_script_linksrb">7. fix_hw_UI_script_links.rb</h3>
+<p><strong>Original:</strong> <code>hw_UI_script_links.rb</code>
+<strong>Purpose:</strong> Generic link results processor
+<strong>Hardening Applied:</strong>
+- Error handling
+- Result field validation
+- Nil-safety checks</p>
+<h3 id="8-fix_hw_ui_script_nodesrb">8. fix_hw_UI_script_nodes.rb</h3>
+<p><strong>Original:</strong> <code>hw_UI_script_nodes.rb</code>
+<strong>Purpose:</strong> Generic node results processor
+<strong>Hardening Applied:</strong>
+- Network validation
+- Timestep verification
+- Safe field access</p>
+<h3 id="swmm-variants-3-additional-scripts">SWMM Variants (3 additional scripts)</h3>
+<p><strong>Purpose:</strong> SWMM-specific versions for:
+- Manholes All Params
+- Subcatchments All Params
+- Links All Params</p>
+<p><strong>Hardening:</strong> All SWMM variants include the same error handling and validation patterns.</p>
+<h2 id="common-processing-patterns">Common Processing Patterns</h2>
+<p>All scripts follow this sequence:</p>
+<ol>
+<li>
+<p><strong>Setup:</strong>
+   <code>ruby
+   net = WSApplication.current_network
+   ts = net.list_timesteps
+   time_interval = (ts[1] - ts[0]).abs if ts.size &gt; 1</code></p>
+</li>
+<li>
+<p><strong>Validation:</strong>
+   <code>ruby
+   ro = net.row_object(table_name, object_id)
+   raise "Object not found" if ro.nil?</code></p>
+</li>
+<li>
+<p><strong>Results Extraction:</strong>
+   <code>ruby
+   results = ro.results(field_name)
+   next unless results.size == ts.size</code></p>
+</li>
+<li>
+<p><strong>Output:</strong>
+   <code>ruby
+   results.each_with_index do |value, ts_index|
+     # Process value at timestep ts_index
+   end</code></p>
+</li>
+</ol>
+<h2 id="important-notes">Important Notes</h2>
+<ul>
+<li>All scripts require completed simulation with results</li>
+<li>Timestep count must match result array size</li>
+<li>Result fields vary by network type (HW vs SW)</li>
+<li>Output is to console (stdout)</li>
+<li>Time interval calculated from first two timesteps</li>
+<li>Scripts process only selected objects</li>
+</ul>
+<h2 id="testing-recommendations">Testing Recommendations</h2>
+<ol>
+<li>Load ICM SWMM network with results</li>
+<li>Select 2-3 objects for initial testing</li>
+<li>Run script and verify timestep progression</li>
+<li>Confirm time interval calculation is reasonable</li>
+<li>Check that all expected fields are present</li>
+<li>Verify result values are within expected ranges</li>
+</ol></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>export_hw_subcatchments_to_csv.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0005 - Import Export of Data Tables</div>
+    <h1>export_hw_subcatchments_to_csv.md</h1>
+    <div class="meta">Markdown document &middot; 0005 - Import Export of Data Tables</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">75 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><p>This Ruby script is designed to export data for selected <code>hw_subcatchment</code> objects from a hydraulic modeling software environment (likely InfoWorks ICM or a similar platform that uses <code>WSApplication</code>) into a CSV file.</p>
+<p>Here's a breakdown of its functionality:</p>
+<p><strong>1. Dependencies:</strong>
+* <code>csv</code>: For CSV file generation and manipulation.
+* <code>fileutils</code>: For file system operations like creating directories.</p>
+<p><strong>2. Configuration:</strong>
+* <strong><code>FIELDS_TO_EXPORT</code> Constant:</strong> This is a crucial array that defines all the potential fields from a <code>hw_subcatchment</code> object that can be exported.
+    * Each entry in the array is another array specifying:
+        1.  A descriptive label for the field (used in the UI).
+        2.  A Ruby symbol representing the attribute/method name on the <code>hw_subcatchment</code> object.
+        3.  A boolean indicating whether the field should be selected for export by default.
+        4.  The header name for the column in the output CSV file.
+    * It includes a comprehensive list of subcatchment properties, from basic identifiers (like <code>subcatchment_id</code>, <code>x</code>, <code>y</code>) and area details to complex hydrological parameters, model-specific attributes (ReFH, SRM, ARMA, RAFTS), wastewater data, groundwater interaction, land use, and user-defined fields.
+    * Top-level flag fields are generally excluded from this list.</p>
+<p><strong>3. Core Logic &amp; Workflow:</strong>
+* <strong>Network Connection:</strong>
+    * It first attempts to get the currently loaded network object using <code>WSApplication.current_network</code>.
+    * Exits with an error if no network is loaded or if <code>WSApplication</code> is not found (indicating the script isn't run in the correct environment).
+* <strong>Optional Debugging Block:</strong>
+    * Contains commented-out code that, if enabled, would print all available methods and fields for the first <code>hw_subcatchment</code> object found in the network. This is helpful for verifying the correct attribute symbols used in <code>FIELDS_TO_EXPORT</code>.
+* <strong>User Interaction (Prompts):</strong>
+    * The script uses <code>WSApplication.prompt</code> to display a dialog to the user.
+    * Users are asked to:
+        * Specify an output folder for the CSV file.
+        * Select/deselect all fields for export via a master checkbox.
+        * Individually select or deselect each field listed in <code>FIELDS_TO_EXPORT</code>.
+    * If the user cancels this dialog, the script exits.
+* <strong>File Setup:</strong>
+    * Validates that an export folder is provided.
+    * Creates the export folder if it doesn't exist.
+    * Constructs a unique CSV filename using a timestamp (e.g., <code>selected_hw_subcatchments_export_YYYYMMDD_HHMMSS.csv</code>).
+* <strong>Field Processing:</strong>
+    * Based on user selections, it builds a list of <code>selected_fields_config</code> (containing attribute symbols and header names) and a <code>header</code> array for the CSV.
+    * If no fields are selected, the script exits.
+* <strong>Data Export Loop:</strong>
+    * Opens the generated CSV file for writing.
+    * Writes the determined header row.
+    * Iterates through all <code>hw_subcatchment</code> objects in the current network (<code>cn.row_objects('hw_subcatchment')</code>).
+    * For each subcatchment object:
+        * It checks if the object is marked as <code>selected</code> (presumably by the user in the application's UI).
+        * If selected, it proceeds to extract data for each field chosen by the user.
+        * <strong>Attribute Access:</strong> Uses <code>sc_obj.send(attr_sym)</code> to dynamically call the method corresponding to the attribute symbol to get its value.
+        * <strong>Special Formatting for Complex Fields:</strong>
+            * <code>:lateral_links</code>: Formats an array of link objects into a semicolon-separated string of "NodeID,Suffix,Weight" sets.
+            * <code>:boundary_array</code>: Formats an array of points into a semicolon-separated string of "X,Y" coordinates.
+            * <code>:suds_controls</code>: Formats an array of SUDS control objects into a semicolon-separated string, with each SUDS control's key attributes (ID, structure, type, area, num_units) joined by commas.
+            * <code>:swmm_coverage</code>: Formats an array of SWMM coverage objects into a semicolon-separated string of "LandUse,Area" pairs.
+            * <code>:refh_descriptors</code>: If the value is a Hash, it's formatted as "key:value;..." pairs. If it's another type of object, it falls back to <code>value.to_s</code>.
+            * <code>:hyperlinks</code>: Formats an array of hyperlink objects into a semicolon-separated string of "Description,URL" pairs.
+            * Other general arrays are converted to comma-separated strings.
+            * Values that might contain CSV delimiters (<code>;</code>, <code>,</code>) are cleaned.
+        * <strong>Error Handling (Attribute Level):</strong>
+            * If an attribute (method) listed in <code>FIELDS_TO_EXPORT</code> is not found on a subcatchment object (<code>NoMethodError</code>), a warning is printed, and "AttributeMissing" is written to the CSV cell.
+            * Other errors during attribute access result in an error message and "AccessError" in the cell.
+        * The processed row of data is then written to the CSV file.
+* <strong>Post-Processing &amp; Summary:</strong>
+    * After iterating through all objects, it prints a summary to the console:
+        * Total subcatchments iterated.
+        * Number of selected subcatchments successfully written to the CSV.
+    * If no subcatchments were written (either none selected or an issue occurred):
+        * It checks if the created CSV file is empty or contains only the header.
+        * If so, the empty/header-only file is deleted to avoid clutter.
+    * Displays a final summary dialog (<code>WSApplication.prompt</code> or <code>WSApplication.message_box</code>) to the user, showing:
+        * The full path to the exported CSV file (if created and not empty).
+        * The number of selected subcatchments written.
+        * The number of fields exported per subcatchment.
+        * Informative messages if no data was exported or if an issue occurred.
+* <strong>Overall Error Handling:</strong>
+    * Includes <code>rescue</code> blocks for common issues like permission errors when creating directories or writing files (<code>Errno::EACCES</code>), disk space errors (<code>Errno::ENOSPC</code>), CSV formatting errors (<code>CSV::MalformedCSVError</code>), and other generic exceptions during the export process.</p>
+<p>In essence, this script provides a flexible way for users of a hydraulic modeling application to extract a custom set of data for selected subcatchments into an easily shareable and analyzable CSV format, with specific handling for complex data structures.</p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

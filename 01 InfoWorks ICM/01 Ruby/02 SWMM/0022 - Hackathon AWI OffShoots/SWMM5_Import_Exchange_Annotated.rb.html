@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SWMM5_Import_Exchange_Annotated.rb</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+<style>pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehl .hll { background-color: #49483e }
+.codehl { background: #272822; color: #f8f8f2 }
+.codehl .c { color: #75715e } /* Comment */
+.codehl .err { color: #960050; background-color: #1e0010 } /* Error */
+.codehl .esc { color: #f8f8f2 } /* Escape */
+.codehl .g { color: #f8f8f2 } /* Generic */
+.codehl .k { color: #66d9ef } /* Keyword */
+.codehl .l { color: #ae81ff } /* Literal */
+.codehl .n { color: #f8f8f2 } /* Name */
+.codehl .o { color: #f92672 } /* Operator */
+.codehl .x { color: #f8f8f2 } /* Other */
+.codehl .p { color: #f8f8f2 } /* Punctuation */
+.codehl .ch { color: #75715e } /* Comment.Hashbang */
+.codehl .cm { color: #75715e } /* Comment.Multiline */
+.codehl .cp { color: #75715e } /* Comment.Preproc */
+.codehl .cpf { color: #75715e } /* Comment.PreprocFile */
+.codehl .c1 { color: #75715e } /* Comment.Single */
+.codehl .cs { color: #75715e } /* Comment.Special */
+.codehl .gd { color: #f92672 } /* Generic.Deleted */
+.codehl .ge { color: #f8f8f2; font-style: italic } /* Generic.Emph */
+.codehl .gr { color: #f8f8f2 } /* Generic.Error */
+.codehl .gh { color: #f8f8f2 } /* Generic.Heading */
+.codehl .gi { color: #a6e22e } /* Generic.Inserted */
+.codehl .go { color: #66d9ef } /* Generic.Output */
+.codehl .gp { color: #f92672; font-weight: bold } /* Generic.Prompt */
+.codehl .gs { color: #f8f8f2; font-weight: bold } /* Generic.Strong */
+.codehl .gu { color: #75715e } /* Generic.Subheading */
+.codehl .gt { color: #f8f8f2 } /* Generic.Traceback */
+.codehl .kc { color: #66d9ef } /* Keyword.Constant */
+.codehl .kd { color: #66d9ef } /* Keyword.Declaration */
+.codehl .kn { color: #f92672 } /* Keyword.Namespace */
+.codehl .kp { color: #66d9ef } /* Keyword.Pseudo */
+.codehl .kr { color: #66d9ef } /* Keyword.Reserved */
+.codehl .kt { color: #66d9ef } /* Keyword.Type */
+.codehl .ld { color: #e6db74 } /* Literal.Date */
+.codehl .m { color: #ae81ff } /* Literal.Number */
+.codehl .s { color: #e6db74 } /* Literal.String */
+.codehl .na { color: #a6e22e } /* Name.Attribute */
+.codehl .nb { color: #f8f8f2 } /* Name.Builtin */
+.codehl .nc { color: #a6e22e } /* Name.Class */
+.codehl .no { color: #66d9ef } /* Name.Constant */
+.codehl .nd { color: #a6e22e } /* Name.Decorator */
+.codehl .ni { color: #f8f8f2 } /* Name.Entity */
+.codehl .ne { color: #a6e22e } /* Name.Exception */
+.codehl .nf { color: #a6e22e } /* Name.Function */
+.codehl .nl { color: #f8f8f2 } /* Name.Label */
+.codehl .nn { color: #f8f8f2 } /* Name.Namespace */
+.codehl .nx { color: #a6e22e } /* Name.Other */
+.codehl .py { color: #f8f8f2 } /* Name.Property */
+.codehl .nt { color: #f92672 } /* Name.Tag */
+.codehl .nv { color: #f8f8f2 } /* Name.Variable */
+.codehl .ow { color: #f92672 } /* Operator.Word */
+.codehl .w { color: #f8f8f2 } /* Text.Whitespace */
+.codehl .mb { color: #ae81ff } /* Literal.Number.Bin */
+.codehl .mf { color: #ae81ff } /* Literal.Number.Float */
+.codehl .mh { color: #ae81ff } /* Literal.Number.Hex */
+.codehl .mi { color: #ae81ff } /* Literal.Number.Integer */
+.codehl .mo { color: #ae81ff } /* Literal.Number.Oct */
+.codehl .sa { color: #e6db74 } /* Literal.String.Affix */
+.codehl .sb { color: #e6db74 } /* Literal.String.Backtick */
+.codehl .sc { color: #e6db74 } /* Literal.String.Char */
+.codehl .dl { color: #e6db74 } /* Literal.String.Delimiter */
+.codehl .sd { color: #e6db74 } /* Literal.String.Doc */
+.codehl .s2 { color: #e6db74 } /* Literal.String.Double */
+.codehl .se { color: #ae81ff } /* Literal.String.Escape */
+.codehl .sh { color: #e6db74 } /* Literal.String.Heredoc */
+.codehl .si { color: #e6db74 } /* Literal.String.Interpol */
+.codehl .sx { color: #e6db74 } /* Literal.String.Other */
+.codehl .sr { color: #e6db74 } /* Literal.String.Regex */
+.codehl .s1 { color: #e6db74 } /* Literal.String.Single */
+.codehl .ss { color: #e6db74 } /* Literal.String.Symbol */
+.codehl .bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
+.codehl .fm { color: #a6e22e } /* Name.Function.Magic */
+.codehl .vc { color: #f8f8f2 } /* Name.Variable.Class */
+.codehl .vg { color: #f8f8f2 } /* Name.Variable.Global */
+.codehl .vi { color: #f8f8f2 } /* Name.Variable.Instance */
+.codehl .vm { color: #f8f8f2 } /* Name.Variable.Magic */
+.codehl .il { color: #ae81ff } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0022 - Hackathon AWI OffShoots</div>
+    <h1>SWMM5_Import_Exchange_Annotated.rb</h1>
+    <div class="meta">Ruby script &middot; 0022 - Hackathon AWI OffShoots</div>
+    <div class="badges"><span class="badge rb">Ruby</span><span class="badge fix">Hardened: <a href="fix_SWMM5_Import_Exchange_Annotated.rb.html">fix_SWMM5_Import_Exchange_Annotated.rb</a></span><span class="badge lines">341 lines &middot; 12,978 bytes</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h2>Source</h2><div class="codewrap"><table class="codehltable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
+<span class="normal">  2</span>
+<span class="normal">  3</span>
+<span class="normal">  4</span>
+<span class="normal">  5</span>
+<span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
+<span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span></pre></div></td><td class="code"><div class="codehl"><pre><span></span><code><span class="c1"># `SWMM5_Import_Exchange_Annotated.rb`.</span>
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># FILE: SWMM5_Import_Exchange_Annotated.rb</span>
+<span class="c1">#</span>
+<span class="c1"># DESCRIPTION:</span>
+<span class="c1"># This is the &quot;Worker&quot; script (Exchange Script).</span>
+<span class="c1"># It runs invisibly in the background, launched by the UI script.</span>
+<span class="c1">#</span>
+<span class="c1"># CONCEPTS FOR NOVICES:</span>
+<span class="c1"># 1. &quot;Headless&quot; Execution: This script runs via &#39;ICMExchange.exe&#39;. It has </span>
+<span class="c1">#    no buttons, windows, or popups. If you try to use a message_box here, </span>
+<span class="c1">#    the script will crash.</span>
+<span class="c1"># 2. Environment Variables (ENV): Think of this as a &quot;Post-it note&quot; left by the </span>
+<span class="c1">#    UI script on the computer&#39;s desktop. The UI script writes the location </span>
+<span class="c1">#    of the settings file to ENV, and this script reads it.</span>
+<span class="c1"># 3. Logging: Since the user can&#39;t see a progress bar, we must write every </span>
+<span class="c1">#    step to a text file (.log) so the user can read what happened later.</span>
+<span class="c1"># 4. Error Handling (Begin/Rescue): If File #5 fails, we don&#39;t want the script </span>
+<span class="c1">#    to stop. We &quot;rescue&quot; the error, write it to the log, and move to File #6.</span>
+<span class="c1"># 5. Object Model: We use &#39;db.new_model_object&#39; to create items inside ICM.</span>
+<span class="c1"># ==============================================================================</span>
+
+<span class="nb">require</span> <span class="s1">&#39;yaml&#39;</span> <span class="c1"># Toolkit for reading the settings file</span>
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># HELPER METHODS</span>
+<span class="c1"># ==============================================================================</span>
+
+<span class="c1"># A helper to write text to TWO places at once:</span>
+<span class="c1"># 1. The &quot;Standard Output&quot; (puts) - visible in the black Command Prompt window.</span>
+<span class="c1"># 2. The &quot;Log File&quot; (log_file.puts) - saved to the hard drive.</span>
+<span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">log_file</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">)</span>
+  <span class="nb">puts</span> <span class="n">message</span>
+  <span class="n">log_file</span><span class="o">.</span><span class="n">puts</span> <span class="n">message</span> <span class="k">if</span> <span class="n">log_file</span>
+<span class="k">end</span>
+
+<span class="c1"># A helper to check if a &#39;Label List&#39; (a specific ICM object) has any data.</span>
+<span class="c1"># We want to delete empty ones to keep the model clean.</span>
+<span class="k">def</span> <span class="nf">is_label_list_empty?</span><span class="p">(</span><span class="n">label_list</span><span class="p">,</span> <span class="n">log_file</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">)</span>
+  <span class="k">begin</span>
+    <span class="c1"># We look at the &#39;labels&#39; data blob inside the object</span>
+    <span class="n">labels_blob</span> <span class="o">=</span> <span class="n">label_list</span><span class="o">[</span><span class="s1">&#39;labels&#39;</span><span class="o">]</span>
+    <span class="c1"># Return TRUE if it&#39;s nil (doesn&#39;t exist) or empty</span>
+    <span class="k">return</span> <span class="n">labels_blob</span><span class="o">.</span><span class="n">nil?</span> <span class="o">||</span> <span class="n">labels_blob</span><span class="o">.</span><span class="n">empty?</span>
+  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+    <span class="n">log</span> <span class="s2">&quot;  WARNING: Error checking label list: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+    <span class="kp">false</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># STEP 1: RETRIEVE CONFIGURATION</span>
+<span class="c1"># ==============================================================================</span>
+
+<span class="c1"># Grab the &quot;Post-it note&quot; left by the UI script</span>
+<span class="n">config_file</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;ICM_IMPORT_CONFIG&#39;</span><span class="o">]</span>
+
+<span class="c1"># SAFETY LOGIC: </span>
+<span class="c1"># If the Post-it note is missing (maybe you ran this script manually?), </span>
+<span class="c1"># try to hunt for the config file in nearby folders.</span>
+<span class="k">unless</span> <span class="n">config_file</span> <span class="o">&amp;&amp;</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+  <span class="n">script_dir</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">__FILE__</span><span class="p">)</span>
+  
+  <span class="c1"># Search current folder, parent, and grandparent for the config file</span>
+  <span class="n">search_paths</span> <span class="o">=</span> <span class="o">[]</span>
+  <span class="o">[</span><span class="n">script_dir</span><span class="p">,</span> <span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">script_dir</span><span class="p">),</span> <span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">script_dir</span><span class="p">))</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">dir</span><span class="o">|</span>
+    <span class="no">Dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir</span><span class="p">,</span> <span class="s2">&quot;**&quot;</span><span class="p">,</span> <span class="s2">&quot;ICM Import Log Files&quot;</span><span class="p">,</span> <span class="s2">&quot;import_config.yaml&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">path</span><span class="o">|</span>
+      <span class="n">search_paths</span> <span class="o">&lt;&lt;</span> <span class="n">path</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  
+  <span class="c1"># If found, take the most recent one</span>
+  <span class="k">if</span> <span class="n">search_paths</span><span class="o">.</span><span class="n">any?</span>
+    <span class="n">config_file</span> <span class="o">=</span> <span class="n">search_paths</span><span class="o">.</span><span class="n">max_by</span> <span class="p">{</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="no">File</span><span class="o">.</span><span class="n">mtime</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="p">}</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># If we STILL can&#39;t find the settings, we must stop.</span>
+<span class="k">unless</span> <span class="n">config_file</span> <span class="o">&amp;&amp;</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+  <span class="nb">puts</span> <span class="s2">&quot;ERROR: Configuration file not found. Run the UI script first.&quot;</span>
+  <span class="nb">exit</span> <span class="mi">1</span> <span class="c1"># Exit code 1 means &quot;Something went wrong&quot;</span>
+<span class="k">end</span>
+
+<span class="c1"># Load the settings from the file</span>
+<span class="n">config</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+
+<span class="c1"># Check if all necessary settings are present</span>
+<span class="n">required_keys</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;import_mode&#39;</span><span class="p">,</span> <span class="s1">&#39;file_configs&#39;</span><span class="p">,</span> <span class="s1">&#39;cleanup_empty_label_lists&#39;</span><span class="o">]</span>
+<span class="n">missing</span> <span class="o">=</span> <span class="n">required_keys</span> <span class="o">-</span> <span class="n">config</span><span class="o">.</span><span class="n">keys</span>
+<span class="k">if</span> <span class="n">missing</span><span class="o">.</span><span class="n">any?</span>
+  <span class="nb">puts</span> <span class="s2">&quot;ERROR: Config file is corrupted. Missing: </span><span class="si">#{</span><span class="n">missing</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nb">exit</span> <span class="mi">1</span>
+<span class="k">end</span>
+
+<span class="c1"># Extract settings into easy-to-use variables</span>
+<span class="n">import_mode</span> <span class="o">=</span> <span class="n">config</span><span class="o">[</span><span class="s1">&#39;import_mode&#39;</span><span class="o">]</span>
+<span class="n">file_configs</span> <span class="o">=</span> <span class="n">config</span><span class="o">[</span><span class="s1">&#39;file_configs&#39;</span><span class="o">]</span> <span class="c1"># This is the list of files to process</span>
+<span class="n">cleanup_empty_label_lists</span> <span class="o">=</span> <span class="n">config</span><span class="o">[</span><span class="s1">&#39;cleanup_empty_label_lists&#39;</span><span class="o">]</span>
+<span class="n">validate_after_import</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="s1">&#39;validate_after_import&#39;</span><span class="p">,</span> <span class="kp">false</span><span class="p">)</span>
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># STEP 2: CONNECT TO THE DATABASE</span>
+<span class="c1"># ==============================================================================</span>
+
+<span class="k">begin</span>
+  <span class="c1"># WSApplication.open connects to the database without showing a login screen </span>
+  <span class="c1"># (assuming current Windows credentials work).</span>
+  <span class="n">db</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">open</span>
+<span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+  <span class="nb">puts</span> <span class="s2">&quot;Error opening database: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nb">exit</span> <span class="mi">1</span>
+<span class="k">end</span>
+
+<span class="k">if</span> <span class="n">db</span><span class="o">.</span><span class="n">nil?</span>
+  <span class="nb">puts</span> <span class="s2">&quot;Failed to open the database.&quot;</span>
+  <span class="nb">exit</span> <span class="mi">1</span>
+<span class="k">end</span>
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># STEP 3: START THE LOG FILE</span>
+<span class="c1"># ==============================================================================</span>
+
+<span class="n">log_dir</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">[</span><span class="s1">&#39;base_directory&#39;</span><span class="o">]</span><span class="p">,</span> <span class="s2">&quot;ICM Import Log Files&quot;</span><span class="p">)</span>
+<span class="no">Dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">log_dir</span><span class="p">)</span> <span class="k">unless</span> <span class="no">Dir</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">log_dir</span><span class="p">)</span>
+
+<span class="c1"># Create a unique log filename using the current time</span>
+<span class="n">log_filename</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">log_dir</span><span class="p">,</span> <span class="s2">&quot;SWMM5_Batch_Import_</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m%d_%H%M%S&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.log&quot;</span><span class="p">)</span>
+<span class="n">log_file</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">log_filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="c1"># &#39;w&#39; means Write mode</span>
+
+<span class="c1"># Write the header to the log</span>
+<span class="n">log</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span><span class="p">,</span> <span class="n">log_file</span>
+<span class="n">log</span> <span class="s2">&quot;SWMM5 Import Log - </span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+<span class="n">log</span> <span class="s2">&quot;Database GUID: </span><span class="si">#{</span><span class="n">db</span><span class="o">.</span><span class="n">guid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+<span class="n">log</span> <span class="s2">&quot;Files to process: </span><span class="si">#{</span><span class="n">file_configs</span><span class="o">.</span><span class="n">length</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+<span class="n">log</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+
+<span class="c1"># Setup a scorecard to keep track of our results</span>
+<span class="n">aggregate_stats</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="ss">files_processed</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="ss">files_successful</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="ss">files_failed</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="ss">total_nodes</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="ss">total_links</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="ss">total_subcatchments</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="ss">total_label_lists_deleted</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="ss">failed_files</span><span class="p">:</span> <span class="o">[]</span>
+<span class="p">}</span>
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># STEP 4: THE MAIN LOOP (Process Every File)</span>
+<span class="c1"># ==============================================================================</span>
+
+<span class="nb">puts</span> <span class="s2">&quot;STARTING BATCH PROCESSING...&quot;</span>
+
+<span class="c1"># Loop through every file in our configuration list</span>
+<span class="n">file_configs</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">file_config</span><span class="p">,</span> <span class="n">file_index</span><span class="o">|</span>
+  
+  <span class="n">file_path</span> <span class="o">=</span> <span class="n">file_config</span><span class="o">[</span><span class="s1">&#39;file_path&#39;</span><span class="o">]</span>
+  <span class="n">model_group_name</span> <span class="o">=</span> <span class="n">file_config</span><span class="o">[</span><span class="s1">&#39;model_group_name&#39;</span><span class="o">]</span>
+  <span class="n">file_basename</span> <span class="o">=</span> <span class="n">file_config</span><span class="o">[</span><span class="s1">&#39;file_basename&#39;</span><span class="o">]</span>
+  
+  <span class="c1"># Visual separator in the log</span>
+  <span class="n">log</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span><span class="p">,</span> <span class="n">log_file</span>
+  <span class="n">log</span> <span class="s2">&quot;[File </span><span class="si">#{</span><span class="n">file_index</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2"> of </span><span class="si">#{</span><span class="n">file_configs</span><span class="o">.</span><span class="n">length</span><span class="si">}</span><span class="s2">]: </span><span class="si">#{</span><span class="n">file_basename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+  <span class="n">log</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span><span class="p">,</span> <span class="n">log_file</span>
+  
+  <span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:files_processed</span><span class="o">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+  <span class="c1"># ----------------------------------------------------------------------------</span>
+  <span class="c1"># Pre-Checks (Before we try to import)</span>
+  <span class="c1"># ----------------------------------------------------------------------------</span>
+  
+  <span class="k">if</span> <span class="o">!</span><span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+    <span class="n">log</span> <span class="s2">&quot;ERROR: File missing: </span><span class="si">#{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+    <span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:files_failed</span><span class="o">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:failed_files</span><span class="o">]</span> <span class="o">&lt;&lt;</span> <span class="p">{</span> <span class="ss">file</span><span class="p">:</span> <span class="n">file_basename</span><span class="p">,</span> <span class="ss">reason</span><span class="p">:</span> <span class="s2">&quot;File not found&quot;</span> <span class="p">}</span>
+    <span class="k">next</span> <span class="c1"># Skip to the next file in the loop</span>
+  <span class="k">end</span>
+
+  <span class="c1"># ----------------------------------------------------------------------------</span>
+  <span class="c1"># The &quot;Safety Net&quot; Block (Begin/Rescue)</span>
+  <span class="c1"># ----------------------------------------------------------------------------</span>
+  <span class="k">begin</span>
+    <span class="c1"># TRACKER: Keep stats just for this one file</span>
+    <span class="n">import_stats</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">nodes</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="ss">links</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="ss">subcatchments</span><span class="p">:</span> <span class="mi">0</span> <span class="p">}</span>
+    
+    <span class="c1"># --- Phase 1: Create the Container (Model Group) ---</span>
+    <span class="n">log</span> <span class="s2">&quot;  Action: Creating Model Group &#39;</span><span class="si">#{</span><span class="n">model_group_name</span><span class="si">}</span><span class="s2">&#39;...&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+    
+    <span class="c1"># &#39;db.new_model_object&#39; creates a new item in the database tree.</span>
+    <span class="c1"># Type: &#39;Model Group&#39;, Name: model_group_name</span>
+    <span class="n">model_group</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">new_model_object</span><span class="p">(</span><span class="s1">&#39;Model Group&#39;</span><span class="p">,</span> <span class="n">model_group_name</span><span class="p">)</span>
+    
+    <span class="c1"># --- Phase 2: Import the Data ---</span>
+    <span class="n">log</span> <span class="s2">&quot;  Action: Importing .inp file...&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+    
+    <span class="c1"># We create a temporary text file to capture the specific import warnings </span>
+    <span class="c1"># that the ICM engine generates internally.</span>
+    <span class="n">import_log_path</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">log_dir</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="no">File</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;.inp&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">_import.txt&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># This is the CORE COMMAND. It tells ICM to suck in the .inp file.</span>
+    <span class="n">imported_objects</span> <span class="o">=</span> <span class="n">model_group</span><span class="o">.</span><span class="n">import_all_sw_model_objects</span><span class="p">(</span>
+      <span class="n">file_path</span><span class="p">,</span>       <span class="c1"># Source file</span>
+      <span class="s2">&quot;inp&quot;</span><span class="p">,</span>           <span class="c1"># Format</span>
+      <span class="kp">nil</span><span class="p">,</span>             <span class="c1"># Options (nil = default)</span>
+      <span class="n">import_log_path</span>  <span class="c1"># Where to write the internal engine log</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Check if it actually worked</span>
+    <span class="k">if</span> <span class="n">imported_objects</span><span class="o">.</span><span class="n">nil?</span> <span class="o">||</span> <span class="n">imported_objects</span><span class="o">.</span><span class="n">empty?</span>
+      <span class="k">raise</span> <span class="s2">&quot;Import returned no objects. The file might be empty or corrupt.&quot;</span>
+    <span class="k">end</span>
+    
+    <span class="n">log</span> <span class="s2">&quot;  Success: Imported </span><span class="si">#{</span><span class="n">imported_objects</span><span class="o">.</span><span class="n">length</span><span class="si">}</span><span class="s2"> items.&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+
+    <span class="c1"># --- Phase 3: Gather Stats ---</span>
+    
+    <span class="c1"># We need to find the &quot;Network&quot; object inside the list of things we just imported.</span>
+    <span class="n">imported_network</span> <span class="o">=</span> <span class="n">imported_objects</span><span class="o">.</span><span class="n">find</span> <span class="p">{</span> <span class="o">|</span><span class="n">obj</span><span class="o">|</span> <span class="n">obj</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;SWMM network&#39;</span> <span class="p">}</span>
+    
+    <span class="k">if</span> <span class="n">imported_network</span>
+      <span class="c1"># &#39;open&#39; opens the network in memory so we can count things.</span>
+      <span class="n">net</span> <span class="o">=</span> <span class="n">imported_network</span><span class="o">.</span><span class="n">open</span>
+      
+      <span class="c1"># Count the rows in specific tables</span>
+      <span class="n">import_stats</span><span class="o">[</span><span class="ss">:nodes</span><span class="o">]</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">row_objects</span><span class="p">(</span><span class="s1">&#39;_nodes&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">length</span>
+      <span class="n">import_stats</span><span class="o">[</span><span class="ss">:links</span><span class="o">]</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">row_objects</span><span class="p">(</span><span class="s1">&#39;_links&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">length</span>
+      <span class="n">import_stats</span><span class="o">[</span><span class="ss">:subcatchments</span><span class="o">]</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">row_objects</span><span class="p">(</span><span class="s1">&#39;_subcatchments&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">length</span>
+      
+      <span class="n">log</span> <span class="s2">&quot;  Stats: Nodes: </span><span class="si">#{</span><span class="n">import_stats</span><span class="o">[</span><span class="ss">:nodes</span><span class="o">]</span><span class="si">}</span><span class="s2">, Links: </span><span class="si">#{</span><span class="n">import_stats</span><span class="o">[</span><span class="ss">:links</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+      
+      <span class="c1"># Add to the grand totals</span>
+      <span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:total_nodes</span><span class="o">]</span> <span class="o">+=</span> <span class="n">import_stats</span><span class="o">[</span><span class="ss">:nodes</span><span class="o">]</span>
+      <span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:total_links</span><span class="o">]</span> <span class="o">+=</span> <span class="n">import_stats</span><span class="o">[</span><span class="ss">:links</span><span class="o">]</span>
+      <span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:total_subcatchments</span><span class="o">]</span> <span class="o">+=</span> <span class="n">import_stats</span><span class="o">[</span><span class="ss">:subcatchments</span><span class="o">]</span>
+      
+      <span class="c1"># &#39;commit&#39; saves the network changes (even though we just opened it to read, </span>
+      <span class="c1"># it&#39;s good practice in Exchange scripts to commit/close).</span>
+      <span class="n">net</span><span class="o">.</span><span class="n">commit</span><span class="p">(</span><span class="s2">&quot;Imported via Script&quot;</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="c1"># --- Phase 4: Cleanup (Label Lists) ---</span>
+    
+    <span class="k">if</span> <span class="n">cleanup_empty_label_lists</span>
+      <span class="n">log</span> <span class="s2">&quot;  Action: Checking for empty Label Lists...&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+      <span class="n">deleted_count</span> <span class="o">=</span> <span class="mi">0</span>
+      
+      <span class="c1"># Loop through everything we imported</span>
+      <span class="n">imported_objects</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">obj</span><span class="o">|</span>
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;Label List&#39;</span>
+          <span class="c1"># Use our helper function to see if it&#39;s empty</span>
+          <span class="k">if</span> <span class="n">is_label_list_empty?</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">log_file</span><span class="p">)</span>
+             <span class="c1"># Delete it from the database</span>
+             <span class="n">obj</span><span class="o">.</span><span class="n">delete</span>
+             <span class="n">deleted_count</span> <span class="o">+=</span> <span class="mi">1</span>
+          <span class="k">end</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+      
+      <span class="k">if</span> <span class="n">deleted_count</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="n">log</span> <span class="s2">&quot;  Cleanup: Removed </span><span class="si">#{</span><span class="n">deleted_count</span><span class="si">}</span><span class="s2"> empty label lists.&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+        <span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:total_label_lists_deleted</span><span class="o">]</span> <span class="o">+=</span> <span class="n">deleted_count</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+    
+    <span class="c1"># --- Phase 5: Validation (Optional) ---</span>
+    
+    <span class="k">if</span> <span class="n">validate_after_import</span> <span class="o">&amp;&amp;</span> <span class="n">imported_network</span>
+      <span class="n">log</span> <span class="s2">&quot;  Action: Running Validation Checks...&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+      
+      <span class="c1"># Example Check: Is the network completely empty?</span>
+      <span class="k">if</span> <span class="n">import_stats</span><span class="o">[</span><span class="ss">:nodes</span><span class="o">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">import_stats</span><span class="o">[</span><span class="ss">:links</span><span class="o">]</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="n">log</span> <span class="s2">&quot;  WARNING: Network contains 0 nodes and 0 links.&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+      <span class="k">end</span>
+      
+      <span class="c1"># (Additional validation logic is in the original code, simplified here for clarity)</span>
+    <span class="k">end</span>
+
+    <span class="c1"># If we got here, everything worked!</span>
+    <span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:files_successful</span><span class="o">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">log</span> <span class="s2">&quot;  RESULT: File processed successfully.&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+
+  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+    <span class="c1"># --------------------------------------------------------------------------</span>
+    <span class="c1"># The Error Handler</span>
+    <span class="c1"># --------------------------------------------------------------------------</span>
+    <span class="c1"># If anything inside the &#39;begin&#39; block crashed:</span>
+    
+    <span class="n">log</span> <span class="s2">&quot;  CRITICAL ERROR: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+    <span class="n">log</span> <span class="s2">&quot;  Trace: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">first</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+    
+    <span class="c1"># If we created a Model Group but failed halfway through, </span>
+    <span class="c1"># try to delete the messy group so we don&#39;t leave junk behind.</span>
+    <span class="k">if</span> <span class="n">defined?</span><span class="p">(</span><span class="n">model_group</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">model_group</span>
+      <span class="k">begin</span>
+        <span class="n">model_group</span><span class="o">.</span><span class="n">delete</span>
+        <span class="n">log</span> <span class="s2">&quot;  Cleanup: Deleted partial model group.&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+      <span class="k">rescue</span>
+        <span class="c1"># If we can&#39;t even delete it, just move on.</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+    
+    <span class="c1"># Record the failure</span>
+    <span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:files_failed</span><span class="o">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:failed_files</span><span class="o">]</span> <span class="o">&lt;&lt;</span> <span class="p">{</span> <span class="ss">file</span><span class="p">:</span> <span class="n">file_basename</span><span class="p">,</span> <span class="ss">reason</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span> <span class="p">}</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># STEP 5: WRITE THE SUMMARY FILE</span>
+<span class="c1"># ==============================================================================</span>
+
+<span class="n">log</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span><span class="p">,</span> <span class="n">log_file</span>
+<span class="n">log</span> <span class="s2">&quot;FINAL SUMMARY&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+<span class="n">log</span> <span class="s2">&quot;Processed: </span><span class="si">#{</span><span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:files_processed</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+<span class="n">log</span> <span class="s2">&quot;Success:   </span><span class="si">#{</span><span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:files_successful</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+<span class="n">log</span> <span class="s2">&quot;Failed:    </span><span class="si">#{</span><span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:files_failed</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">log_file</span>
+<span class="n">log</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span><span class="p">,</span> <span class="n">log_file</span>
+
+<span class="n">log_file</span><span class="o">.</span><span class="n">close</span>
+
+<span class="c1"># Create a specific &quot;batch_summary.txt&quot; file.</span>
+<span class="c1"># The UI script reads THIS file to show the final popup to the user.</span>
+<span class="n">summary_file_path</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">log_dir</span><span class="p">,</span> <span class="s2">&quot;batch_summary.txt&quot;</span><span class="p">)</span>
+
+<span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">summary_file_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+  <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;files_processed=</span><span class="si">#{</span><span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:files_processed</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;files_successful=</span><span class="si">#{</span><span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:files_successful</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;files_failed=</span><span class="si">#{</span><span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:files_failed</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;total_nodes=</span><span class="si">#{</span><span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:total_nodes</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;total_links=</span><span class="si">#{</span><span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:total_links</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;total_subcatchments=</span><span class="si">#{</span><span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:total_subcatchments</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;total_label_lists_deleted=</span><span class="si">#{</span><span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:total_label_lists_deleted</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="k">end</span>
+
+<span class="nb">puts</span> <span class="s2">&quot;Summary file written to: </span><span class="si">#{</span><span class="n">summary_file_path</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="c1"># Exit code 0 = Success, 1 = Some failures occurred</span>
+<span class="nb">exit</span><span class="p">(</span><span class="n">aggregate_stats</span><span class="o">[</span><span class="ss">:files_failed</span><span class="o">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">?</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
+<span class="sb">```</span>
+</code></pre></div>
+</td></tr></table></div></section>
+  <footer>Auto-generated &middot; Original file unmodified</footer>
+</div>
+</body>
+</html>

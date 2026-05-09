@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ui.script  Read InfoSewer Steady State Report File.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0014 - InfoSewer to ICM Comparison Tools</div>
+    <h1>ui.script  Read InfoSewer Steady State Report File.md</h1>
+    <div class="meta">Markdown document &middot; 0014 - InfoSewer to ICM Comparison Tools</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">167 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="infosewer-rpt-file-reader-documentation">InfoSewer RPT File Reader Documentation</h1>
+<h2 id="overview">Overview</h2>
+<p>This Ruby script is designed to read and analyze InfoSewer Steady State Report (RPT) files within the WSApplication environment. It parses multiple sections of the RPT file, calculates statistical summaries, and outputs data in CSV format for further analysis.</p>
+<h2 id="features">Features</h2>
+<h3 id="core-functionality">Core Functionality</h3>
+<ul>
+<li>Interactive file selection dialog</li>
+<li>Selective section processing based on user preferences</li>
+<li>Statistical analysis (mean, max, min, count) for numerical data</li>
+<li>CSV output for manholes and links (pipes, pumps, force mains)</li>
+</ul>
+<h3 id="supported-rpt-sections">Supported RPT Sections</h3>
+<ol>
+<li><strong>Summary</strong> - General system summary information</li>
+<li><strong>Loading Manholes</strong> - Manhole loading data (Base, Storm, Total loads)</li>
+<li><strong>Pipes</strong> - Gravity sewer pipe hydraulic data</li>
+<li><strong>Force Mains</strong> - Pressurized pipe data</li>
+<li><strong>Pumps</strong> - Pump station operational data</li>
+</ol>
+<h2 id="script-structure">Script Structure</h2>
+<h3 id="1-user-interface-dialog">1. User Interface Dialog</h3>
+<p>The script begins by presenting a dialog box where users can:
+- Select the RPT file to process
+- Choose which sections to analyze using checkboxes</p>
+<h3 id="2-file-validation">2. File Validation</h3>
+<ul>
+<li>Verifies the selected file exists</li>
+<li>Checks for valid file path</li>
+<li>Handles user cancellation gracefully</li>
+</ul>
+<h3 id="3-data-parsing-engine">3. Data Parsing Engine</h3>
+<h4 id="section-headers-configuration">Section Headers Configuration</h4>
+<p>The script defines specific headers for each section type:</p>
+<ul>
+<li><strong>Loading Manholes</strong>: Base, Storm, Total</li>
+<li><strong>Pumps</strong>: Pump Count, Pump Flow, Pump Head</li>
+<li><strong>Force Mains</strong>: Pipe Diam, Pipe Flow, Pipe Vel., Pipe Loss</li>
+<li><strong>Pipes</strong>: 16 different metrics including flow, velocity, depth, etc.</li>
+</ul>
+<h4 id="parsing-logic">Parsing Logic</h4>
+<ol>
+<li>Identifies section boundaries marked by <code>[Section Name]</code></li>
+<li>Skips the first 3 lines of each section (headers)</li>
+<li>Applies section-specific column shifts:
+   - Pipes: Skip 2 columns after ID
+   - Force Mains: Skip 2 columns after ID
+   - Pumps: Skip 3 columns after ID</li>
+<li>Converts string values to floats for numerical analysis</li>
+</ol>
+<h3 id="4-statistical-analysis">4. Statistical Analysis</h3>
+<p>For each selected section, the script calculates:
+- <strong>Mean</strong> - Average value for each metric
+- <strong>Max</strong> - Maximum value found
+- <strong>Min</strong> - Minimum value found
+- <strong>Count</strong> - Number of valid data points</p>
+<p>Output format:</p>
+<pre><code>Section: [Section Name]
+  [Metric Name]        | Mean: [value]      | Max: [value]       | Min: [value]       | Count: [number]
+</code></pre>
+<h3 id="5-csv-output-generation">5. CSV Output Generation</h3>
+<h4 id="loading-manholes-csv">Loading Manholes CSV</h4>
+<p>Format:</p>
+<pre><code class="language-csv">ID,Base,Storm,Total
+MH001,1.23,0.45,1.68
+MH002,2.34,0.56,2.90
+</code></pre>
+<h4 id="links-csv-combined-output">Links CSV (Combined Output)</h4>
+<p>Combines all link types into a unified format:</p>
+<pre><code class="language-csv">ID,Type,Diameter,Flow,Velocity,Depth_Ratio
+P001,Pipe,12.0,45.6,3.2,0.75
+FM001,Force Main,8.0,23.4,5.6,1.0
+PMP001,Pump,0.0,123.4,0.0,0.0
+</code></pre>
+<h2 id="key-technical-details">Key Technical Details</h2>
+<h3 id="data-cleaning">Data Cleaning</h3>
+<ul>
+<li>Handles special cases like "Exponential 3-Point" text that could break tokenization</li>
+<li>Strips whitespace and skips empty lines</li>
+<li>Validates numeric conversions with error handling</li>
+</ul>
+<h3 id="error-handling">Error Handling</h3>
+<ul>
+<li>Graceful handling of missing values (defaults to 0.0)</li>
+<li>Validation of array bounds before accessing indices</li>
+<li>Nil checking for robust operation</li>
+</ul>
+<h3 id="section-specific-processing">Section-Specific Processing</h3>
+<p>Each section type has unique characteristics:
+- <strong>Pipes</strong>: Most complex with 16 data columns
+- <strong>Force Mains</strong>: Always full (depth_ratio = 1.0)
+- <strong>Pumps</strong>: No diameter or traditional velocity metrics</p>
+<h2 id="usage-requirements">Usage Requirements</h2>
+<h3 id="environment">Environment</h3>
+<ul>
+<li>Requires WSApplication environment (InfoSewer/InfoSWMM)</li>
+<li>Ruby runtime within the application</li>
+<li>Access to RPT files from InfoSewer steady-state analysis</li>
+</ul>
+<h3 id="input-file-format">Input File Format</h3>
+<p>The RPT file must follow the standard InfoSewer format:
+- Section headers enclosed in brackets: <code>[Section Name]</code>
+- Tab or space-delimited data
+- First column contains element IDs
+- Minimum 3 header lines per section</p>
+<h2 id="output-examples">Output Examples</h2>
+<h3 id="statistical-summary">Statistical Summary</h3>
+<pre><code>Section: Pipes
+  Pipe Flow 1          | Mean: 45.678       | Max: 123.450      | Min: 0.100        | Count: 150
+  Pipe Veloc           | Mean: 3.245        | Max: 8.900        | Min: 0.050        | Count: 150
+</code></pre>
+<h3 id="csv-output">CSV Output</h3>
+<p>The script generates two CSV sections that can be easily copied for use in spreadsheet applications or further processing:
+1. Manhole loads with individual base, storm, and total values
+2. Combined links data with unified structure for all link types</p>
+<h2 id="customization-options">Customization Options</h2>
+<h3 id="adding-new-sections">Adding New Sections</h3>
+<p>To add support for additional RPT sections:
+1. Add section name to the dialog prompt
+2. Define headers array for the new section
+3. Add section-specific token shift logic if needed
+4. Include in statistical analysis case statement</p>
+<h3 id="modifying-output-format">Modifying Output Format</h3>
+<p>The CSV output format can be customized by modifying the output sections at the end of the script. Additional fields can be added by accessing different indices from the parsed data arrays.</p>
+<h2 id="best-practices">Best Practices</h2>
+<ol>
+<li><strong>Always verify</strong> the RPT file format matches expected structure</li>
+<li><strong>Test with small files</strong> first to ensure proper parsing</li>
+<li><strong>Check statistical results</strong> for reasonableness</li>
+<li><strong>Save CSV output</strong> immediately if needed for further analysis</li>
+<li><strong>Monitor memory usage</strong> with very large RPT files</li>
+</ol>
+<h2 id="limitations">Limitations</h2>
+<ul>
+<li>Requires specific RPT file format from InfoSewer</li>
+<li>Statistical analysis limited to numerical data</li>
+<li>CSV output goes to console (not directly to file)</li>
+<li>Some data transformations are hard-coded (e.g., force main depth_ratio)</li>
+</ul>
+<h2 id="future-enhancement-possibilities">Future Enhancement Possibilities</h2>
+<ol>
+<li>Direct CSV file export option</li>
+<li>Additional statistical metrics (standard deviation, percentiles)</li>
+<li>Graphical visualization of results</li>
+<li>Batch processing of multiple RPT files</li>
+<li>Custom header mapping configuration</li>
+<li>Export to InfoSewer model attributes</li>
+</ol>
+<p><img alt="alt text" src="image.png"></p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

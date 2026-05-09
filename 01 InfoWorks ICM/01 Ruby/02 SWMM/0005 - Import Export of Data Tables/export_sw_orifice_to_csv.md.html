@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>export_sw_orifice_to_csv.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0005 - Import Export of Data Tables</div>
+    <h1>export_sw_orifice_to_csv.md</h1>
+    <div class="meta">Markdown document &middot; 0005 - Import Export of Data Tables</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">184 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="swmm-orifice-export-script-documentation">SWMM Orifice Export Script Documentation</h1>
+<h2 id="overview">Overview</h2>
+<p>This Ruby script automates the export of SWMM orifice data from InfoWorks ICM/InfoSWMM to CSV format. It provides comprehensive field selection, statistical analysis capabilities, and user-friendly prompts for customizing orifice data exports.</p>
+<h2 id="key-features">Key Features</h2>
+<h3 id="data-export-capabilities"><strong>Data Export Capabilities</strong></h3>
+<ul>
+<li>Exports selected SWMM orifice objects to timestamped CSV files</li>
+<li>Supports 30+ configurable orifice parameters</li>
+<li>Handles complex data types (point arrays, hyperlinks)</li>
+<li>User-selectable field configuration with individual toggles</li>
+</ul>
+<h3 id="statistical-analysis"><strong>Statistical Analysis</strong></h3>
+<ul>
+<li>Optional statistical calculations for numeric fields</li>
+<li>Generates formatted tables showing:</li>
+<li>Count, Min, Max, Mean, Standard Deviation</li>
+<li>Automatically excludes non-numeric fields (IDs, shapes, types)</li>
+<li>Uses sample standard deviation formula (n-1 denominator)</li>
+</ul>
+<h3 id="user-interface"><strong>User Interface</strong></h3>
+<ul>
+<li>Interactive prompts for field selection</li>
+<li>"Select/Deselect All" toggle option</li>
+<li>Export folder selection with validation</li>
+<li>Summary dialog upon completion</li>
+<li>Progress tracking and comprehensive error reporting</li>
+</ul>
+<h2 id="supported-swmm-orifice-fields">Supported SWMM Orifice Fields</h2>
+<h3 id="essential-fields-default-enabled"><strong>Essential Fields (Default: Enabled)</strong></h3>
+<ul>
+<li><strong>Orifice ID</strong>: Unique identifier</li>
+<li><strong>US/DS Node IDs</strong>: Upstream and downstream node connections</li>
+<li><strong>Link Type</strong>: Should be "ORIFICE" for orifice objects</li>
+<li><strong>Shape</strong>: Orifice geometry (CIRCULAR, RECT_CLOSED, RECT_OPEN)</li>
+<li><strong>Orifice Height</strong>: Primary geometric dimension (Geom1 in SWMM5)</li>
+<li><strong>Invert Level</strong>: Crest height/elevation</li>
+<li><strong>Discharge Coefficient</strong>: Flow coefficient (Cd)</li>
+</ul>
+<h3 id="geometric-properties"><strong>Geometric Properties</strong></h3>
+<ul>
+<li><strong>Orifice Width</strong>: Secondary dimension for rectangular shapes (Geom2)</li>
+<li><strong>Shape specifications</strong>: Circular, rectangular configurations</li>
+<li><strong>Point Array</strong>: Vertex coordinates for complex geometries</li>
+<li><strong>Dimensional parameters</strong>: Height, width, invert elevations</li>
+</ul>
+<h3 id="hydraulic-parameters"><strong>Hydraulic Parameters</strong></h3>
+<ul>
+<li><strong>Discharge Coefficient</strong>: Flow resistance factor</li>
+<li><strong>Flap Gate</strong>: Presence of backflow prevention (YES/NO)</li>
+<li><strong>Time to Open/Close</strong>: Gating operation duration (seconds)</li>
+<li><strong>Flow control settings</strong>: Operational parameters</li>
+</ul>
+<h3 id="network-integration"><strong>Network Integration</strong></h3>
+<ul>
+<li><strong>Branch ID</strong>: Network subdivision identifier</li>
+<li><strong>Node connections</strong>: Upstream/downstream relationships</li>
+<li><strong>Spatial data</strong>: Coordinate arrays for positioning</li>
+</ul>
+<h3 id="user-defined-fields"><strong>User-Defined Fields</strong></h3>
+<ul>
+<li><strong>10 User Number Fields</strong>: Custom numeric parameters</li>
+<li><strong>10 User Text Fields</strong>: Custom text annotations</li>
+<li><strong>Notes</strong>: Detailed descriptions</li>
+<li><strong>Hyperlinks</strong>: External references and documentation</li>
+</ul>
+<h2 id="technical-implementation">Technical Implementation</h2>
+<h3 id="swmm-specific-features"><strong>SWMM-Specific Features</strong></h3>
+<ul>
+<li>Targets <code>sw_orifice</code> objects specifically</li>
+<li>Compatible with SWMM5 input file structure</li>
+<li>Handles SWMM geometric conventions (Geom1/Geom2)</li>
+<li>Processes SWMM-specific shape definitions</li>
+</ul>
+<h3 id="data-processing"><strong>Data Processing</strong></h3>
+<ul>
+<li>Processes only selected orifice objects</li>
+<li>Handles boolean values (converts to 1.0/0.0 for statistics)</li>
+<li>Sanitizes CSV data (removes semicolons and commas)</li>
+<li>Type conversion with error handling</li>
+</ul>
+<h3 id="error-handling"><strong>Error Handling</strong></h3>
+<ul>
+<li>Network validation and connection checks</li>
+<li>Orifice object existence verification</li>
+<li>File permission and disk space validation</li>
+<li>Graceful handling of missing attributes</li>
+<li>Comprehensive logging with object IDs</li>
+</ul>
+<h3 id="performance-features"><strong>Performance Features</strong></h3>
+<ul>
+<li>Iterator-based processing for memory efficiency</li>
+<li>Progress tracking with object counts</li>
+<li>Execution timing reports</li>
+<li>Automatic cleanup of empty files</li>
+</ul>
+<h2 id="usage-instructions">Usage Instructions</h2>
+<h3 id="prerequisites"><strong>Prerequisites</strong></h3>
+<ul>
+<li>InfoSWMM or InfoWorks ICM environment</li>
+<li>Network with SWMM orifice objects loaded</li>
+<li>Write permissions to export directory</li>
+</ul>
+<h3 id="execution-steps"><strong>Execution Steps</strong></h3>
+<ol>
+<li><strong>Select Orifices</strong>: Use the GUI to select orifice objects for export</li>
+<li><strong>Run Script</strong>: Execute within the application environment</li>
+<li><strong>Configure Export</strong>:
+   - Choose export folder
+   - Select desired fields (essential fields enabled by default)
+   - Enable statistics calculation if needed</li>
+<li><strong>Review Results</strong>: Check console output and summary dialog</li>
+</ol>
+<h3 id="output-files"><strong>Output Files</strong></h3>
+<ul>
+<li>CSV format: <code>selected_swmm_orifices_export_YYYYMMDD_HHMMSS.csv</code></li>
+<li>Automatic cleanup of empty files</li>
+<li>Timestamped for version control</li>
+</ul>
+<h2 id="statistical-output-example">Statistical Output Example</h2>
+<pre><code>| Parameter (Header)            | Count  | Min      | Max      | Mean         | Std Dev      |
+|-------------------------------|--------|----------|----------|--------------|--------------|
+| OrifHeight                    | 45     | 0.200    | 1.500    | 0.750        | 0.325        |
+| InvertElev                    | 45     | 12.500   | 45.800   | 28.150       | 8.450        |
+| DischCoeff                    | 45     | 0.600    | 0.650    | 0.620        | 0.015        |
+| OpenCloseT                    | 12     | 5.000    | 30.000   | 15.500       | 7.200        |
+</code></pre>
+<h2 id="swmm-integration-notes">SWMM Integration Notes</h2>
+<h3 id="swmm5-compatibility"><strong>SWMM5 Compatibility</strong></h3>
+<ul>
+<li><strong>Geometry Fields</strong>: Maps to Geom1 (height) and Geom2 (width) in SWMM5</li>
+<li><strong>Shape Types</strong>: Supports standard SWMM orifice shapes</li>
+<li><strong>Crest Height</strong>: Corresponds to invert level parameter</li>
+<li><strong>Flow Coefficients</strong>: Compatible with SWMM discharge coefficients</li>
+</ul>
+<h3 id="field-verification"><strong>Field Verification</strong></h3>
+<ul>
+<li>Field symbols must match actual SWMM API method names</li>
+<li>Debugging block available for method inspection</li>
+<li>SWMM version-specific field availability may vary</li>
+</ul>
+<h3 id="statistics-exclusions"><strong>Statistics Exclusions</strong></h3>
+<ul>
+<li>Text fields (IDs, notes, shape names)</li>
+<li>Type fields (link_type, opening_type)</li>
+<li>Complex arrays (point_array, hyperlinks)</li>
+<li>Shape descriptors and categorical data</li>
+</ul>
+<h2 id="error-messages-and-troubleshooting">Error Messages and Troubleshooting</h2>
+<h3 id="common-issues"><strong>Common Issues</strong></h3>
+<ul>
+<li><strong>"No network loaded"</strong>: Ensure a SWMM network is open before running</li>
+<li><strong>"No 'sw_orifice' objects found"</strong>: Verify orifices exist in the model</li>
+<li><strong>"Permission denied"</strong>: Check folder write permissions</li>
+<li><strong>"AttributeMissing"</strong>: Field not available in current SWMM API version</li>
+<li><strong>"No orifices selected"</strong>: Select orifice objects in GUI before export</li>
+</ul>
+<h3 id="debug-mode"><strong>Debug Mode</strong></h3>
+<p>Uncomment the debugging block to inspect available methods:</p>
+<pre><code class="language-ruby"># orifice_example = cn.row_objects('sw_orifice').first 
+# puts orifice_example.methods.sort.inspect
+</code></pre>
+<h2 id="configuration-notes">Configuration Notes</h2>
+<h3 id="swmm-specific-considerations"><strong>SWMM-Specific Considerations</strong></h3>
+<ul>
+<li>Orifices typically don't use <code>link_suffix</code> like ICM links</li>
+<li>Shape field determines which geometric parameters are relevant</li>
+<li>Flap gate settings affect flow behavior</li>
+<li>Time-based controls may require additional fields</li>
+</ul>
+<h3 id="export-customization"><strong>Export Customization</strong></h3>
+<ul>
+<li>Essential fields enabled by default for basic SWMM analysis</li>
+<li>Advanced fields (user numbers/text) disabled by default</li>
+<li>Statistics calculation optional to reduce processing time</li>
+<li>Field selection persists through user interface</li>
+</ul>
+<h2 id="integration-with-swmm-workflow">Integration with SWMM Workflow</h2>
+<h3 id="model-comparison-applications"><strong>Model Comparison Applications</strong></h3>
+<ul>
+<li>Compare orifice specifications between scenarios</li>
+<li>Validate design parameters across model versions</li>
+<li>Export for external analysis tools</li>
+<li>Generate reports for design documentation</li>
+</ul>
+<h3 id="quality-assurance"><strong>Quality Assurance</strong></h3>
+<ul>
+<li>Statistical analysis identifies outliers</li>
+<li>Field validation ensures data consistency</li>
+<li>Comprehensive logging tracks processing issues</li>
+<li>Automated cleanup prevents incomplete exports</li>
+</ul>
+<p>This script forms part of the larger InfoWorks automation suite, specifically designed for SWMM network analysis and comparison tasks as outlined in Edition 41-44 of the series.</p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

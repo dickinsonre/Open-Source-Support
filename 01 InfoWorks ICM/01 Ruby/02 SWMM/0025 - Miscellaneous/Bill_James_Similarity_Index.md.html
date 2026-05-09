@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bill_James_Similarity_Index.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0025 - Miscellaneous</div>
+    <h1>Bill_James_Similarity_Index.md</h1>
+    <div class="meta">Markdown document &middot; 0025 - Miscellaneous</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">34 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><pre><code class="language-markdown"># Using the Bill James Similarity Index to Compare SWMM5 and InfoWorks ICM Hydraulic Networks
+
+This paper presents a novel paradigm for evaluating hydraulic modeling platforms using the **Bill James Similarity Index**, a statistical technique initially created for baseball statistics. The methodology allows for a systematic comparison of the **Storm Water Management Model 5 (SWMM5)** (utilizing ICM SWMM) and **InfoWorks ICM** by assessing their computational outputs and performance in standardized situations.
+
+The methodology takes advantage of the unique ability to run both SWMM5 and InfoWorks ICM simultaneously under the same user interface, resulting in equivalent **InfoWorks Result (IWR) files**. The research uses 100 historical SWMM test files generated from SWMM3, SWMM4, and SWMM5 releases, which constitute the USEPA's standard engine testing suite. **ICM SWMM** is the background network, while **ICM InfoWorks** is the current network.
+
+A modified similarity index was created by assigning weighted scores (0–100) to key hydraulic characteristics at shared network nodes. These metrics include flow rates, water depths, and velocities, with weights based on hydraulic relevance. Metrics such as **Current Network Mean**, **Background Network Mean**, **Root Mean Square Error**, **Mean Average Error**, **Mean Simple Least Square Error**, **Simulated Standard Deviation**, **Skewness of Background Network**, **Kurtosis of Background Network**, **Kurtosis of Current Network**, **Log Nash-Sutcliffe Efficiency**, **Index of Agreement**, **Integral Square Error**, **Kling-Gupta Efficiency**, **Correlation Coefficient**, and **Nash-Sutcliffe Efficiency** were used to guide the similarity index.
+
+The evaluation framework looks at three major dimensions:
+- **Computational correctness vs. observed data**
+- **Hydraulic robustness in problem settings** (e.g., backwater effects, surcharges, flooding)
+- **Computational efficiency for large networks**
+
+Ruby scripting streamlines the analytical procedure, resulting in consistent evaluation across all test situations. This methodology combines sports analytics and hydraulic engineering to provide a consistent, replicable protocol for model comparison. The obtained similarity ratings provide objective criteria for selecting modeling platforms based on project specifications.
+
+**Keywords:** Bill James Similarity Index, hydraulic modeling, model comparison, SWMM5, InfoWorks ICM, statistical evaluation, performance metrics, computational hydraulics
+</code></pre>
+<p>```markdown</p>
+<h1 id="explanation">Explanation</h1>
+<h2 id="statistical-methods">Statistical Methods:</h2>
+<p>Functions such as mean, rmse, mape, standard_deviation, skewness, and kurtosis compute basic descriptive statistics.</p>
+<h2 id="efficiency-metrics">Efficiency Metrics:</h2>
+<p>Methods like nash_sutcliffe_efficiency, log_nash_sutcliffe_efficiency, index_of_agreement, integral_square_error, correlation_coefficient, and kling_gupta_efficiency quantify the agreement between the two datasets using common hydraulic performance criteria.</p>
+<h2 id="scoring-function">Scoring Function:</h2>
+<p>The score_for_metric function converts the raw metric error into a score from 0 to 100. A perfect match (error equal to the ideal value) earns a score of 100; as the error approaches the defined tolerance, the score linearly decreases.</p>
+<h2 id="aggregation">Aggregation:</h2>
+<p>In similarity_index, all metric scores are weighted and aggregated into a final similarity rating.</p>
+<p>This script provides a template that can be extended or refined with more detailed error tolerances, more complex weighting schemes, or actual file I/O to process real IWR files from SWMM5 and InfoWorks ICM.</p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0007 - Hydraulic Comparison Tools for ICM InfoWorks and SWMM</title>
+<style>
+:root {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-2: #0b1220;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-2: #f472b6;
+  --good: #22c55e;
+  --border: #334155;
+  --code-bg: #0b1220;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: linear-gradient(180deg, #0a1226 0%, #0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+header.hero {
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(244,114,182,0.06));
+  padding: 28px 28px 24px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+header.hero .crumbs {
+  font-size: 12px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+header.hero h1 {
+  font-size: 26px; margin: 0 0 6px 0; color: #fff;
+}
+header.hero p.lede {
+  margin: 0 0 14px 0; color: var(--muted);
+}
+.stats {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 13px;
+  background: rgba(56,189,248,0.10);
+  border: 1px solid rgba(56,189,248,0.35);
+  color: var(--accent);
+}
+.chip.alt { background: rgba(34,197,94,0.10); border-color: rgba(34,197,94,0.35); color: var(--good); }
+.chip.pink { background: rgba(244,114,182,0.10); border-color: rgba(244,114,182,0.35); color: var(--accent-2); }
+.content {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 6px 28px 24px;
+}
+.content h2 {
+  margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border);
+  font-size: 18px; color: #fff;
+}
+.content h2:first-of-type { border-top: none; padding-top: 6px; }
+.content h3 { font-size: 15px; color: var(--accent); margin: 16px 0 6px; }
+.content p, .content li { color: var(--text); }
+.content code {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 4px; font-size: 13px;
+  color: #fbbf24;
+}
+.content pre {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 14px; border-radius: 8px; overflow-x: auto;
+  font-size: 13px; line-height: 1.5;
+}
+.content pre code { background: transparent; border: 0; padding: 0; color: var(--text); }
+.content ul { padding-left: 22px; }
+.content li { margin: 4px 0; }
+.content a { color: var(--accent); text-decoration: none; }
+.content a:hover { text-decoration: underline; }
+.content blockquote {
+  margin: 12px 0; padding: 8px 16px;
+  border-left: 3px solid var(--accent); background: rgba(56,189,248,0.06);
+  color: var(--muted);
+}
+.content table {
+  width: 100%; border-collapse: collapse; margin: 12px 0;
+  font-size: 14px;
+}
+.content th, .content td {
+  border: 1px solid var(--border); padding: 8px 12px; text-align: left;
+}
+.content th { background: var(--panel-2); }
+footer {
+  margin-top: 28px; color: var(--muted); font-size: 12px; text-align: center;
+}
+.toc {
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--panel-2); padding: 14px 18px; margin-bottom: 16px;
+}
+.toc strong { color: var(--accent); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.toc ol { columns: 2; margin: 6px 0 0; padding-left: 22px; }
+.toc a { color: var(--text); text-decoration: none; font-size: 13px; }
+.toc a:hover { color: var(--accent); }
+@media (max-width: 720px) {
+  .toc ol { columns: 1; }
+  header.hero h1 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">SWMM &rsaquo; Ruby Fixes</div>
+    <h1>0007 - Hydraulic Comparison Tools for ICM InfoWorks and SWMM</h1>
+    <p class="lede">Hydraulic math: Manning's, Kutter, tau/shear stress, HEC-22 inlet checks.</p>
+    <div class="stats">
+      <span class="chip">7 originals</span>
+      <span class="chip alt">7 fix_ versions</span>
+      <span class="chip pink">Robustness pass</span>
+    </div>
+  </header>
+
+<style>
+  .file-table-wrap { background:#0b1220; border:1px solid #334155; border-radius:12px; padding:14px 18px; margin:18px 0; }
+  .file-table-wrap h2 { color:#fff; font-size:16px; margin:0 0 10px; }
+  .file-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .file-table th, .file-table td { border-bottom:1px solid #1f2937; padding:6px 10px; text-align:left; vertical-align:top; }
+  .file-table th { color:#94a3b8; font-weight:500; font-size:12px; letter-spacing:0.04em; text-transform:uppercase; }
+  .file-table a { color:#38bdf8; text-decoration:none; }
+  .file-table a:hover { text-decoration:underline; }
+  .file-table .pair { font-family:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace; }
+  .file-table tr:last-child td { border-bottom:0; }
+  .file-table .miss { color:#64748b; font-style:italic; }
+  .md-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .md-list a { padding:4px 10px; border:1px solid #334155; border-radius:8px; background:#0b1220; color:#38bdf8; text-decoration:none; font-size:13px; }
+  .md-list a:hover { border-color:#38bdf8; }
+</style>
+<div class="file-table-wrap"><h2>Files in this folder</h2><table class="file-table"><thead><tr><th>Original (.rb)</th><th>Hardened (fix_*.rb)</th></tr></thead><tbody><tr><td class="pair"><a href="hw_UI_script_compare_icm_headloss.rb.html">hw_UI_script_compare_icm_headloss.rb</a></td><td class="pair"><a href="fix_hw_UI_script_compare_icm_headloss.rb.html">fix_hw_UI_script_compare_icm_headloss.rb</a></td></tr><tr><td class="pair"><a href="hw_UI_script_compare_icm_inlets_hec22_inlets.rb.html">hw_UI_script_compare_icm_inlets_hec22_inlets.rb</a></td><td class="pair"><a href="fix_hw_UI_script_compare_icm_inlets_hec22_inlets.rb.html">fix_hw_UI_script_compare_icm_inlets_hec22_inlets.rb</a></td></tr><tr><td class="pair"><a href="hw_UI_scripta%20Compare%20ICM%20Headloss.rb.html">hw_UI_scripta Compare ICM Headloss.rb</a></td><td class="pair"><a href="fix_hw_UI_scripta%20Compare%20ICM%20Headloss.rb.html">fix_hw_UI_scripta Compare ICM Headloss.rb</a></td></tr><tr><td class="pair"><a href="kutter_tm%20Kutter%20Sql%20for%20ICM%20SWMM.rb.html">kutter_tm Kutter Sql for ICM SWMM.rb</a></td><td class="pair"><a href="fix_kutter_tm%20Kutter%20Sql%20for%20ICM%20SWMM.rb.html">fix_kutter_tm Kutter Sql for ICM SWMM.rb</a></td></tr><tr><td class="pair"><a href="kutter_tm.rb.html">kutter_tm.rb</a></td><td class="pair"><a href="fix_kutter_tm.rb.html">fix_kutter_tm.rb</a></td></tr><tr><td class="pair"><a href="tau_shear_stress.rb.html">tau_shear_stress.rb</a></td><td class="pair"><a href="fix_tau_shear_stress.rb.html">fix_tau_shear_stress.rb</a></td></tr><tr><td class="pair"><a href="UI_script%20Tau%20or%20Shear%20Stress%20non%20QM%20Calculations.rb.html">UI_script Tau or Shear Stress non QM Calculations.rb</a></td><td class="pair"><a href="fix_UI_script%20Tau%20or%20Shear%20Stress%20non%20QM%20Calculations.rb.html">fix_UI_script Tau or Shear Stress non QM Calculations.rb</a></td></tr></tbody></table><h2 style="margin-top:14px;">Markdown</h2><div class="md-list"><a href="_Fixes.md.html">_Fixes.md</a><a href="readme.md.html">readme.md</a></div></div>
+  <nav class="toc"><strong>Scripts in this folder</strong><ol><li><a href="#overview">Overview</a></li><li><a href="#per-script-summary">Per-Script Summary</a></li><li><a href="#how-to-run">How to Run</a></li><li><a href="#common-issues-troubleshooting">Common Issues & Troubleshooting</a></li><li><a href="#original-issues-addressed">Original Issues Addressed</a></li></ol></nav>
+  <section class="content">
+    <h1 id="folder-0007-hardening-report-hydraulic-comparison-tools">Folder 0007 Hardening Report: Hydraulic Comparison Tools</h1>
+<h2 id="overview">Overview</h2>
+<p>7 math-heavy UI scripts for InfoWorks ICM hydraulic comparisons (HEC-22 inlets, Kutter's formula, shear stress/tau).</p>
+<h2 id="per-script-summary">Per-Script Summary</h2>
+<h3 id="fix_hw_ui_script_compare_icm_headlossrb">fix_hw_UI_script_compare_icm_headloss.rb</h3>
+<ul>
+<li><strong>Purpose</strong>: HEC-22 inlet efficiency comparison for selected nodes</li>
+<li><strong>Inputs</strong>: Network, selected nodes, result fields (DEPNOD, FloodDepth, GLLYFLOW, GTTRSPRD, INLETEFF, OVDEPNOD)</li>
+<li><strong>Outputs</strong>: Tabular console output with HEC-22 vs ICM inlet spread/efficiency</li>
+<li><strong>Hardening</strong>:</li>
+<li>Frozen string literals</li>
+<li>begin/rescue/ensure wrapper with fatal error logging</li>
+<li>Network nil-check</li>
+<li>Timestep validation (size &gt;= 2)</li>
+<li>nil-safe field results handling</li>
+<li>Zero-guard on depnod_value division (icm_spreadsheet = 0 if depnod == 0)</li>
+<li>opening_length validation before division</li>
+<li>Indexed field access for robustness</li>
+<li>Progress logging with timestamps</li>
+</ul>
+<h3 id="fix_ui_script-tau-or-shear-stress-non-qm-calculationsrb">fix_UI_script Tau or Shear Stress non QM Calculations.rb</h3>
+<ul>
+<li><strong>Purpose</strong>: Calculate tau (shear stress) statistics in USA (62.4 lb/ft³) or SI (998.34 N/m³) units</li>
+<li><strong>Inputs</strong>: Selected conduits, unit system prompt (Boolean pair)</li>
+<li><strong>Outputs</strong>: Mean/Max/Min tau values for upstream and downstream per conduit</li>
+<li><strong>Hardening</strong>:</li>
+<li>Frozen strings</li>
+<li>begin/rescue/ensure with error logging</li>
+<li>Network nil-check</li>
+<li>User prompt validation (checked for cancellation)</li>
+<li>Unit system validation (at least one selected)</li>
+<li>Timestep size validation</li>
+<li>nil-safe depth/gradient results handling</li>
+<li>Empty tau array validation before statistics</li>
+<li>Rescue on to_f conversions (defaults to 0.0)</li>
+<li>Progress count and timestamp logging</li>
+</ul>
+<h3 id="fix_hw_ui_scripta-compare-icm-headlossrb">fix_hw_UI_scripta Compare ICM Headloss.rb</h3>
+<ul>
+<li><strong>Purpose</strong>: HEC-22 inlet efficiency comparison (duplicate of first with same hardening)</li>
+<li><strong>Inputs</strong>: Network, selected nodes, result fields</li>
+<li><strong>Outputs</strong>: Tabular console HEC-22 vs ICM inlet comparison</li>
+<li><strong>Hardening</strong>: Identical to fix_hw_UI_script_compare_icm_headloss.rb</li>
+</ul>
+<h3 id="fix_hw_ui_script_compare_icm_inlets_hec22_inletsrb">fix_hw_UI_script_compare_icm_inlets_hec22_inlets.rb</h3>
+<ul>
+<li><strong>Purpose</strong>: HEC-22 inlet efficiency comparison (third variant)</li>
+<li><strong>Inputs</strong>: Network, selected nodes, result fields</li>
+<li><strong>Outputs</strong>: Tabular console HEC-22 vs ICM inlet comparison</li>
+<li><strong>Hardening</strong>: Identical to other HEC-22 variants</li>
+</ul>
+<h3 id="fix_kutter_tm-kutter-sql-for-icm-swmmrb">fix_kutter_tm Kutter Sql for ICM SWMM.rb</h3>
+<ul>
+<li><strong>Purpose</strong>: Calculate Kutter's formula capacity for all links at full, 3/4, and 1/2 fill levels</li>
+<li><strong>Inputs</strong>: Network links (iterate all), extract conduit_height, gradient, bottom_roughness_N</li>
+<li><strong>Outputs</strong>: Table with Link ID, diameter, slope, Manning's N, and capacities (ICM vs Kutter's)</li>
+<li><strong>Hardening</strong>:</li>
+<li>Frozen strings</li>
+<li>begin/rescue/ensure with error logging</li>
+<li>Network nil-check</li>
+<li>Conversion of properties to float with default fallback</li>
+<li>Validation: conduit_height &gt; 0, gradient &gt;= 0, Manning's N &gt; 0</li>
+<li>Zero-guard on division (add 0.0001 to denominators)</li>
+<li>Zero-safe Math.sqrt with epsilon guard</li>
+<li>Link iteration with try/catch per link</li>
+<li>Progress count and timestamp logging</li>
+<li>Header printed once on first link</li>
+</ul>
+<h3 id="fix_kutter_tmrb">fix_kutter_tm.rb</h3>
+<ul>
+<li><strong>Purpose</strong>: Define reusable Kutter's formula methods (coefficient, full/3/4/half capacity)</li>
+<li><strong>Inputs</strong>: Test values (conduit_height=48in, gradient=100 ft/ft*100, Manning's N=0.013)</li>
+<li><strong>Outputs</strong>: Console output with calculated full, 3/4, 1/2 capacity values</li>
+<li><strong>Hardening</strong>:</li>
+<li>Frozen strings</li>
+<li>Method-level input validation (nil-checks, bounds)</li>
+<li>Zero-guard on division (add epsilon 0.0001)</li>
+<li>Zero-safe Math.sqrt with epsilon</li>
+<li>begin/rescue/ensure wrapper</li>
+<li>Graceful error messages with backtrace</li>
+</ul>
+<h3 id="fix_tau_shear_stressrb">fix_tau_shear_stress.rb</h3>
+<ul>
+<li><strong>Purpose</strong>: Calculate tau statistics in USA or SI units (identical to second script)</li>
+<li><strong>Inputs</strong>: Selected conduits, unit system prompt</li>
+<li><strong>Outputs</strong>: Mean/Max/Min tau per conduit</li>
+<li><strong>Hardening</strong>: Identical to fix_UI_script Tau or Shear Stress non QM Calculations.rb</li>
+</ul>
+<h2 id="how-to-run">How to Run</h2>
+<ol>
+<li><strong>HEC-22 Inlet Scripts</strong> (headloss, compare_icm_inlets, compare_icm_inlets_hec22_inlets):</li>
+<li>Open InfoWorks ICM UI</li>
+<li>Select target nodes</li>
+<li>Run script via Tools &gt; Ruby Scripts</li>
+<li>
+<p>Review tabular console output (DEPNOD, inlet efficiency, HEC-22 spread, eff difference)</p>
+</li>
+<li>
+<p><strong>Tau/Shear Stress Scripts</strong>:</p>
+</li>
+<li>Open InfoWorks ICM UI</li>
+<li>Select target conduits</li>
+<li>Run script</li>
+<li>When prompted, choose USA Units or SI Units</li>
+<li>
+<p>Review console output (upstream/downstream tau mean/max/min)</p>
+</li>
+<li>
+<p><strong>Kutter's Formula Scripts</strong>:</p>
+</li>
+<li>kutter_tm.rb: Run standalone to test coefficient/capacity calculation</li>
+<li>kutter_tm Kutter Sql for ICM SWMM.rb: Run to iterate all links and display Kutter vs ICM capacity</li>
+</ol>
+<h2 id="common-issues-troubleshooting">Common Issues &amp; Troubleshooting</h2>
+<ul>
+<li><strong>"Network is nil"</strong>: Ensure a network is open in InfoWorks ICM</li>
+<li><strong>"Insufficient timesteps"</strong>: Ensure results are available (run simulation first)</li>
+<li><strong>"No unit system selected"</strong>: When prompted, select USA or SI Units</li>
+<li><strong>"Missing depth/gradient results"</strong>: Verify simulation includes required fields (HYDGRAD, us_depth, ds_depth)</li>
+<li><strong>Division by zero</strong>: Scripts guard against zero diameter/slope/depth; invalid conduits are skipped with warnings</li>
+</ul>
+<h2 id="original-issues-addressed">Original Issues Addressed</h2>
+<ul>
+<li>Missing nil-checks on network, selected objects, results arrays</li>
+<li>Unguarded division (zero depnod, slope, diameter)</li>
+<li>No error handling on field lookups</li>
+<li>Missing input validation (unit system prompt, timestep count)</li>
+<li>No progress logging or timestamps</li>
+<li>Potential silent failures in result processing</li>
+</ul>
+  </section>
+  <footer>
+    Auto-generated from _Fixes.md &middot; InfoWorks ICM Ruby scripts hardened with begin/rescue/ensure, input validation, block-form file I/O, progress logging.
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bill_James_Similarity_Index.rb</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+<style>pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehl .hll { background-color: #49483e }
+.codehl { background: #272822; color: #f8f8f2 }
+.codehl .c { color: #75715e } /* Comment */
+.codehl .err { color: #960050; background-color: #1e0010 } /* Error */
+.codehl .esc { color: #f8f8f2 } /* Escape */
+.codehl .g { color: #f8f8f2 } /* Generic */
+.codehl .k { color: #66d9ef } /* Keyword */
+.codehl .l { color: #ae81ff } /* Literal */
+.codehl .n { color: #f8f8f2 } /* Name */
+.codehl .o { color: #f92672 } /* Operator */
+.codehl .x { color: #f8f8f2 } /* Other */
+.codehl .p { color: #f8f8f2 } /* Punctuation */
+.codehl .ch { color: #75715e } /* Comment.Hashbang */
+.codehl .cm { color: #75715e } /* Comment.Multiline */
+.codehl .cp { color: #75715e } /* Comment.Preproc */
+.codehl .cpf { color: #75715e } /* Comment.PreprocFile */
+.codehl .c1 { color: #75715e } /* Comment.Single */
+.codehl .cs { color: #75715e } /* Comment.Special */
+.codehl .gd { color: #f92672 } /* Generic.Deleted */
+.codehl .ge { color: #f8f8f2; font-style: italic } /* Generic.Emph */
+.codehl .gr { color: #f8f8f2 } /* Generic.Error */
+.codehl .gh { color: #f8f8f2 } /* Generic.Heading */
+.codehl .gi { color: #a6e22e } /* Generic.Inserted */
+.codehl .go { color: #66d9ef } /* Generic.Output */
+.codehl .gp { color: #f92672; font-weight: bold } /* Generic.Prompt */
+.codehl .gs { color: #f8f8f2; font-weight: bold } /* Generic.Strong */
+.codehl .gu { color: #75715e } /* Generic.Subheading */
+.codehl .gt { color: #f8f8f2 } /* Generic.Traceback */
+.codehl .kc { color: #66d9ef } /* Keyword.Constant */
+.codehl .kd { color: #66d9ef } /* Keyword.Declaration */
+.codehl .kn { color: #f92672 } /* Keyword.Namespace */
+.codehl .kp { color: #66d9ef } /* Keyword.Pseudo */
+.codehl .kr { color: #66d9ef } /* Keyword.Reserved */
+.codehl .kt { color: #66d9ef } /* Keyword.Type */
+.codehl .ld { color: #e6db74 } /* Literal.Date */
+.codehl .m { color: #ae81ff } /* Literal.Number */
+.codehl .s { color: #e6db74 } /* Literal.String */
+.codehl .na { color: #a6e22e } /* Name.Attribute */
+.codehl .nb { color: #f8f8f2 } /* Name.Builtin */
+.codehl .nc { color: #a6e22e } /* Name.Class */
+.codehl .no { color: #66d9ef } /* Name.Constant */
+.codehl .nd { color: #a6e22e } /* Name.Decorator */
+.codehl .ni { color: #f8f8f2 } /* Name.Entity */
+.codehl .ne { color: #a6e22e } /* Name.Exception */
+.codehl .nf { color: #a6e22e } /* Name.Function */
+.codehl .nl { color: #f8f8f2 } /* Name.Label */
+.codehl .nn { color: #f8f8f2 } /* Name.Namespace */
+.codehl .nx { color: #a6e22e } /* Name.Other */
+.codehl .py { color: #f8f8f2 } /* Name.Property */
+.codehl .nt { color: #f92672 } /* Name.Tag */
+.codehl .nv { color: #f8f8f2 } /* Name.Variable */
+.codehl .ow { color: #f92672 } /* Operator.Word */
+.codehl .w { color: #f8f8f2 } /* Text.Whitespace */
+.codehl .mb { color: #ae81ff } /* Literal.Number.Bin */
+.codehl .mf { color: #ae81ff } /* Literal.Number.Float */
+.codehl .mh { color: #ae81ff } /* Literal.Number.Hex */
+.codehl .mi { color: #ae81ff } /* Literal.Number.Integer */
+.codehl .mo { color: #ae81ff } /* Literal.Number.Oct */
+.codehl .sa { color: #e6db74 } /* Literal.String.Affix */
+.codehl .sb { color: #e6db74 } /* Literal.String.Backtick */
+.codehl .sc { color: #e6db74 } /* Literal.String.Char */
+.codehl .dl { color: #e6db74 } /* Literal.String.Delimiter */
+.codehl .sd { color: #e6db74 } /* Literal.String.Doc */
+.codehl .s2 { color: #e6db74 } /* Literal.String.Double */
+.codehl .se { color: #ae81ff } /* Literal.String.Escape */
+.codehl .sh { color: #e6db74 } /* Literal.String.Heredoc */
+.codehl .si { color: #e6db74 } /* Literal.String.Interpol */
+.codehl .sx { color: #e6db74 } /* Literal.String.Other */
+.codehl .sr { color: #e6db74 } /* Literal.String.Regex */
+.codehl .s1 { color: #e6db74 } /* Literal.String.Single */
+.codehl .ss { color: #e6db74 } /* Literal.String.Symbol */
+.codehl .bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
+.codehl .fm { color: #a6e22e } /* Name.Function.Magic */
+.codehl .vc { color: #f8f8f2 } /* Name.Variable.Class */
+.codehl .vg { color: #f8f8f2 } /* Name.Variable.Global */
+.codehl .vi { color: #f8f8f2 } /* Name.Variable.Instance */
+.codehl .vm { color: #f8f8f2 } /* Name.Variable.Magic */
+.codehl .il { color: #ae81ff } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0025 - Miscellaneous</div>
+    <h1>Bill_James_Similarity_Index.rb</h1>
+    <div class="meta">Ruby script &middot; 0025 - Miscellaneous</div>
+    <div class="badges"><span class="badge rb">Ruby</span><span class="badge fix">Hardened: <a href="fix_Bill_James_Similarity_Index.rb.html">fix_Bill_James_Similarity_Index.rb</a></span><span class="badge lines">272 lines &middot; 10,976 bytes</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h2>Source</h2><div class="codewrap"><table class="codehltable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
+<span class="normal">  2</span>
+<span class="normal">  3</span>
+<span class="normal">  4</span>
+<span class="normal">  5</span>
+<span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
+<span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span></pre></div></td><td class="code"><div class="codehl"><pre><span></span><code><span class="ch">#!/usr/bin/env ruby</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># Title: Using the Bill James Similarity Index to Compare SWMM5 and InfoWorks ICM</span>
+<span class="c1">#</span>
+<span class="c1"># This script demonstrates a simplified evaluation framework that compares</span>
+<span class="c1"># hydraulic modeling outputs from two networks: a background network (ICM SWMM)</span>
+<span class="c1"># and a current network (InfoWorks ICM). The methodology uses a modified version</span>
+<span class="c1"># of the Bill James Similarity Index, where various hydraulic metrics (e.g., means,</span>
+<span class="c1"># RMSE, standard deviation, skewness, kurtosis, efficiency metrics, etc.) are scored</span>
+<span class="c1"># on a scale from 0-100, and then combined with assigned weights to produce a </span>
+<span class="c1"># final similarity rating.</span>
+<span class="c1">#</span>
+<span class="c1"># NOTE:</span>
+<span class="c1"># - In an actual implementation, the data arrays would be generated from reading</span>
+<span class="c1">#   InfoWorks Result (IWR) files produced by the simulation platforms.</span>
+<span class="c1"># - The error tolerance values and weights are set arbitrarily for demonstration.</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+
+<span class="k">class</span> <span class="nc">HydraulicNetworkComparison</span>
+    <span class="kp">attr_reader</span> <span class="ss">:background_data</span><span class="p">,</span> <span class="ss">:current_data</span><span class="p">,</span> <span class="ss">:weights</span>
+  
+    <span class="c1"># Initialize with two datasets and optionally a custom set of weights.</span>
+    <span class="c1"># The weights hash assigns relative importance to each metric.</span>
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">background_data</span><span class="p">,</span> <span class="n">current_data</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="p">{})</span>
+      <span class="vi">@background_data</span> <span class="o">=</span> <span class="n">background_data</span>
+      <span class="vi">@current_data</span> <span class="o">=</span> <span class="n">current_data</span>
+      <span class="vi">@weights</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="ss">mean</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="ss">rmse</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="ss">mape</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+        <span class="ss">std_dev</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="ss">skewness</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="ss">kurtosis</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="ss">log_nse</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="ss">index_of_agreement</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="ss">integral_square_error</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="ss">correlation</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="ss">nse</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="ss">kling_gupta</span><span class="p">:</span> <span class="mi">5</span>
+      <span class="p">}</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+    <span class="k">end</span>
+  
+    <span class="c1"># -------------------------</span>
+    <span class="c1"># Basic Statistical Methods</span>
+    <span class="c1"># -------------------------</span>
+  
+    <span class="c1"># Computes the mean (average) of an array of numbers.</span>
+    <span class="k">def</span> <span class="nf">mean</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+      <span class="n">data</span><span class="o">.</span><span class="n">sum</span><span class="o">.</span><span class="n">to_f</span> <span class="o">/</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span>
+    <span class="k">end</span>
+  
+    <span class="c1"># Computes the Root Mean Square Error (RMSE) between two datasets.</span>
+    <span class="k">def</span> <span class="nf">rmse</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">)</span>
+      <span class="n">sum</span> <span class="o">=</span> <span class="n">data1</span><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">data2</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">|</span> <span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">}</span><span class="o">.</span><span class="n">sum</span>
+      <span class="no">Math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sum</span><span class="o">.</span><span class="n">to_f</span> <span class="o">/</span> <span class="n">data1</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+    <span class="k">end</span>
+  
+    <span class="c1"># Computes the Mean Absolute Percentage Error (MAPE) between two datasets.</span>
+    <span class="k">def</span> <span class="nf">mape</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">)</span>
+      <span class="n">errors</span> <span class="o">=</span> <span class="n">data1</span><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">data2</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">|</span>
+        <span class="c1"># Avoid division by zero by adding a small epsilon when needed.</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">6</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">abs</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">6</span>
+        <span class="p">((</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span> <span class="o">/</span> <span class="n">a</span><span class="o">.</span><span class="n">abs</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="o">.</span><span class="mi">0</span>
+      <span class="k">end</span>
+      <span class="n">errors</span><span class="o">.</span><span class="n">sum</span> <span class="o">/</span> <span class="n">data1</span><span class="o">.</span><span class="n">size</span>
+    <span class="k">end</span>
+  
+    <span class="c1"># Computes the standard deviation of an array.</span>
+    <span class="k">def</span> <span class="nf">standard_deviation</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+      <span class="n">m</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+      <span class="n">variance</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">}</span><span class="o">.</span><span class="n">sum</span> <span class="o">/</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span>
+      <span class="no">Math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span><span class="p">)</span>
+    <span class="k">end</span>
+  
+    <span class="c1"># Computes the skewness of the dataset.</span>
+    <span class="k">def</span> <span class="nf">skewness</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+      <span class="n">m</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+      <span class="n">sd</span> <span class="o">=</span> <span class="n">standard_deviation</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+      <span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">sd</span><span class="o">.</span><span class="n">zero?</span>
+      <span class="n">n</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span>
+      <span class="n">data</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span> <span class="o">/</span> <span class="n">sd</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span> <span class="p">}</span><span class="o">.</span><span class="n">sum</span> <span class="o">/</span> <span class="n">n</span>
+    <span class="k">end</span>
+  
+    <span class="c1"># Computes the kurtosis (excess kurtosis) of the dataset.</span>
+    <span class="k">def</span> <span class="nf">kurtosis</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+      <span class="n">m</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+      <span class="n">sd</span> <span class="o">=</span> <span class="n">standard_deviation</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+      <span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">sd</span><span class="o">.</span><span class="n">zero?</span>
+      <span class="n">n</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span>
+      <span class="n">data</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span> <span class="o">/</span> <span class="n">sd</span><span class="p">)</span><span class="o">**</span><span class="mi">4</span> <span class="p">}</span><span class="o">.</span><span class="n">sum</span> <span class="o">/</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">3</span><span class="o">.</span><span class="mi">0</span>
+    <span class="k">end</span>
+  
+    <span class="c1"># ---------------------------------------------</span>
+    <span class="c1"># Efficiency and Agreement Metric Calculations</span>
+    <span class="c1"># ---------------------------------------------</span>
+  
+    <span class="c1"># Computes the Nash-Sutcliffe Efficiency (NSE).</span>
+    <span class="c1"># NSE values close to 1 indicate a good match between simulated and observed data.</span>
+    <span class="k">def</span> <span class="nf">nash_sutcliffe_efficiency</span><span class="p">(</span><span class="n">simulated</span><span class="p">,</span> <span class="n">observed</span><span class="p">)</span>
+      <span class="n">mean_obs</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">observed</span><span class="p">)</span>
+      <span class="n">numerator</span> <span class="o">=</span> <span class="n">observed</span><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">simulated</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">o</span><span class="p">,</span> <span class="n">s</span><span class="o">|</span> <span class="p">(</span><span class="n">o</span> <span class="o">-</span> <span class="n">s</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">}</span><span class="o">.</span><span class="n">sum</span>
+      <span class="n">denominator</span> <span class="o">=</span> <span class="n">observed</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">o</span><span class="o">|</span> <span class="p">(</span><span class="n">o</span> <span class="o">-</span> <span class="n">mean_obs</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">}</span><span class="o">.</span><span class="n">sum</span>
+      <span class="k">return</span> <span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="k">if</span> <span class="n">denominator</span><span class="o">.</span><span class="n">zero?</span>
+      <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">numerator</span> <span class="o">/</span> <span class="n">denominator</span><span class="o">.</span><span class="n">to_f</span><span class="p">)</span>
+    <span class="k">end</span>
+  
+    <span class="c1"># Computes the Log Nash-Sutcliffe Efficiency.</span>
+    <span class="c1"># We take the natural logarithm of both datasets to emphasize differences at lower magnitudes.</span>
+    <span class="k">def</span> <span class="nf">log_nash_sutcliffe_efficiency</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">)</span>
+      <span class="n">epsilon</span> <span class="o">=</span> <span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">6</span> <span class="c1"># small constant to avoid log(0)</span>
+      <span class="n">log_data1</span> <span class="o">=</span> <span class="n">data1</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="no">Math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">abs</span> <span class="o">+</span> <span class="n">epsilon</span><span class="p">)</span> <span class="p">}</span>
+      <span class="n">log_data2</span> <span class="o">=</span> <span class="n">data2</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="no">Math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">abs</span> <span class="o">+</span> <span class="n">epsilon</span><span class="p">)</span> <span class="p">}</span>
+      <span class="n">nash_sutcliffe_efficiency</span><span class="p">(</span><span class="n">log_data1</span><span class="p">,</span> <span class="n">log_data2</span><span class="p">)</span>
+    <span class="k">end</span>
+  
+    <span class="c1"># Computes the Index of Agreement between two datasets.</span>
+    <span class="c1"># This metric is another measure of agreement where 1 indicates perfect agreement.</span>
+    <span class="k">def</span> <span class="nf">index_of_agreement</span><span class="p">(</span><span class="n">simulated</span><span class="p">,</span> <span class="n">observed</span><span class="p">)</span>
+      <span class="n">mean_obs</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">observed</span><span class="p">)</span>
+      <span class="n">numerator</span> <span class="o">=</span> <span class="n">observed</span><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">simulated</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">o</span><span class="p">,</span> <span class="n">s</span><span class="o">|</span> <span class="p">(</span><span class="n">o</span> <span class="o">-</span> <span class="n">s</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">}</span><span class="o">.</span><span class="n">sum</span>
+      <span class="n">denominator</span> <span class="o">=</span> <span class="n">observed</span><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">simulated</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">o</span><span class="p">,</span> <span class="n">s</span><span class="o">|</span> <span class="p">((</span><span class="n">s</span> <span class="o">-</span> <span class="n">mean_obs</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span> <span class="o">+</span> <span class="p">(</span><span class="n">o</span> <span class="o">-</span> <span class="n">mean_obs</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">}</span><span class="o">.</span><span class="n">sum</span>
+      <span class="k">return</span> <span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="k">if</span> <span class="n">denominator</span><span class="o">.</span><span class="n">zero?</span>
+      <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">numerator</span> <span class="o">/</span> <span class="n">denominator</span><span class="o">.</span><span class="n">to_f</span><span class="p">)</span>
+    <span class="k">end</span>
+  
+    <span class="c1"># Computes the Integral Square Error (ISE) between the two datasets.</span>
+    <span class="k">def</span> <span class="nf">integral_square_error</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">)</span>
+      <span class="n">data1</span><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">data2</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">|</span> <span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">}</span><span class="o">.</span><span class="n">sum</span>
+    <span class="k">end</span>
+  
+    <span class="c1"># Computes the Pearson correlation coefficient between two datasets.</span>
+    <span class="k">def</span> <span class="nf">correlation_coefficient</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">)</span>
+      <span class="n">n</span> <span class="o">=</span> <span class="n">data1</span><span class="o">.</span><span class="n">size</span>
+      <span class="n">mean1</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">data1</span><span class="p">)</span>
+      <span class="n">mean2</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">data2</span><span class="p">)</span>
+      <span class="n">sum_xy</span> <span class="o">=</span> <span class="n">data1</span><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">data2</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">|</span> <span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">mean1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">mean2</span><span class="p">)</span> <span class="p">}</span><span class="o">.</span><span class="n">sum</span>
+      <span class="n">sum_x2</span> <span class="o">=</span> <span class="n">data1</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">a</span><span class="o">|</span> <span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">mean1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">}</span><span class="o">.</span><span class="n">sum</span>
+      <span class="n">sum_y2</span> <span class="o">=</span> <span class="n">data2</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">b</span><span class="o">|</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">mean2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">}</span><span class="o">.</span><span class="n">sum</span>
+      <span class="n">denominator</span> <span class="o">=</span> <span class="no">Math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sum_x2</span> <span class="o">*</span> <span class="n">sum_y2</span><span class="p">)</span>
+      <span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">denominator</span><span class="o">.</span><span class="n">zero?</span>
+      <span class="n">sum_xy</span> <span class="o">/</span> <span class="n">denominator</span>
+    <span class="k">end</span>
+  
+    <span class="c1"># Computes the Kling-Gupta Efficiency (KGE), which synthesizes correlation, bias, and variability.</span>
+    <span class="k">def</span> <span class="nf">kling_gupta_efficiency</span><span class="p">(</span><span class="n">simulated</span><span class="p">,</span> <span class="n">observed</span><span class="p">)</span>
+      <span class="n">r</span> <span class="o">=</span> <span class="n">correlation_coefficient</span><span class="p">(</span><span class="n">simulated</span><span class="p">,</span> <span class="n">observed</span><span class="p">)</span>
+      <span class="n">sd_sim</span> <span class="o">=</span> <span class="n">standard_deviation</span><span class="p">(</span><span class="n">simulated</span><span class="p">)</span>
+      <span class="n">sd_obs</span> <span class="o">=</span> <span class="n">standard_deviation</span><span class="p">(</span><span class="n">observed</span><span class="p">)</span>
+      <span class="n">mean_sim</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">simulated</span><span class="p">)</span>
+      <span class="n">mean_obs</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">observed</span><span class="p">)</span>
+      
+      <span class="n">alpha</span> <span class="o">=</span> <span class="n">sd_sim</span> <span class="o">/</span> <span class="n">sd_obs</span>
+      <span class="n">beta</span> <span class="o">=</span> <span class="n">mean_sim</span> <span class="o">/</span> <span class="n">mean_obs</span>
+      <span class="mi">1</span> <span class="o">-</span> <span class="no">Math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">r</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">beta</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">end</span>
+  
+    <span class="c1"># ------------------------------------------------------</span>
+    <span class="c1"># Metric Scoring and Aggregation for Similarity Index</span>
+    <span class="c1"># ------------------------------------------------------</span>
+  
+    <span class="c1"># Converts a raw metric value into a score between 0 and 100.</span>
+    <span class="c1"># For error metrics, a value equal to the ideal (usually 0 error) scores 100.</span>
+    <span class="c1"># A value equal to the specified tolerance will score 0. Values in between</span>
+    <span class="c1"># are scaled linearly.</span>
+    <span class="k">def</span> <span class="nf">score_for_metric</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ideal</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tolerance</span> <span class="o">=</span> <span class="mi">1</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
+      <span class="k">return</span> <span class="mi">100</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="n">ideal</span>
+      <span class="n">score</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">value</span> <span class="o">-</span> <span class="n">ideal</span><span class="p">)</span> <span class="o">/</span> <span class="n">tolerance</span><span class="p">)</span>
+      <span class="n">score</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">?</span> <span class="mi">0</span> <span class="p">:</span> <span class="n">score</span>
+    <span class="k">end</span>
+  
+    <span class="c1"># Computes the overall similarity index by calculating individual metric scores,</span>
+    <span class="c1"># weighting them, and then aggregating into a final score.</span>
+    <span class="k">def</span> <span class="nf">similarity_index</span>
+      <span class="n">scores</span> <span class="o">=</span> <span class="p">{}</span>
+  
+      <span class="c1"># 1. Compare the mean values of the two datasets.</span>
+      <span class="n">mean_bg</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">background_data</span><span class="p">)</span>
+      <span class="n">mean_cur</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">current_data</span><span class="p">)</span>
+      <span class="n">mean_diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">mean_bg</span> <span class="o">-</span> <span class="n">mean_cur</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span>
+      <span class="n">scores</span><span class="o">[</span><span class="ss">:mean</span><span class="o">]</span> <span class="o">=</span> <span class="n">score_for_metric</span><span class="p">(</span><span class="n">mean_diff</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tolerance</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>  <span class="c1"># Tolerance of 10 units</span>
+  
+      <span class="c1"># 2. Compute RMSE between datasets.</span>
+      <span class="n">rmse_val</span> <span class="o">=</span> <span class="n">rmse</span><span class="p">(</span><span class="n">background_data</span><span class="p">,</span> <span class="n">current_data</span><span class="p">)</span>
+      <span class="n">scores</span><span class="o">[</span><span class="ss">:rmse</span><span class="o">]</span> <span class="o">=</span> <span class="n">score_for_metric</span><span class="p">(</span><span class="n">rmse_val</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tolerance</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+  
+      <span class="c1"># 3. Compute MAPE between datasets.</span>
+      <span class="n">mape_val</span> <span class="o">=</span> <span class="n">mape</span><span class="p">(</span><span class="n">background_data</span><span class="p">,</span> <span class="n">current_data</span><span class="p">)</span>
+      <span class="n">scores</span><span class="o">[</span><span class="ss">:mape</span><span class="o">]</span> <span class="o">=</span> <span class="n">score_for_metric</span><span class="p">(</span><span class="n">mape_val</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tolerance</span> <span class="o">=</span> <span class="mi">50</span><span class="p">)</span>
+  
+      <span class="c1"># 4. Compare standard deviations.</span>
+      <span class="n">std_bg</span> <span class="o">=</span> <span class="n">standard_deviation</span><span class="p">(</span><span class="n">background_data</span><span class="p">)</span>
+      <span class="n">std_cur</span> <span class="o">=</span> <span class="n">standard_deviation</span><span class="p">(</span><span class="n">current_data</span><span class="p">)</span>
+      <span class="n">std_diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">std_bg</span> <span class="o">-</span> <span class="n">std_cur</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span>
+      <span class="n">scores</span><span class="o">[</span><span class="ss">:std_dev</span><span class="o">]</span> <span class="o">=</span> <span class="n">score_for_metric</span><span class="p">(</span><span class="n">std_diff</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tolerance</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span>
+  
+      <span class="c1"># 5. Compare skewness.</span>
+      <span class="n">skew_bg</span> <span class="o">=</span> <span class="n">skewness</span><span class="p">(</span><span class="n">background_data</span><span class="p">)</span>
+      <span class="n">skew_cur</span> <span class="o">=</span> <span class="n">skewness</span><span class="p">(</span><span class="n">current_data</span><span class="p">)</span>
+      <span class="n">skew_diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">skew_bg</span> <span class="o">-</span> <span class="n">skew_cur</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span>
+      <span class="n">scores</span><span class="o">[</span><span class="ss">:skewness</span><span class="o">]</span> <span class="o">=</span> <span class="n">score_for_metric</span><span class="p">(</span><span class="n">skew_diff</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tolerance</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+  
+      <span class="c1"># 6. Compare kurtosis.</span>
+      <span class="n">kurt_bg</span> <span class="o">=</span> <span class="n">kurtosis</span><span class="p">(</span><span class="n">background_data</span><span class="p">)</span>
+      <span class="n">kurt_cur</span> <span class="o">=</span> <span class="n">kurtosis</span><span class="p">(</span><span class="n">current_data</span><span class="p">)</span>
+      <span class="n">kurt_diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">kurt_bg</span> <span class="o">-</span> <span class="n">kurt_cur</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span>
+      <span class="n">scores</span><span class="o">[</span><span class="ss">:kurtosis</span><span class="o">]</span> <span class="o">=</span> <span class="n">score_for_metric</span><span class="p">(</span><span class="n">kurt_diff</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tolerance</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+  
+      <span class="c1"># 7. Log Nash-Sutcliffe Efficiency: we want an efficiency close to 1.</span>
+      <span class="n">log_nse</span> <span class="o">=</span> <span class="n">log_nash_sutcliffe_efficiency</span><span class="p">(</span><span class="n">background_data</span><span class="p">,</span> <span class="n">current_data</span><span class="p">)</span>
+      <span class="n">scores</span><span class="o">[</span><span class="ss">:log_nse</span><span class="o">]</span> <span class="o">=</span> <span class="n">score_for_metric</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">log_nse</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tolerance</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+  
+      <span class="c1"># 8. Index of Agreement: also aiming for values near 1.</span>
+      <span class="n">ioa</span> <span class="o">=</span> <span class="n">index_of_agreement</span><span class="p">(</span><span class="n">current_data</span><span class="p">,</span> <span class="n">background_data</span><span class="p">)</span>
+      <span class="n">scores</span><span class="o">[</span><span class="ss">:index_of_agreement</span><span class="o">]</span> <span class="o">=</span> <span class="n">score_for_metric</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">ioa</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tolerance</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+  
+      <span class="c1"># 9. Integral Square Error per data point.</span>
+      <span class="n">ise</span> <span class="o">=</span> <span class="n">integral_square_error</span><span class="p">(</span><span class="n">background_data</span><span class="p">,</span> <span class="n">current_data</span><span class="p">)</span> <span class="o">/</span> <span class="n">background_data</span><span class="o">.</span><span class="n">size</span>
+      <span class="n">scores</span><span class="o">[</span><span class="ss">:integral_square_error</span><span class="o">]</span> <span class="o">=</span> <span class="n">score_for_metric</span><span class="p">(</span><span class="n">ise</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tolerance</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+  
+      <span class="c1"># 10. Correlation Coefficient: closer to 1 is better.</span>
+      <span class="n">corr</span> <span class="o">=</span> <span class="n">correlation_coefficient</span><span class="p">(</span><span class="n">background_data</span><span class="p">,</span> <span class="n">current_data</span><span class="p">)</span>
+      <span class="n">scores</span><span class="o">[</span><span class="ss">:correlation</span><span class="o">]</span> <span class="o">=</span> <span class="n">score_for_metric</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">corr</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tolerance</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+  
+      <span class="c1"># 11. Nash-Sutcliffe Efficiency.</span>
+      <span class="n">nse</span> <span class="o">=</span> <span class="n">nash_sutcliffe_efficiency</span><span class="p">(</span><span class="n">current_data</span><span class="p">,</span> <span class="n">background_data</span><span class="p">)</span>
+      <span class="n">scores</span><span class="o">[</span><span class="ss">:nse</span><span class="o">]</span> <span class="o">=</span> <span class="n">score_for_metric</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">nse</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tolerance</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+  
+      <span class="c1"># 12. Kling-Gupta Efficiency.</span>
+      <span class="n">kge</span> <span class="o">=</span> <span class="n">kling_gupta_efficiency</span><span class="p">(</span><span class="n">current_data</span><span class="p">,</span> <span class="n">background_data</span><span class="p">)</span>
+      <span class="n">scores</span><span class="o">[</span><span class="ss">:kling_gupta</span><span class="o">]</span> <span class="o">=</span> <span class="n">score_for_metric</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">kge</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tolerance</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+  
+      <span class="c1"># Combine weighted scores: each metric’s score is multiplied by its weight,</span>
+      <span class="c1"># and the sum is normalized by the total weight.</span>
+      <span class="n">total_weight</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">sum</span><span class="o">.</span><span class="n">to_f</span>
+      <span class="n">weighted_sum</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">sum</span><span class="p">,</span> <span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="n">score</span><span class="p">)</span><span class="o">|</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">score</span> <span class="o">*</span> <span class="n">weights</span><span class="o">[</span><span class="n">metric</span><span class="o">]</span> <span class="p">}</span>
+      <span class="n">final_index</span> <span class="o">=</span> <span class="n">weighted_sum</span> <span class="o">/</span> <span class="n">total_weight</span>
+  
+      <span class="p">{</span> <span class="ss">scores</span><span class="p">:</span> <span class="n">scores</span><span class="p">,</span> <span class="ss">weighted_score</span><span class="p">:</span> <span class="n">final_index</span> <span class="p">}</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  
+  <span class="c1"># -----------------------</span>
+  <span class="c1"># Example Usage Section</span>
+  <span class="c1"># -----------------------</span>
+  <span class="k">if</span> <span class="bp">__FILE__</span> <span class="o">==</span> <span class="vg">$0</span>
+    <span class="c1"># In a real scenario, data would be extracted from IWR files representing the</span>
+    <span class="c1"># hydraulic outputs from ICM SWMM (background network) and InfoWorks ICM (current network).</span>
+  
+    <span class="c1"># For demonstration, we generate synthetic data for 100 nodes.</span>
+    <span class="c1"># These numbers could represent flow rates, water depths, velocities, etc.</span>
+    <span class="k">def</span> <span class="nf">generate_data</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+      <span class="nb">Array</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="p">{</span> <span class="nb">rand</span> <span class="o">*</span> <span class="n">std</span> <span class="o">+</span> <span class="n">mean</span> <span class="p">}</span>
+    <span class="k">end</span>
+  
+    <span class="c1"># Generate synthetic datasets</span>
+    <span class="n">background_data</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>  <span class="c1"># Background network (ICM SWMM)</span>
+    <span class="c1"># Simulate a slight deviation for the current network (InfoWorks ICM)</span>
+    <span class="n">current_data</span> <span class="o">=</span> <span class="n">background_data</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">val</span><span class="o">|</span> <span class="n">val</span> <span class="o">+</span> <span class="nb">rand</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">.</span><span class="mi">0</span><span class="o">..</span><span class="mi">2</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span> <span class="p">}</span>
+  
+    <span class="c1"># Instantiate the comparison object</span>
+    <span class="n">comparator</span> <span class="o">=</span> <span class="no">HydraulicNetworkComparison</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">background_data</span><span class="p">,</span> <span class="n">current_data</span><span class="p">)</span>
+  
+    <span class="c1"># Compute and display the similarity index and individual metric scores.</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">comparator</span><span class="o">.</span><span class="n">similarity_index</span>
+    <span class="nb">puts</span> <span class="s2">&quot;Individual Metric Scores (0-100):&quot;</span>
+    <span class="n">result</span><span class="o">[</span><span class="ss">:scores</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">metric</span><span class="p">,</span> <span class="n">score</span><span class="o">|</span>
+      <span class="nb">puts</span> <span class="s2">&quot;  </span><span class="si">#{</span><span class="n">metric</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">capitalize</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">22</span><span class="p">)</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">score</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">end</span>
+    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Final Weighted Similarity Index: </span><span class="si">#{</span><span class="n">result</span><span class="o">[</span><span class="ss">:weighted_score</span><span class="o">].</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">end</span>
+  
+  
+</code></pre></div>
+</td></tr></table></div></section>
+  <footer>Auto-generated &middot; Original file unmodified</footer>
+</div>
+</body>
+</html>

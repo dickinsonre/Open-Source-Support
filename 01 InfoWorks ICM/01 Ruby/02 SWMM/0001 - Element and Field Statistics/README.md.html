@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>README.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0001 - Element and Field Statistics</div>
+    <h1>README.md</h1>
+    <div class="meta">Markdown document &middot; 0001 - Element and Field Statistics</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">55 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><p>markdown</p>
+<h1 id="folder-structure">Folder Structure</h1>
+<h2 id="01-ruby">01 Ruby</h2>
+<ul>
+<li><strong>01 InfoWorks</strong></li>
+</ul>
+<h2 id="02-swmm">02 SWMM</h2>
+<ul>
+<li><strong>0001 - Element and Field Statistics</strong></li>
+<li><code>0001 - Ruby for HW and SW.gif</code></li>
+<li><code>expand Pipe Length Statistics.rb</code></li>
+<li><code>How it works.png</code></li>
+<li><code>hw_UI_Script All Link Parameter Statistics.rb</code></li>
+<li><code>hw_UI_Script All Node Parameter Statistics.rb</code></li>
+<li><code>hw_UI_Script All Subcatchment Parameter Statistics.rb</code></li>
+<li><code>hw_UI_Script Depression Storage Statistics.rb</code></li>
+<li><code>hw_UI_Script InfoWorks 2D Parameter Statistics.rb</code></li>
+<li><code>hw_UI_Script Pipe Diameter Statistics.rb</code></li>
+<li><code>hw_UI_Script Pipe Length Histogram.rb</code></li>
+<li><code>hw_UI_Script Pipe Length Statistics.rb</code></li>
+<li><code>hw_UI_script Statistics for Link User Numbers.rb</code></li>
+<li><code>hw_UI_script Statistics for Node User Numbers.rb</code></li>
+<li><code>image.png</code></li>
+<li><code>Pipe Length Histogram.md</code></li>
+</ul>
+<hr>
+<h3 id="description">Description</h3>
+<p>This project directory contains scripts and documentation related to Ruby for HydroWorks (HW) and Storm Water Management Model (SWMM). The <code>01 Ruby</code> and <code>01 InfoWorks</code> folders likely contain foundational scripts or documentation for Ruby programming in the context of InfoWorks.</p>
+<p>The <code>02 SWMM</code> directory delves into more specific statistical analysis scripts for various elements and fields within SWMM:</p>
+<ul>
+<li><strong>Element and Field Statistics:</strong> This subdirectory includes a variety of Ruby scripts designed to extract and analyze different parameters within SWMM models, such as:</li>
+<li>Link, Node, and Subcatchment parameters</li>
+<li>Pipe diameter and length statistics</li>
+<li>User number statistics for links and nodes</li>
+<li>Depression storage statistics</li>
+<li>2D parameter statistics specific to InfoWorks</li>
+</ul>
+<p>Additionally, there are visual aids (<code>How it works.png</code>, <code>image.png</code>) and a markdown file (<code>Pipe Length Histogram.md</code>) which might provide explanations or results visualizations for the scripts.</p>
+<h3 id="usage">Usage</h3>
+<p>To use these scripts, you would typically:
+1. Ensure you have Ruby installed on your system.
+2. Navigate to the appropriate directory.
+3. Run the Ruby scripts from the command line or integrate them into your workflow with SWMM or InfoWorks.</p>
+<h3 id="note">Note</h3>
+<ul>
+<li>Ensure you have the necessary permissions and environment setup to run these scripts.</li>
+<li>Always backup your data before running new scripts, especially when dealing with statistical analysis which might alter or process large datasets.</li>
+</ul>
+<p>This README provides a structure based on the directory listing in the image, offering a brief on what each script might be used for and general usage instructions. If there's any specific detail or additional context you want to include, please let me know!</p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

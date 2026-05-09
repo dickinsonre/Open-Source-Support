@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>_Fixes.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0012 - ICM InfoWorks Results to SWMM5  Summary Tables</div>
+    <h1>_Fixes.md</h1>
+    <div class="meta">Markdown document &middot; 0012 - ICM InfoWorks Results to SWMM5  Summary Tables</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">197 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="folder-0012-icm-infoworks-results-to-swmm5-summary-tables-fixes-summary">Folder 0012: ICM InfoWorks Results to SWMM5 Summary Tables - Fixes Summary</h1>
+<h2 id="overview">Overview</h2>
+<p>This folder contains 6 Ruby scripts that generate SWMM5-compatible summary tables from ICM InfoWorks simulation results. These mimic the standard SWMM5 report format for easy comparison and validation.</p>
+<h2 id="files-processed">Files Processed</h2>
+<h3 id="1-fix_hw_ui_script_swmm5_link_flows_summary_tablerb">1. fix_hw_UI_script._swmm5_link_flows_summary_table.rb</h3>
+<p><strong>Original:</strong> <code>hw_UI_script._swmm5_link_flows_summary_table.rb</code>
+<strong>Purpose:</strong> Generate SWMM5-style Link Flow Summary table from ICM results
+<strong>Hardening Applied:</strong>
+- Added <code>frozen_string_literal: true</code>
+- Complete begin/rescue/ensure error handling
+- Network and results validation
+- CSV file handling with block form
+- Safe numeric conversions and formatting
+- Progress logging for multiple links</p>
+<p><strong>Output Format (SWMM5-compatible):</strong></p>
+<pre><code>Link                     Flow     Depth    Velocity   Capacity
+                        (cmd)      (m)      (m/s)     (%)
+Link1                    12.34     0.56      1.23      45.2
+</code></pre>
+<p><strong>How to Run:</strong></p>
+<pre><code class="language-ruby"># Run from InfoWorks ICM UI Script menu
+# Automatically processes all conduits with results
+# Outputs CSV to configured location
+# Statistics: Min, Max, Mean flow per link
+</code></pre>
+<h3 id="2-fix_hw_ui_script_swmm5_node_depths_summary_tablerb">2. fix_hw_UI_script_swmm5_node_depths_summary_table.rb</h3>
+<p><strong>Original:</strong> <code>hw_UI_script_swmm5_node_depths_summary_table.rb</code>
+<strong>Purpose:</strong> Generate SWMM5-style Node Depth Summary table from ICM results
+<strong>Hardening Applied:</strong>
+- Complete error handling
+- Validates node objects exist
+- Result field verification
+- Safe statistics calculations
+- CSV generation with resource cleanup</p>
+<p><strong>Output Format (SWMM5-compatible):</strong></p>
+<pre><code>Node              Max Depth    Time of Max    Min Depth    Avg Depth
+                    (m)         (hours)         (m)          (m)
+Node1               2.34         3.5            0.01         0.45
+</code></pre>
+<p><strong>How to Run:</strong></p>
+<pre><code class="language-ruby"># Run from UI Script menu
+# Processes all nodes with depth results
+# Generates depth statistics table
+# Exports to CSV format
+</code></pre>
+<h3 id="3-fix_hw_ui_script_swmm5_node_inflows_summary_tablerb">3. fix_hw_UI_script_swmm5_node_inflows_summary_table.rb</h3>
+<p><strong>Original:</strong> <code>hw_UI_script_swmm5_node_inflows_summary_table.rb</code>
+<strong>Purpose:</strong> Generate SWMM5-style Node Inflow Summary table
+<strong>Hardening Applied:</strong>
+- Network validation
+- Inflow field existence checking
+- Safe numeric accumulation
+- Error recovery on missing fields</p>
+<p><strong>Output Format (SWMM5-compatible):</strong></p>
+<pre><code>Node              Total Inflow    Max Inflow    Time of Max
+                  (Million gal)      (cmd)       (hours)
+Node1             123.45          45.67          2.5
+</code></pre>
+<h3 id="4-fix_hw_ui_script_swmm5_node_surcharge_summary_tablerb">4. fix_hw_UI_script_swmm5_node_surcharge_summary_table.rb</h3>
+<p><strong>Original:</strong> <code>hw_UI_script_swmm5_node_surcharge_summary_table.rb</code>
+<strong>Purpose:</strong> Generate SWMM5-style Node Surcharge Summary table
+<strong>Hardening Applied:</strong>
+- Surcharge field validation
+- Safe boolean state handling
+- Duration calculation checks
+- Error handling on missing surcharge data</p>
+<p><strong>Output Format (SWMM5-compatible):</strong></p>
+<pre><code>Node          Surcharge        Max Depth     Duration
+             (type)             (m)          (hours)
+Node1        Full Surcharge     2.45          0.75
+</code></pre>
+<h3 id="5-fix_hw_ui_script_swmm5_conduit_surcharge_summary_tablerb">5. fix_hw_UI_script_swmm5_conduit_surcharge_summary_table.rb</h3>
+<p><strong>Original:</strong> <code>hw_UI_script_swmm5_conduit_surcharge_summary_table.rb</code>
+<strong>Purpose:</strong> Generate SWMM5-style Conduit Surcharge Summary table
+<strong>Hardening Applied:</strong>
+- Complete error handling
+- Surcharge state validation
+- Duration tracking
+- Safe division on time calculations</p>
+<p><strong>Output Format (SWMM5-compatible):</strong></p>
+<pre><code>Conduit           Surcharge State    Duration    Max Depth
+                                    (hours)       (m)
+Link1            Surcharged         1.25         0.34
+</code></pre>
+<h3 id="6-fix_hw_ui_script_swmm5_runoff_summary_tablerb">6. fix_hw_UI_script_swmm5_runoff_summary_table.rb</h3>
+<p><strong>Original:</strong> <code>hw_UI_script_swmm5_runoff_summary_table.rb</code>
+<strong>Purpose:</strong> Generate SWMM5-style Runoff Summary table from subcatchment results
+<strong>Hardening Applied:</strong>
+- Subcatchment object validation
+- Runoff field existence checking
+- Safe rainfall accumulation
+- Statistics calculation with nil guards</p>
+<p><strong>Output Format (SWMM5-compatible):</strong></p>
+<pre><code>Subcatchment      Total Runoff    Peak Runoff    Rainfall     Runoff Coeff
+                 (Million gal)      (cms)        (inches)
+SC1              45.67            12.34          2.5          0.65
+</code></pre>
+<h2 id="common-swmm5-patterns">Common SWMM5 Patterns</h2>
+<p>All summary table scripts:</p>
+<ol>
+<li>
+<p><strong>Read ICM Results:</strong>
+   <code>ruby
+   cn = WSApplication.current_network
+   objects = cn.row_objects(table_name)
+   results = obj.results(field_name)</code></p>
+</li>
+<li>
+<p><strong>Calculate SWMM5 Statistics:</strong>
+   <code>ruby
+   max_val = results.max
+   max_time = timesteps[results.index(max_val)]
+   mean_val = results.sum / results.count</code></p>
+</li>
+<li>
+<p><strong>Format as CSV:</strong>
+   <code>ruby
+   CSV.open(filename, 'w') do |csv|
+     csv &lt;&lt; headers
+     csv &lt;&lt; row_data
+   end</code></p>
+</li>
+<li>
+<p><strong>Handle Missing Data:</strong>
+   <code>ruby
+   next if results.nil? || results.empty?
+   value = result.to_f
+   next unless value.finite?</code></p>
+</li>
+</ol>
+<h2 id="swmm5-compatibility">SWMM5 Compatibility</h2>
+<p>These scripts are designed to produce output compatible with:
+- SWMM5 standard report format
+- Spreadsheet import (Excel, Calc)
+- Hydraulic modeling comparison
+- Model calibration documentation</p>
+<p><strong>Important Note:</strong> ICM result units should match SWMM5 expectations:
+- Depth: meters (m)
+- Flow: m³/s or cms
+- Time: hours
+- Volume: m³ or Million Gallons</p>
+<h2 id="testing-recommendations">Testing Recommendations</h2>
+<ol>
+<li>Run a test simulation in ICM with known results</li>
+<li>Generate SWMM5 summary tables using these scripts</li>
+<li>Compare output format with actual SWMM5 reports</li>
+<li>Verify statistics calculations:
+   - Max values and timing
+   - Total volumes (sum check)
+   - Mean values</li>
+<li>Check CSV imports to Excel without errors</li>
+<li>Validate that surcharge detection is correct</li>
+</ol>
+<h2 id="output-files">Output Files</h2>
+<p>All scripts generate:
+- <strong>Location:</strong> User's configured export folder
+- <strong>Format:</strong> CSV (comma-separated values)
+- <strong>Naming:</strong> <code>SWMM5_[TableType]_[Timestamp].csv</code>
+- <strong>Headers:</strong> SWMM5-compatible column names
+- <strong>Encoding:</strong> UTF-8</p>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Requires completed ICM SWMM simulation</li>
+<li>Results must be loaded in network</li>
+<li>All selected objects are processed</li>
+<li>Statistics calculated from available timesteps</li>
+<li>Compatible with SWMM5 EPA version</li>
+</ul></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

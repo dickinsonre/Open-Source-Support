@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0000 - InfoSWMM Multi-Scenario Import</title>
+<style>
+:root {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-2: #0b1220;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-2: #f472b6;
+  --good: #22c55e;
+  --border: #334155;
+  --code-bg: #0b1220;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: linear-gradient(180deg, #0a1226 0%, #0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+header.hero {
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(244,114,182,0.06));
+  padding: 28px 28px 24px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+header.hero .crumbs {
+  font-size: 12px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+header.hero h1 {
+  font-size: 26px; margin: 0 0 6px 0; color: #fff;
+}
+header.hero p.lede {
+  margin: 0 0 14px 0; color: var(--muted);
+}
+.stats {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 13px;
+  background: rgba(56,189,248,0.10);
+  border: 1px solid rgba(56,189,248,0.35);
+  color: var(--accent);
+}
+.chip.alt { background: rgba(34,197,94,0.10); border-color: rgba(34,197,94,0.35); color: var(--good); }
+.chip.pink { background: rgba(244,114,182,0.10); border-color: rgba(244,114,182,0.35); color: var(--accent-2); }
+.content {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 6px 28px 24px;
+}
+.content h2 {
+  margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border);
+  font-size: 18px; color: #fff;
+}
+.content h2:first-of-type { border-top: none; padding-top: 6px; }
+.content h3 { font-size: 15px; color: var(--accent); margin: 16px 0 6px; }
+.content p, .content li { color: var(--text); }
+.content code {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 4px; font-size: 13px;
+  color: #fbbf24;
+}
+.content pre {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 14px; border-radius: 8px; overflow-x: auto;
+  font-size: 13px; line-height: 1.5;
+}
+.content pre code { background: transparent; border: 0; padding: 0; color: var(--text); }
+.content ul { padding-left: 22px; }
+.content li { margin: 4px 0; }
+.content a { color: var(--accent); text-decoration: none; }
+.content a:hover { text-decoration: underline; }
+.content blockquote {
+  margin: 12px 0; padding: 8px 16px;
+  border-left: 3px solid var(--accent); background: rgba(56,189,248,0.06);
+  color: var(--muted);
+}
+.content table {
+  width: 100%; border-collapse: collapse; margin: 12px 0;
+  font-size: 14px;
+}
+.content th, .content td {
+  border: 1px solid var(--border); padding: 8px 12px; text-align: left;
+}
+.content th { background: var(--panel-2); }
+footer {
+  margin-top: 28px; color: var(--muted); font-size: 12px; text-align: center;
+}
+.toc {
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--panel-2); padding: 14px 18px; margin-bottom: 16px;
+}
+.toc strong { color: var(--accent); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.toc ol { columns: 2; margin: 6px 0 0; padding-left: 22px; }
+.toc a { color: var(--text); text-decoration: none; font-size: 13px; }
+.toc a:hover { color: var(--accent); }
+@media (max-width: 720px) {
+  .toc ol { columns: 1; }
+  header.hero h1 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">SWMM &rsaquo; Ruby Fixes</div>
+    <h1>0000 - InfoSWMM Multi-Scenario Import</h1>
+    <p class="lede">Multi-scenario importer that pulls InfoSWMM exports into ICM with phase-based workflow (UI + Exchange).</p>
+    <div class="stats">
+      <span class="chip">2 originals</span>
+      <span class="chip alt">2 fix_ versions</span>
+      <span class="chip pink">Robustness pass</span>
+    </div>
+  </header>
+
+<style>
+  .file-table-wrap { background:#0b1220; border:1px solid #334155; border-radius:12px; padding:14px 18px; margin:18px 0; }
+  .file-table-wrap h2 { color:#fff; font-size:16px; margin:0 0 10px; }
+  .file-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .file-table th, .file-table td { border-bottom:1px solid #1f2937; padding:6px 10px; text-align:left; vertical-align:top; }
+  .file-table th { color:#94a3b8; font-weight:500; font-size:12px; letter-spacing:0.04em; text-transform:uppercase; }
+  .file-table a { color:#38bdf8; text-decoration:none; }
+  .file-table a:hover { text-decoration:underline; }
+  .file-table .pair { font-family:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace; }
+  .file-table tr:last-child td { border-bottom:0; }
+  .file-table .miss { color:#64748b; font-style:italic; }
+  .md-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .md-list a { padding:4px 10px; border:1px solid #334155; border-radius:8px; background:#0b1220; color:#38bdf8; text-decoration:none; font-size:13px; }
+  .md-list a:hover { border-color:#38bdf8; }
+</style>
+<div class="file-table-wrap"><h2>Files in this folder</h2><table class="file-table"><thead><tr><th>Original (.rb)</th><th>Hardened (fix_*.rb)</th></tr></thead><tbody><tr><td class="pair"><a href="InfoSWMM_Import_Exchange.rb.html">InfoSWMM_Import_Exchange.rb</a></td><td class="pair"><a href="fix_InfoSWMM_Import_Exchange.rb.html">fix_InfoSWMM_Import_Exchange.rb</a></td></tr><tr><td class="pair"><a href="InfoSWMM_Import_UI.rb.html">InfoSWMM_Import_UI.rb</a></td><td class="pair"><a href="fix_InfoSWMM_Import_UI.rb.html">fix_InfoSWMM_Import_UI.rb</a></td></tr></tbody></table><h2 style="margin-top:14px;">Markdown</h2><div class="md-list"><a href="_Fixes.md.html">_Fixes.md</a><a href="README.md.html">README.md</a></div></div>
+  <nav class="toc"><strong>Scripts in this folder</strong><ol><li><a href="#fix-infoswmm-import-uirb">fix_InfoSWMM_Import_UI.rb</a></li><li><a href="#fix-infoswmm-import-exchangerb">fix_InfoSWMM_Import_Exchange.rb</a></li></ol></nav>
+  <section class="content">
+    <h1 id="infoswmm-multi-scenario-import-hardened-scripts">InfoSWMM Multi-Scenario Import - Hardened Scripts</h1>
+<p>Folder: <code>0000 - InfoSWMM Multi-Scenario Import</code></p>
+<p>Purpose: Import multiple InfoSWMM scenarios from .mxd files into InfoWorks ICM SWMM networks with deduplication and automatic configuration.</p>
+<h2 id="fix_infoswmm_import_uirb">fix_InfoSWMM_Import_UI.rb</h2>
+<p><strong>Purpose:</strong> User interface script - collects user input and launches the Exchange script.</p>
+<p><strong>What it does (in 1-2 sentences):</strong> Prompts user to select an InfoSWMM .mxd file, reads scenario names from SCENARIO.DBF, validates database connection, and launches the Exchange script for backend processing.</p>
+<p><strong>Hardening applied:</strong>
+- Added <code>frozen_string_literal: true</code> pragma for immutability
+- Wrapped entire main logic in begin/rescue/ensure block for robust error handling
+- Validates WSApplication.current_database is not nil before proceeding
+- Checks for user cancellation on all input dialogs and exits gracefully
+- Added nil-safety checks with <code>&amp;.</code> operator on optional method returns
+- File handles opened via block form <code>File.open(path) do |f|</code>
+- Progress logging with <code>puts "[#{Time.now}] ..."</code> timestamps for long operations
+- Validates config file creation before launching Exchange script
+- Cleanup of resources in ensure block even on errors</p>
+<p><strong>How to run it:</strong> Open ICM database, Network → Run Ruby Script → Select this file, follow prompts to choose .mxd and scenarios.</p>
+<hr>
+<h2 id="fix_infoswmm_import_exchangerb">fix_InfoSWMM_Import_Exchange.rb</h2>
+<p><strong>Purpose:</strong> Backend ICM Exchange script that performs the heavy lifting of the multi-scenario import (Phases 1, 1.5, 2, 2.5). Launched automatically by the UI script.</p>
+<p><strong>What it does (in 1-2 sentences):</strong> Reads the JSON config written by the UI script, opens the target ICM database (verifying GUID), imports each InfoSWMM scenario int</p>
+  </section>
+  <footer>
+    Auto-generated from _Fixes.md &middot; InfoWorks ICM Ruby scripts hardened with begin/rescue/ensure, input validation, block-form file I/O, progress logging.
+  </footer>
+</div>
+</body>
+</html>

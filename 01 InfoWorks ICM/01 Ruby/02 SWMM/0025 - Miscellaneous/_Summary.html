@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0025 - Miscellaneous</title>
+<style>
+:root {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-2: #0b1220;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-2: #f472b6;
+  --good: #22c55e;
+  --border: #334155;
+  --code-bg: #0b1220;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: linear-gradient(180deg, #0a1226 0%, #0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+header.hero {
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(244,114,182,0.06));
+  padding: 28px 28px 24px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+header.hero .crumbs {
+  font-size: 12px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+header.hero h1 {
+  font-size: 26px; margin: 0 0 6px 0; color: #fff;
+}
+header.hero p.lede {
+  margin: 0 0 14px 0; color: var(--muted);
+}
+.stats {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 13px;
+  background: rgba(56,189,248,0.10);
+  border: 1px solid rgba(56,189,248,0.35);
+  color: var(--accent);
+}
+.chip.alt { background: rgba(34,197,94,0.10); border-color: rgba(34,197,94,0.35); color: var(--good); }
+.chip.pink { background: rgba(244,114,182,0.10); border-color: rgba(244,114,182,0.35); color: var(--accent-2); }
+.content {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 6px 28px 24px;
+}
+.content h2 {
+  margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border);
+  font-size: 18px; color: #fff;
+}
+.content h2:first-of-type { border-top: none; padding-top: 6px; }
+.content h3 { font-size: 15px; color: var(--accent); margin: 16px 0 6px; }
+.content p, .content li { color: var(--text); }
+.content code {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 4px; font-size: 13px;
+  color: #fbbf24;
+}
+.content pre {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 14px; border-radius: 8px; overflow-x: auto;
+  font-size: 13px; line-height: 1.5;
+}
+.content pre code { background: transparent; border: 0; padding: 0; color: var(--text); }
+.content ul { padding-left: 22px; }
+.content li { margin: 4px 0; }
+.content a { color: var(--accent); text-decoration: none; }
+.content a:hover { text-decoration: underline; }
+.content blockquote {
+  margin: 12px 0; padding: 8px 16px;
+  border-left: 3px solid var(--accent); background: rgba(56,189,248,0.06);
+  color: var(--muted);
+}
+.content table {
+  width: 100%; border-collapse: collapse; margin: 12px 0;
+  font-size: 14px;
+}
+.content th, .content td {
+  border: 1px solid var(--border); padding: 8px 12px; text-align: left;
+}
+.content th { background: var(--panel-2); }
+footer {
+  margin-top: 28px; color: var(--muted); font-size: 12px; text-align: center;
+}
+.toc {
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--panel-2); padding: 14px 18px; margin-bottom: 16px;
+}
+.toc strong { color: var(--accent); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.toc ol { columns: 2; margin: 6px 0 0; padding-left: 22px; }
+.toc a { color: var(--text); text-decoration: none; font-size: 13px; }
+.toc a:hover { color: var(--accent); }
+@media (max-width: 720px) {
+  .toc ol { columns: 1; }
+  header.hero h1 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">SWMM &rsaquo; Ruby Fixes</div>
+    <h1>0025 - Miscellaneous</h1>
+    <p class="lede">Sandbox demos, Bill James similarity index, prompt-layout examples, parameter listings.</p>
+    <div class="stats">
+      <span class="chip">11 originals</span>
+      <span class="chip alt">11 fix_ versions</span>
+      <span class="chip pink">Robustness pass</span>
+    </div>
+  </header>
+
+<style>
+  .file-table-wrap { background:#0b1220; border:1px solid #334155; border-radius:12px; padding:14px 18px; margin:18px 0; }
+  .file-table-wrap h2 { color:#fff; font-size:16px; margin:0 0 10px; }
+  .file-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .file-table th, .file-table td { border-bottom:1px solid #1f2937; padding:6px 10px; text-align:left; vertical-align:top; }
+  .file-table th { color:#94a3b8; font-weight:500; font-size:12px; letter-spacing:0.04em; text-transform:uppercase; }
+  .file-table a { color:#38bdf8; text-decoration:none; }
+  .file-table a:hover { text-decoration:underline; }
+  .file-table .pair { font-family:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace; }
+  .file-table tr:last-child td { border-bottom:0; }
+  .file-table .miss { color:#64748b; font-style:italic; }
+  .md-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .md-list a { padding:4px 10px; border:1px solid #334155; border-radius:8px; background:#0b1220; color:#38bdf8; text-decoration:none; font-size:13px; }
+  .md-list a:hover { border-color:#38bdf8; }
+</style>
+<div class="file-table-wrap"><h2>Files in this folder</h2><table class="file-table"><thead><tr><th>Original (.rb)</th><th>Hardened (fix_*.rb)</th></tr></thead><tbody><tr><td class="pair"><a href="Bill_James_Similarity_Index.rb.html">Bill_James_Similarity_Index.rb</a></td><td class="pair"><a href="fix_Bill_James_Similarity_Index.rb.html">fix_Bill_James_Similarity_Index.rb</a></td></tr><tr><td class="pair"><a href="dave.rb.html">dave.rb</a></td><td class="pair"><a href="fix_dave.rb.html">fix_dave.rb</a></td></tr><tr><td class="pair"><a href="hub.rb.html">hub.rb</a></td><td class="pair"><a href="fix_hub.rb.html">fix_hub.rb</a></td></tr><tr><td class="pair"><a href="hw_parameters.rb.html">hw_parameters.rb</a></td><td class="pair"><a href="fix_hw_parameters.rb.html">fix_hw_parameters.rb</a></td></tr><tr><td class="pair"><a href="ICM%20Ruby%20Tutorials.rb.html">ICM Ruby Tutorials.rb</a></td><td class="pair"><a href="fix_ICM%20Ruby%20Tutorials.rb.html">fix_ICM Ruby Tutorials.rb</a></td></tr><tr><td class="pair"><a href="Input%20Message%20Box.rb.html">Input Message Box.rb</a></td><td class="pair"><a href="fix_Input%20Message%20Box.rb.html">fix_Input Message Box.rb</a></td></tr><tr><td class="pair"><a href="master_all_1.rb.html">master_all_1.rb</a></td><td class="pair"><a href="fix_master_all_1.rb.html">fix_master_all_1.rb</a></td></tr><tr><td class="pair"><a href="prompt_layout.rb.html">prompt_layout.rb</a></td><td class="pair"><a href="fix_prompt_layout.rb.html">fix_prompt_layout.rb</a></td></tr><tr><td class="pair"><a href="Sandbox.rb.html">Sandbox.rb</a></td><td class="pair"><a href="fix_Sandbox.rb.html">fix_Sandbox.rb</a></td></tr><tr><td class="pair"><a href="sw_parameters.rb.html">sw_parameters.rb</a></td><td class="pair"><a href="fix_sw_parameters.rb.html">fix_sw_parameters.rb</a></td></tr><tr><td class="pair"><a href="test_prompt_limit.rb.html">test_prompt_limit.rb</a></td><td class="pair"><a href="fix_test_prompt_limit.rb.html">fix_test_prompt_limit.rb</a></td></tr></tbody></table><h2 style="margin-top:14px;">Markdown</h2><div class="md-list"><a href="_Fixes.md.html">_Fixes.md</a><a href="Bill_James_Similarity_Index.md.html">Bill_James_Similarity_Index.md</a><a href="hub.md.html">hub.md</a><a href="readme.md.html">readme.md</a><a href="readme_hub.md.html">readme_hub.md</a><a href="Wayne.md.html">Wayne.md</a></div></div>
+  <nav class="toc"><strong>Scripts in this folder</strong><ol><li><a href="#fix-bill-james-similarity-indexrb">fix_Bill_James_Similarity_Index.rb</a></li><li><a href="#fix-icm-ruby-tutorialsrb">fix_ICM Ruby Tutorials.rb</a></li><li><a href="#fix-input-message-boxrb">fix_Input Message Box.rb</a></li><li><a href="#fix-sandboxrb">fix_Sandbox.rb</a></li><li><a href="#fix-daverb">fix_dave.rb</a></li><li><a href="#fix-hubrb">fix_hub.rb</a></li><li><a href="#fix-hw-parametersrb">fix_hw_parameters.rb</a></li><li><a href="#fix-master-all-1rb">fix_master_all_1.rb</a></li><li><a href="#fix-prompt-layoutrb">fix_prompt_layout.rb</a></li><li><a href="#fix-sw-parametersrb">fix_sw_parameters.rb</a></li><li><a href="#fix-test-prompt-limitrb">fix_test_prompt_limit.rb</a></li></ol></nav>
+  <section class="content">
+    <h1 id="0025-miscellaneous-hardened-wrapper-notes">0025 - Miscellaneous - Hardened Wrapper Notes</h1>
+<p>This folder is a sandbox / tutorial / demos collection. Some scripts hit
+the ICM API; others are pure-Ruby demos with no ICM dependency. Every
+<code>.rb</code> file gets a <code>fix_&lt;original&gt;.rb</code> wrapper that preserves behavior via
+<code>Kernel#load</code> and adds:</p>
+<ul>
+<li><code># frozen_string_literal: true</code> pragma</li>
+<li>File-level header (purpose, inputs, outputs, UI/EX, hardening notes)</li>
+<li><code>begin / rescue StandardError / rescue Interrupt / rescue SystemExit / ensure</code></li>
+<li><code>WSApplication</code> and <code>current_network</code> checks where the original needs them</li>
+<li>Timestamped wrapper-level progress logging on stdout</li>
+</ul>
+<p>Behavior is preserved verbatim.</p>
+<h2 id="fix_bill_james_similarity_indexrb">fix_Bill_James_Similarity_Index.rb</h2>
+<p>Wraps the standalone HydraulicNetworkComparison class demo. No ICM needed.</p>
+<h2 id="fix_icm-ruby-tutorialsrb">fix_ICM Ruby Tutorials.rb</h2>
+<p>Wraps the row-object / row-object-collection access tutorial.
+Validates current_network.</p>
+<h2 id="fix_input-message-boxrb">fix_Input Message Box.rb</h2>
+<p>Wraps the input_box demo. Validates WSApplication availability.</p>
+<h2 id="fix_sandboxrb">fix_Sandbox.rb</h2>
+<p>Wraps the instance_eval demo. No ICM needed.</p>
+<h2 id="fix_daverb">fix_dave.rb</h2>
+<p>Wraps the appreciation ASCII-art print script. No ICM needed.</p>
+<h2 id="fix_hubrb">fix_hub.rb</h2>
+<p>Wraps the InfoWorks ICM Technical Information Hub print-out. No ICM needed.</p>
+<h2 id="fix_hw_parametersrb">fix_hw_parameters.rb</h2>
+<p>Wraps the hw_* parameter reference listing (comments-only file).</p>
+<h2 id="fix_master_all_1rb">fix_master_all_1.rb</h2>
+<p>Wraps the concatenated pipe-length-statistics scripts. Validates
+current_network.</p>
+<h2 id="fix_prompt_layoutrb">fix_prompt_layout.rb</h2>
+<p>Wraps the multi-row WSApplication.prompt layout demo. Validates
+current_network.</p>
+<h2 id="fix_sw_parametersrb">fix_sw_parameters.rb</h2>
+<p>Wraps the sw_* parameter reference listing (comments-only file).</p>
+<h2 id="fix_test_prompt_limitrb">fix_test_prompt_limit.rb</h2>
+<p>Wraps the prompt-row-count limit probe. Validates WSApplication.</p>
+  </section>
+  <footer>
+    Auto-generated from _Fixes.md &middot; InfoWorks ICM Ruby scripts hardened with begin/rescue/ensure, input validation, block-form file I/O, progress logging.
+  </footer>
+</div>
+</body>
+</html>

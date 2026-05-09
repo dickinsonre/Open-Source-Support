@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Fixed_Ruby_Scripts.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM</div>
+    <h1>Fixed_Ruby_Scripts.md</h1>
+    <div class="meta">Markdown document &middot; .</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">70 lines</span></div>
+    <div class="toolbar"><a href="./index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="ruby-script-robustness-pass-master-index">Ruby Script Robustness Pass — Master Index</h1>
+<p>Every <code>.rb</code> file under <code>02 SWMM/</code> was paired with a <code>fix_&lt;name&gt;.rb</code> sibling that adds a <strong>robustness layer</strong> while preserving original behavior.</p>
+<ul>
+<li><strong>Folders processed:</strong> 26</li>
+<li><strong>Original scripts:</strong> 279</li>
+<li><strong>fix_ scripts written:</strong> 279</li>
+<li><strong>Per-folder docs:</strong> <code>_Fixes.md</code> (markdown) + <code>_Summary.html</code> (styled standalone)</li>
+</ul>
+<h2 id="what-robustness-means-here">What "robustness" means here</h2>
+<p>Each <code>fix_*.rb</code> adds a consistent hardening layer:</p>
+<ul>
+<li><code># frozen_string_literal: true</code> pragma at top.</li>
+<li>A header docblock stating purpose, inputs, outputs, whether it's a UI script or an ICM Exchange (EX) script, and what was hardened.</li>
+<li><code>begin / rescue =&gt; e / ensure</code> around the main logic so transactions always commit-or-rollback, log files always close, and tracebacks are surfaced cleanly.</li>
+<li>Pre-flight validation: <code>WSApplication.current_network</code> not nil, selection non-empty, prompts not cancelled, file paths exist via <code>File.exist?</code>.</li>
+<li>File I/O via the block form <code>File.open(...) do |f| ... end</code> and <code>CSV.open(...) do |csv| ... end</code> so handles always close.</li>
+<li>Timestamped progress logging (<code>[HH:MM:SS] ...</code>) so long batches show liveness.</li>
+<li>Nil-safety with <code>&amp;.</code> and explicit <code>next if ro.nil?</code> guards inside loops.</li>
+<li>Per-row <code>rescue</code> so a single malformed row doesn't abort an entire batch.</li>
+<li><code>transaction_begin</code> / <code>transaction_commit</code> paired with <code>transaction_cancel</code> (or <code>rollback</code>) in the rescue branch — only when the original used transactions.</li>
+<li>For very large Exchange importers (&gt;1000 lines), <code>fix_</code> is implemented as a thin <strong>delegating wrapper</strong> that adds the outer safety net via <code>Kernel#load</code>, preserving the original logic verbatim.</li>
+</ul>
+<h2 id="folder-index">Folder index</h2>
+<table>
+<thead>
+<tr>
+<th>Folder</th>
+<th style="text-align: right;">Originals</th>
+<th style="text-align: right;">fix_</th>
+<th>Summary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>0000 - InfoSWMM Multi-Scenario Import</strong> &mdash; Multi-scenario importer that pulls InfoSWMM exports into ICM with phase-based workflow (UI + Exchange).</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td><a href="./0000%20-%20InfoSWMM%20Multi-Scenario%20Import/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0000 - PCSWMM Import to ICM SWMM</strong> &mdash; PCSWMM .inp ingestion into ICM SWMM via UI prompts and an Exchange worker.</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td><a href="./0000%20-%20PCSWMM%20Import%20to%20ICM%20SWMM/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0001 - Element and Field Statistics</strong> &mdash; Statistics over element fields (lengths, diameters, depression storage, user numbers, all-parameter stats).</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td><a href="./0001%20-%20Element%20and%20Field%20Statistics/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0002 - Tracing Tools</strong> &mdash; Network traversal: upstream/downstream traces, Dijkstra shortest path, boundary trace, area accumulators.</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">22</td>
+<td><a href="./0002%20-%20Tracing%20Tools/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0003 - Scenario Tools</strong> &mdash; Scenario generators (alphabetic, numbered, parametric) and DWF/scenario importers from CSV.</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td><a href="./0003%20-%20Scenario%20Tools/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0004 - Scenario Sensitivity - InfoWorks</strong> &mdash; Parametric sensitivity scenarios over GIM and link data.</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td><a href="./0004%20-%20Scenario%20Sensitivity%20-%20InfoWorks/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0005 - Import Export of Data Tables</strong> &mdash; Bulk CSV/snapshot export-import for nodes, conduits, pumps, weirs, orifices, subcatchments, parameters.</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">40</td>
+<td><a href="./0005%20-%20Import%20Export%20of%20Data%20Tables/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0006 - ICM SWMM vs ICM InfoWorks All Tables</strong> &mdash; Side-by-side enumeration of ICM SWMM and ICM InfoWorks table names, run params, sensors.</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">11</td>
+<td><a href="./0006%20-%20ICM%20SWMM%20vs%20ICM%20InfoWorks%20All%20Tables/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0007 - Hydraulic Comparison Tools for ICM InfoWorks and SWMM</strong> &mdash; Hydraulic math: Manning's, Kutter, tau/shear stress, HEC-22 inlet checks.</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td><a href="./0007%20-%20Hydraulic%20Comparison%20Tools%20for%20ICM%20InfoWorks%20and%20SWMM/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0008 - Database Field Tools for Elements and Results</strong> &mdash; Field/schema introspection: list every input variable, every result, network field structures.</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">28</td>
+<td><a href="./0008%20-%20Database%20Field%20Tools%20for%20Elements%20and%20Results/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0009 - Polygon Subcatchment Boundary Tools</strong> &mdash; Polygon ops: result points, generic-sided shapes, create subs/nodes from polygons.</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td><a href="./0009%20-%20Polygon%20Subcatchment%20Boundary%20Tools/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0010 - List all results fields with Stats</strong> &mdash; Enumerate result fields and dump min/max/mean/std-dev per field for nodes, links, subcatchments, flap valves.</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td><a href="./0010%20-%20List%20all%20results%20fields%20with%20Stats/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0011 - Get results from all timesteps in the IWR File</strong> &mdash; Time-series extraction for every timestep across links, nodes, subcatchments, manholes.</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">11</td>
+<td><a href="./0011%20-%20Get%20results%20from%20all%20timesteps%20in%20the%20IWR%20File/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0012 - ICM InfoWorks Results to SWMM5  Summary Tables</strong> &mdash; Replicate EPA SWMM5-style summary tables (Link Flow, Node Depth, Surcharge, Runoff) from ICM results.</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td><a href="./0012%20-%20ICM%20InfoWorks%20Results%20to%20SWMM5%20%20Summary%20Tables/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0013 - SUDS or LID Tools</strong> &mdash; Sustainable Urban Drainage / LID controls: bulk creation and CSV export.</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td><a href="./0013%20-%20SUDS%20or%20LID%20Tools/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0014 - InfoSewer to ICM Comparison Tools</strong> &mdash; InfoSewer steady-state report parsers, peaking-factor calculators, subcatchment generators from imported manholes.</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td><a href="./0014%20-%20InfoSewer%20to%20ICM%20Comparison%20Tools/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0015 - Export SWMM5 Calibration Files</strong> &mdash; Export per-element time series in EPA SWMM5 .DAT calibration format (flow, depth, velocity, runoff, groundwater).</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">13</td>
+<td><a href="./0015%20-%20Export%20SWMM5%20Calibration%20Files/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0016 - InfoSWMM and SWMM5 Tools in Ruby</strong> &mdash; InfoSWMM subcatchment manager, SWMM5 .RPT parser, inflow file builder.</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td><a href="./0016%20-%20InfoSWMM%20and%20SWMM5%20Tools%20in%20Ruby/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0017 - Subcatchment Grid and Tabs Tools</strong> &mdash; Subcatchment grid/tabs: land-use, runoff surfaces, copy/move pumps, nearest-node connections, multi-load copies.</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">19</td>
+<td><a href="./0017%20-%20Subcatchment%20Grid%20and%20Tabs%20Tools/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0018 - Create Selection list using a SQL query</strong> &mdash; Build selection lists from SQL, generate per-row reports, find isolated nodes, detect duplicate links.</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td><a href="./0018%20-%20Create%20Selection%20list%20using%20a%20SQL%20query/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0019 - Node Connection Tools</strong> &mdash; Detect dry pipes, bifurcation nodes, header nodes via graph traversal.</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td><a href="./0019%20-%20Node%20Connection%20Tools/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0020 - All Node, Subs and Link IDs Tools</strong> &mdash; Bulk rename of node/sub/link IDs with collision detection; duplicate ID reporting.</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td><a href="./0020%20-%20All%20Node%2C%20Subs%20and%20Link%20IDs%20Tools/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0021 - Change the Geometry or Rename IDs</strong> &mdash; Split links, change subcatchment polygon shapes, add 1D results points, rename objects.</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td><a href="./0021%20-%20Change%20the%20Geometry%20or%20Rename%20IDs/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0022 - Hackathon AWI OffShoots</strong> &mdash; Folder-mode multi-scenario importers and SWMM5-to-ICM cleanup variants.</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td><a href="./0022%20-%20Hackathon%20AWI%20OffShoots/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0024 - Utilities</strong> &mdash; Cross-network comparisons, asset-id mappers, network-info utilities.</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">13</td>
+<td><a href="./0024%20-%20Utilities/_Summary.html">HTML</a></td>
+</tr>
+<tr>
+<td><strong>0025 - Miscellaneous</strong> &mdash; Sandbox demos, Bill James similarity index, prompt-layout examples, parameter listings.</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">11</td>
+<td><a href="./0025%20-%20Miscellaneous/_Summary.html">HTML</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="notable-bug-fixes-uncovered-during-the-pass">Notable bug fixes uncovered during the pass</h2>
+<ul>
+<li><code>0017 - Subcatchment Grid and Tabs Tools/Move_Copy_Impored_Pumps.rb</code> called undefined <code>new_pump_ro()</code> &mdash; the fix_ version uses <code>net.new_row_object('hw_pump')</code>.</li>
+<li><code>0017 - Subcatchment Grid and Tabs Tools/*Copy selected subcatchments*.rb</code> opened/committed transactions per-copy inside the inner loop &mdash; fixed to one transaction wrapping the whole batch.</li>
+<li><code>0017</code> nearest-node scripts replaced magic <code>999999999.9</code> with <code>Float::INFINITY</code> and pre-built node arrays for O(N+M) instead of O(N×M).</li>
+<li><code>0018 - Create Selection list using a SQL query/UI_Script.rb</code> had a SQL syntax error (extra trailing quote) &mdash; fixed in the fix_ version.</li>
+<li><code>0002 - Tracing Tools/Sum_Selected_Total_Area.rb</code> had <code>row   objects</code> with a triple space typo &mdash; corrected to <code>row_objects</code>.</li>
+</ul>
+<h2 id="how-to-use-a-fix_-script">How to use a fix_ script</h2>
+<ol>
+<li>Open ICM (or ICMExchange.exe for EX scripts).</li>
+<li>Open the relevant network.</li>
+<li>Run the <code>fix_&lt;name&gt;.rb</code> instead of the original. Behaviour is identical, but you get clean error messages, transaction safety, and progress logs in the console.</li>
+</ol>
+<p>Originals are untouched and remain in their folders.</p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

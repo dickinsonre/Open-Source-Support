@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>readme_ Change Subcatchment Boundaries.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0021 - Change the Geometry or Rename IDs</div>
+    <h1>readme_ Change Subcatchment Boundaries.md</h1>
+    <div class="meta">Markdown document &middot; 0021 - Change the Geometry or Rename IDs</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">116 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="ruby-code-for-generating-polygon-boundaries-in-infoworks-icm">Ruby Code for Generating Polygon Boundaries in InfoWorks ICM</h1>
+<p>This Ruby script is used to generate the boundaries for polygons with a specified number of sides in the InfoWorks ICM software. Here's a summary of what it does:</p>
+<ol>
+<li>
+<p><strong>Get the current network object</strong>: The script starts by getting the current network object using <code>WSApplication.current_network</code>.</p>
+</li>
+<li>
+<p><strong>Begin a transaction</strong>: It then begins a transaction using <code>net.transaction_begin</code>. This allows all changes to be committed at once at the end of the script.</p>
+</li>
+<li>
+<p><strong>Define a function to generate the boundary for a polygon</strong>: The <code>generate_polygon_boundary</code> function is defined. This function takes a boundary array and a number of sides as arguments. It calculates the minimum and maximum x and y coordinates, the width and height, and then generates the points of the polygon. It returns the polygon boundary.</p>
+</li>
+<li>
+<p><strong>Iterate over all polygon objects in the network</strong>: The script then iterates over all polygon objects in the network using <code>net.row_object_collection('hw_subcatchment').each</code>. For each polygon, it checks if the polygon is selected. If it is, it gets the boundary array of the polygon, generates a new boundary array with a specified number of sides, and then sets the new boundary array.</p>
+</li>
+<li>
+<p><strong>Commit the transaction</strong>: Finally, the script commits the transaction using <code>net.transaction_commit</code>, making all changes permanent.</p>
+</li>
+</ol>
+<p><img alt="alt text" src="image-1.png"></p>
+<h1 id="_1">==============================================================</h1>
+<h3 id="summary-of">Summary of</h3>
+<p>swmm_UI_script.rb</p>
+<h4 id="overview">Overview</h4>
+<p>This Ruby script is designed to modify the boundaries of polygon objects in a SWMM or ICM network. It prompts the user to select the network type and desired polygon shape, then updates the boundaries accordingly. All changes are committed in a single transaction for efficiency. Let's dive into the details, shall we?</p>
+<h4 id="key-components">Key Components</h4>
+<ol>
+<li>
+<p><strong>Network Object Initialization</strong>
+   <code>ruby
+   net = WSApplication.current_network
+   net.transaction_begin</code>
+   - <strong>Translation</strong>: Grabs the current network object and starts a transaction. Because who doesn't love committing all changes at once?</p>
+</li>
+<li>
+<p><strong>Polygon Boundary Generation Function</strong>
+   <code>ruby
+   def generate_polygon_boundary(boundary_array, sides)
+     # Calculate min/max coordinates, width, height, and points of the polygon
+     # Close the shape and return the boundary array
+   end</code>
+   - <strong>Translation</strong>: This function calculates the boundary for a polygon with a specified number of sides. It's like geometry class, but with more code and less chalk dust.</p>
+</li>
+<li>
+<p><strong>User Prompt for Network Type and Shape Selection</strong>
+   <code>ruby
+   parameters = WSApplication.prompt "Select the network type and desired shape for the polygons",
+   [
+     ['Is this a SWMM network?', 'Boolean', true],
+     ['Triangle (3-sided)', 'Boolean', false],
+     ['Square (4-sided)', 'Boolean', false],
+     ['Pentagon (5-sided)', 'Boolean', false],
+     ['Hexagon (6-sided)', 'Boolean', false],
+     ['Heptagon (7-sided)', 'Boolean', false],
+     ['Octagon (8-sided)', 'Boolean', false],
+     ['Nonagon (9-sided)', 'Boolean', false],
+     ['Decagon (10-sided)', 'Boolean', false],
+     ['Hendecagon (11-sided)', 'Boolean', false],
+     ['Dodecagon (12-sided)', 'Boolean', false],
+     ['Tridecagon (13-sided)', 'Boolean', false],
+     ['Tetradecagon (14-sided)', 'Boolean', false],
+     ['Pentadecagon (15-sided)', 'Boolean', true]
+   ], false</code>
+   - <strong>Translation</strong>: Prompts the user to select whether the network is SWMM or ICM and choose a polygon shape. Because making decisions is fun, right?</p>
+</li>
+<li>
+<p><strong>Determine Prefix and Number of Sides</strong>
+   <code>ruby
+   is_swmm_network = parameters[0]
+   shape_selection = parameters[1..-1]
+   prefix = is_swmm_network ? 'sw' : 'hw'
+   sides = if shape_selection[0]
+             3
+           elsif shape_selection[1]
+             4
+           elsif shape_selection[2]
+             5
+           elsif shape_selection[3]
+             6
+           elsif shape_selection[4]
+             7
+           elsif shape_selection[5]
+             8
+           elsif shape_selection[6]
+             9
+           elsif shape_selection[7]
+             10
+           elsif shape_selection[8]
+             11
+           elsif shape_selection[9]
+             12
+           elsif shape_selection[10]
+             13
+           elsif shape_selection[11]
+             14
+           else
+             15  # Default to a 15-sided polygon
+           end</code>
+   - <strong>Translation</strong>: Determines the prefix (<code>sw</code> for SWMM, <code>hw</code> for ICM) and the number of sides for the polygon based on user input. Because who doesn't love a good conditional statement?</p>
+</li>
+<li>
+<p><strong>Iterate and Update Polygon Boundaries</strong>
+   <code>ruby
+   net.row_object_collection("#{prefix}_subcatchment").each do |polygon|
+     if polygon.selected?
+       boundary_array = polygon.boundary_array
+       polygon.boundary_array = generate_polygon_boundary(boundary_array, sides)
+       polygon.write
+     end
+   end
+   net.transaction_commit</code>
+   - <strong>Translation</strong>: Iterates over all selected polygons, updates their boundaries based on the chosen shape, and commits the changes. It's like a makeover for polygons, but with less glitter.</p>
+</li>
+</ol>
+<h4 id="conclusion">Conclusion</h4>
+<p>This script is a nifty tool for updating polygon boundaries in SWMM or ICM networks. It combines user input, geometric calculations, and efficient transaction handling to get the job done. And let's be honest, who doesn't love a good polygon transformation?</p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

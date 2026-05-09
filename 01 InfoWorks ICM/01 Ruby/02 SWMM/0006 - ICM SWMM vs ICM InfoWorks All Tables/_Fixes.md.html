@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>_Fixes.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0006 - ICM SWMM vs ICM InfoWorks All Tables</div>
+    <h1>_Fixes.md</h1>
+    <div class="meta">Markdown document &middot; 0006 - ICM SWMM vs ICM InfoWorks All Tables</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">88 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="fixes-for-0006-icm-swmm-vs-icm-infoworks-all-tables">Fixes for 0006 - ICM SWMM vs ICM InfoWorks All Tables</h1>
+<p>Hardened <code>fix_*.rb</code> versions of each Ruby script in this folder. The originals
+are preserved unchanged.  All fixes share the same template:
+<code># frozen_string_literal: true</code>, header comment, <code>begin / rescue / ensure</code>,
+nil-safety, and timestamped progress logging via a <code>log</code> helper.</p>
+<h2 id="fix_ex-run-parametersrb">fix_EX Run Parameters.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Retrieve all read/write Run fields for a given Run ID via
+  <code>WSApplication.open</code> and dump them as a hash.</li>
+<li><strong>Hardening</strong>: validates database opens, run object exists; per-field rescue
+  on read; explicit error message if <code>run_id</code> not set.</li>
+<li><strong>How to run</strong>: Edit the script and replace the <code>run_id = nil</code> placeholder
+  with a real Run id, then <code>Database -&gt; Run Exchange Script...</code> from ICM.</li>
+</ul>
+<h2 id="fix_icm-infoworks-all-table-namesrb">fix_ICM InfoWorks All Table Names.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Count rows in every known <code>hw_*</code> InfoWorks table.</li>
+<li><strong>Hardening</strong>: per-table rescue so unknown tables (older/newer versions) do
+  not abort; current_network nil-check.</li>
+<li><strong>How to run</strong>: Open an InfoWorks ICM network, <code>Network -&gt; Run Ruby Script...</code>.</li>
+</ul>
+<h2 id="fix_icm-swmm-all-tablesrb">fix_ICM SWMM All Tables.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Count rows in every known <code>sw_*</code> ICM SWMM table.</li>
+<li><strong>Hardening</strong>: per-table rescue, nil-check, timestamped log.</li>
+<li><strong>How to run</strong>: Open an ICM SWMM network, <code>Network -&gt; Run Ruby Script...</code>.</li>
+</ul>
+<h2 id="fix_icm-swmm-network-overviewrb">fix_ICM SWMM Network Overview.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Aggregate stats for sw_node, sw_conduit, sw_subcatchment, plus
+  counts of pumps/weirs/orifices/outlets.</li>
+<li><strong>Hardening</strong>: nil-checks on every attribute, zero-division guards on means,
+  <code>begin/rescue/ensure</code>.</li>
+<li><strong>How to run</strong>: Open an ICM SWMM network, <code>Network -&gt; Run Ruby Script...</code>.</li>
+</ul>
+<h2 id="fix_compare_icm_swmm_icm_filesrb">fix_compare_icm_swmm_icm_files.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Library helper that compares column 1 of two CSV files.</li>
+<li><strong>Hardening</strong>: validates both files exist, tolerant to unequal row counts,
+  reports diffs to stdout.</li>
+<li><strong>How to run</strong>: <code>require_relative 'fix_compare_icm_swmm_icm_files'</code> then call
+  <code>compare_icm_swmm_icm_files(path_a, path_b)</code>.</li>
+</ul>
+<h2 id="fix_find_hw_runoff_tablesrb">fix_find_hw_runoff_tables.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: From a selection on hw_runoff_surface, propagate selection to
+  matching hw_land_use rows and then their hw_subcatchment rows.</li>
+<li><strong>Hardening</strong>: requires non-empty selection, nil-safe attribute access.</li>
+<li><strong>How to run</strong>: Select rows in hw_runoff_surface, then run via UI.</li>
+</ul>
+<h2 id="fix_sensor_comparisonrb">fix_Sensor_Comparison.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Plot ICM model results vs measured sensor data with line and
+  scatter graphs.</li>
+<li><strong>Hardening</strong>: validates folder dialog, file existence, results presence;
+  per-location rescue.</li>
+<li><strong>How to run</strong>: Run the script in ICM, choose the sensor data folder when
+  prompted.</li>
+</ul>
+<h2 id="fix_sw_ui_get_script_cn_bnrb">fix_sw_UI_Get_script_CN_BN.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Compute time-series sum/mean/min/max for selected sw_conduit
+  rows for FLOW/DEPTH/HGL/etc, plus d/D and q/Q ratios.</li>
+<li><strong>Hardening</strong>: skips selections without rows, nil-safe diameter/full_flow,
+  per-field rescue.</li>
+<li><strong>How to run</strong>: Select conduits, ensure simulation results loaded, run.</li>
+</ul>
+<h2 id="fix_sw_hw_ui_set_script_cn_bnrb">fix_sw_hw_UI_Set_Script_CN_BN.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Copy capacity/gradient from background hw_conduit rows onto
+  current sw_conduit rows as user_number_9 / user_number_10.</li>
+<li><strong>Hardening</strong>: validates both networks, transaction with rollback.</li>
+<li><strong>How to run</strong>: Open SWMM network as current, InfoWorks network as
+  background, then run.</li>
+</ul>
+<h2 id="fix_sw_ui_script_additional_dwf_nodes_icm_swmmrb">fix_sw_UI_Script_additional_dwf_nodes_icm_swmm.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Stats on sw_node base_flow and additional_dwf baselines.</li>
+<li><strong>Hardening</strong>: nil-safe iteration; defensive <code>print_stats</code> helper.</li>
+<li><strong>How to run</strong>: Open ICM SWMM network, run via UI.</li>
+</ul>
+<h2 id="fix_sw_ui_script_calculate-statistics-for-baseline-datarb">fix_sw_UI_Script_Calculate statistics for baseline data.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Stats (MGD and GPM) on additional_dwf baselines per sw_node.</li>
+<li><strong>Hardening</strong>: nil-safe iteration, empty-data guard.</li>
+<li><strong>How to run</strong>: Open ICM SWMM network, run via UI.</li>
+</ul></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

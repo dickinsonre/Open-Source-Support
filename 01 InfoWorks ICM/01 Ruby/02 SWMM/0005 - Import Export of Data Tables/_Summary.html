@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0005 - Import Export of Data Tables</title>
+<style>
+:root {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-2: #0b1220;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-2: #f472b6;
+  --good: #22c55e;
+  --border: #334155;
+  --code-bg: #0b1220;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: linear-gradient(180deg, #0a1226 0%, #0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+header.hero {
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(244,114,182,0.06));
+  padding: 28px 28px 24px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+header.hero .crumbs {
+  font-size: 12px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+header.hero h1 {
+  font-size: 26px; margin: 0 0 6px 0; color: #fff;
+}
+header.hero p.lede {
+  margin: 0 0 14px 0; color: var(--muted);
+}
+.stats {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 13px;
+  background: rgba(56,189,248,0.10);
+  border: 1px solid rgba(56,189,248,0.35);
+  color: var(--accent);
+}
+.chip.alt { background: rgba(34,197,94,0.10); border-color: rgba(34,197,94,0.35); color: var(--good); }
+.chip.pink { background: rgba(244,114,182,0.10); border-color: rgba(244,114,182,0.35); color: var(--accent-2); }
+.content {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 6px 28px 24px;
+}
+.content h2 {
+  margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border);
+  font-size: 18px; color: #fff;
+}
+.content h2:first-of-type { border-top: none; padding-top: 6px; }
+.content h3 { font-size: 15px; color: var(--accent); margin: 16px 0 6px; }
+.content p, .content li { color: var(--text); }
+.content code {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 4px; font-size: 13px;
+  color: #fbbf24;
+}
+.content pre {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 14px; border-radius: 8px; overflow-x: auto;
+  font-size: 13px; line-height: 1.5;
+}
+.content pre code { background: transparent; border: 0; padding: 0; color: var(--text); }
+.content ul { padding-left: 22px; }
+.content li { margin: 4px 0; }
+.content a { color: var(--accent); text-decoration: none; }
+.content a:hover { text-decoration: underline; }
+.content blockquote {
+  margin: 12px 0; padding: 8px 16px;
+  border-left: 3px solid var(--accent); background: rgba(56,189,248,0.06);
+  color: var(--muted);
+}
+.content table {
+  width: 100%; border-collapse: collapse; margin: 12px 0;
+  font-size: 14px;
+}
+.content th, .content td {
+  border: 1px solid var(--border); padding: 8px 12px; text-align: left;
+}
+.content th { background: var(--panel-2); }
+footer {
+  margin-top: 28px; color: var(--muted); font-size: 12px; text-align: center;
+}
+.toc {
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--panel-2); padding: 14px 18px; margin-bottom: 16px;
+}
+.toc strong { color: var(--accent); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.toc ol { columns: 2; margin: 6px 0 0; padding-left: 22px; }
+.toc a { color: var(--text); text-decoration: none; font-size: 13px; }
+.toc a:hover { color: var(--accent); }
+@media (max-width: 720px) {
+  .toc ol { columns: 1; }
+  header.hero h1 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">SWMM &rsaquo; Ruby Fixes</div>
+    <h1>0005 - Import Export of Data Tables</h1>
+    <p class="lede">Bulk CSV/snapshot export-import for nodes, conduits, pumps, weirs, orifices, subcatchments, and parameters.</p>
+    <div class="stats">
+      <span class="chip">40 originals</span>
+      <span class="chip alt">40 fix_ versions</span>
+      <span class="chip pink">Robustness pass</span>
+    </div>
+  </header>
+
+<style>
+  .file-table-wrap { background:#0b1220; border:1px solid #334155; border-radius:12px; padding:14px 18px; margin:18px 0; }
+  .file-table-wrap h2 { color:#fff; font-size:16px; margin:0 0 10px; }
+  .file-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .file-table th, .file-table td { border-bottom:1px solid #1f2937; padding:6px 10px; text-align:left; vertical-align:top; }
+  .file-table th { color:#94a3b8; font-weight:500; font-size:12px; letter-spacing:0.04em; text-transform:uppercase; }
+  .file-table a { color:#38bdf8; text-decoration:none; }
+  .file-table a:hover { text-decoration:underline; }
+  .file-table .pair { font-family:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace; }
+  .file-table tr:last-child td { border-bottom:0; }
+  .file-table .miss { color:#64748b; font-style:italic; }
+  .md-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .md-list a { padding:4px 10px; border:1px solid #334155; border-radius:8px; background:#0b1220; color:#38bdf8; text-decoration:none; font-size:13px; }
+  .md-list a:hover { border-color:#38bdf8; }
+</style>
+<div class="file-table-wrap"><h2>Files in this folder</h2><table class="file-table"><thead><tr><th>Original (.rb)</th><th>Hardened (fix_*.rb)</th></tr></thead><tbody><tr><td class="pair"><a href="all_for_one_and_one_for_all.rb.html">all_for_one_and_one_for_all.rb</a></td><td class="pair"><a href="fix_all_for_one_and_one_for_all.rb.html">fix_all_for_one_and_one_for_all.rb</a></td></tr><tr><td class="pair"><a href="check_fields.rb.html">check_fields.rb</a></td><td class="pair"><a href="fix_check_fields.rb.html">fix_check_fields.rb</a></td></tr><tr><td class="pair"><a href="ex%3Bport_hw_orifice_to_csv.rb.html">ex;port_hw_orifice_to_csv.rb</a></td><td class="pair"><a href="fix_ex%3Bport_hw_orifice_to_csv.rb.html">fix_ex;port_hw_orifice_to_csv.rb</a></td></tr><tr><td class="pair"><a href="ex%3Bport_hw_weir_to_csv.rb.html">ex;port_hw_weir_to_csv.rb</a></td><td class="pair"><a href="fix_ex%3Bport_hw_weir_to_csv.rb.html">fix_ex;port_hw_weir_to_csv.rb</a></td></tr><tr><td class="pair"><a href="EX_script_ICM%20Binary%20Results%20Export.rb.html">EX_script_ICM Binary Results Export.rb</a></td><td class="pair"><a href="fix_EX_script_ICM%20Binary%20Results%20Export.rb.html">fix_EX_script_ICM Binary Results Export.rb</a></td></tr><tr><td class="pair"><a href="export_hw_conduit_data_to_csv.rb.html">export_hw_conduit_data_to_csv.rb</a></td><td class="pair"><a href="fix_export_hw_conduit_data_to_csv.rb.html">fix_export_hw_conduit_data_to_csv.rb</a></td></tr><tr><td class="pair"><a href="export_hw_node_data_to_csv.rb.html">export_hw_node_data_to_csv.rb</a></td><td class="pair"><a href="fix_export_hw_node_data_to_csv.rb.html">fix_export_hw_node_data_to_csv.rb</a></td></tr><tr><td class="pair"><a href="export_hw_pump_to_csv.rb.html">export_hw_pump_to_csv.rb</a></td><td class="pair"><a href="fix_export_hw_pump_to_csv.rb.html">fix_export_hw_pump_to_csv.rb</a></td></tr><tr><td class="pair"><a href="export_hw_subcatchments_to_csv.rb.html">export_hw_subcatchments_to_csv.rb</a></td><td class="pair"><a href="fix_export_hw_subcatchments_to_csv.rb.html">fix_export_hw_subcatchments_to_csv.rb</a></td></tr><tr><td class="pair"><a href="export_sw_conduit_data_to_csv%20.rb.html">export_sw_conduit_data_to_csv .rb</a></td><td class="pair"><a href="fix_export_sw_conduit_data_to_csv%20.rb.html">fix_export_sw_conduit_data_to_csv .rb</a></td></tr><tr><td class="pair"><a href="export_sw_node_data_to_csv.rb.html">export_sw_node_data_to_csv.rb</a></td><td class="pair"><a href="fix_export_sw_node_data_to_csv.rb.html">fix_export_sw_node_data_to_csv.rb</a></td></tr><tr><td class="pair"><a href="export_sw_orifice_to_csv.rb.html">export_sw_orifice_to_csv.rb</a></td><td class="pair"><a href="fix_export_sw_orifice_to_csv.rb.html">fix_export_sw_orifice_to_csv.rb</a></td></tr><tr><td class="pair"><a href="export_sw_pump_to_csv.rb.html">export_sw_pump_to_csv.rb</a></td><td class="pair"><a href="fix_export_sw_pump_to_csv.rb.html">fix_export_sw_pump_to_csv.rb</a></td></tr><tr><td class="pair"><a href="export_sw_subcatchments_to_csv.rb.html">export_sw_subcatchments_to_csv.rb</a></td><td class="pair"><a href="fix_export_sw_subcatchments_to_csv.rb.html">fix_export_sw_subcatchments_to_csv.rb</a></td></tr><tr><td class="pair"><a href="export_sw_weir_to_csv.rb.html">export_sw_weir_to_csv.rb</a></td><td class="pair"><a href="fix_export_sw_weir_to_csv.rb.html">fix_export_sw_weir_to_csv.rb</a></td></tr><tr><td class="pair"><a href="hw_parameters.rb.html">hw_parameters.rb</a></td><td class="pair"><a href="fix_hw_parameters.rb.html">fix_hw_parameters.rb</a></td></tr><tr><td class="pair"><a href="hw_simulation_parameters.rb.html">hw_simulation_parameters.rb</a></td><td class="pair"><a href="fix_hw_simulation_parameters.rb.html">fix_hw_simulation_parameters.rb</a></td></tr><tr><td class="pair"><a href="hw_sw_all_table_reader.rb.html">hw_sw_all_table_reader.rb</a></td><td class="pair"><a href="fix_hw_sw_all_table_reader.rb.html">fix_hw_sw_all_table_reader.rb</a></td></tr><tr><td class="pair"><a href="hw_UI-GIS_export.rb.html">hw_UI-GIS_export.rb</a></td><td class="pair"><a href="fix_hw_UI-GIS_export.rb.html">fix_hw_UI-GIS_export.rb</a></td></tr><tr><td class="pair"><a href="IE-befdss_export.rb.html">IE-befdss_export.rb</a></td><td class="pair"><a href="fix_IE-befdss_export.rb.html">fix_IE-befdss_export.rb</a></td></tr><tr><td class="pair"><a href="IE-befdss_import_cctv-BulkImport.rb.html">IE-befdss_import_cctv-BulkImport.rb</a></td><td class="pair"><a href="fix_IE-befdss_import_cctv-BulkImport.rb.html">fix_IE-befdss_import_cctv-BulkImport.rb</a></td></tr><tr><td class="pair"><a href="IE-befdss_import_cctv.rb.html">IE-befdss_import_cctv.rb</a></td><td class="pair"><a href="fix_IE-befdss_import_cctv.rb.html">fix_IE-befdss_import_cctv.rb</a></td></tr><tr><td class="pair"><a href="IE-befdss_import_manhole_surveys.rb.html">IE-befdss_import_manhole_surveys.rb</a></td><td class="pair"><a href="fix_IE-befdss_import_manhole_surveys.rb.html">fix_IE-befdss_import_manhole_surveys.rb</a></td></tr><tr><td class="pair"><a href="IE-csv_changes.rb.html">IE-csv_changes.rb</a></td><td class="pair"><a href="fix_IE-csv_changes.rb.html">fix_IE-csv_changes.rb</a></td></tr><tr><td class="pair"><a href="IE-DashboardExport.rb.html">IE-DashboardExport.rb</a></td><td class="pair"><a href="fix_IE-DashboardExport.rb.html">fix_IE-DashboardExport.rb</a></td></tr><tr><td class="pair"><a href="IE-Snapshot-Bulk-Import.rb.html">IE-Snapshot-Bulk-Import.rb</a></td><td class="pair"><a href="fix_IE-Snapshot-Bulk-Import.rb.html">fix_IE-Snapshot-Bulk-Import.rb</a></td></tr><tr><td class="pair"><a href="IE-snapshot_export_ex.rb.html">IE-snapshot_export_ex.rb</a></td><td class="pair"><a href="fix_IE-snapshot_export_ex.rb.html">fix_IE-snapshot_export_ex.rb</a></td></tr><tr><td class="pair"><a href="sw_parameters.rb.html">sw_parameters.rb</a></td><td class="pair"><a href="fix_sw_parameters.rb.html">fix_sw_parameters.rb</a></td></tr><tr><td class="pair"><a href="sw_UI-GIS_export.rb.html">sw_UI-GIS_export.rb</a></td><td class="pair"><a href="fix_sw_UI-GIS_export.rb.html">fix_sw_UI-GIS_export.rb</a></td></tr><tr><td class="pair"><a href="UI-CSV_export-selection.rb.html">UI-CSV_export-selection.rb</a></td><td class="pair"><a href="fix_UI-CSV_export-selection.rb.html">fix_UI-CSV_export-selection.rb</a></td></tr><tr><td class="pair"><a href="UI-CSV_export.rb.html">UI-CSV_export.rb</a></td><td class="pair"><a href="fix_UI-CSV_export.rb.html">fix_UI-CSV_export.rb</a></td></tr><tr><td class="pair"><a href="UI-ExportChoiceListValues.rb.html">UI-ExportChoiceListValues.rb</a></td><td class="pair"><a href="fix_UI-ExportChoiceListValues.rb.html">fix_UI-ExportChoiceListValues.rb</a></td></tr><tr><td class="pair"><a href="UI-ExportPipeArrayCSV.rb.html">UI-ExportPipeArrayCSV.rb</a></td><td class="pair"><a href="fix_UI-ExportPipeArrayCSV.rb.html">fix_UI-ExportPipeArrayCSV.rb</a></td></tr><tr><td class="pair"><a href="UI-Snapshot-Bulk-Import-Filename.rb.html">UI-Snapshot-Bulk-Import-Filename.rb</a></td><td class="pair"><a href="fix_UI-Snapshot-Bulk-Import-Filename.rb.html">fix_UI-Snapshot-Bulk-Import-Filename.rb</a></td></tr><tr><td class="pair"><a href="UI-Snapshot-Bulk-Import.rb.html">UI-Snapshot-Bulk-Import.rb</a></td><td class="pair"><a href="fix_UI-Snapshot-Bulk-Import.rb.html">fix_UI-Snapshot-Bulk-Import.rb</a></td></tr><tr><td class="pair"><a href="UI-snapshot_export_ex.rb.html">UI-snapshot_export_ex.rb</a></td><td class="pair"><a href="fix_UI-snapshot_export_ex.rb.html">fix_UI-snapshot_export_ex.rb</a></td></tr><tr><td class="pair"><a href="UI-UpdateFromExternalCSV.rb.html">UI-UpdateFromExternalCSV.rb</a></td><td class="pair"><a href="fix_UI-UpdateFromExternalCSV.rb.html">fix_UI-UpdateFromExternalCSV.rb</a></td></tr><tr><td class="pair"><a href="UI_script_ODEC%20Export%20Node%20and%20Conduit%20tables%20to%20CSV%20and%20MIF.rb.html">UI_script_ODEC Export Node and Conduit tables to CSV and MIF.rb</a></td><td class="pair"><a href="fix_UI_script_ODEC%20Export%20Node%20and%20Conduit%20tables%20to%20CSV%20and%20MIF.rb.html">fix_UI_script_ODEC Export Node and Conduit tables to CSV and MIF.rb</a></td></tr><tr><td class="pair"><a href="UI_script_Output%20CSV%20of%20calcs%20based%20on%20Subcatchment%20Data.rb.html">UI_script_Output CSV of calcs based on Subcatchment Data.rb</a></td><td class="pair"><a href="fix_UI_script_Output%20CSV%20of%20calcs%20based%20on%20Subcatchment%20Data.rb.html">fix_UI_script_Output CSV of calcs based on Subcatchment Data.rb</a></td></tr><tr><td class="pair"><a href="UIIE-CSV_export.rb.html">UIIE-CSV_export.rb</a></td><td class="pair"><a href="fix_UIIE-CSV_export.rb.html">fix_UIIE-CSV_export.rb</a></td></tr></tbody></table><h2 style="margin-top:14px;">Markdown</h2><div class="md-list"><a href="_Fixes.md.html">_Fixes.md</a><a href="ex%3Bport_hw_orifice_to_csv.md.html">ex;port_hw_orifice_to_csv.md</a><a href="ex%3Bport_hw_weir_to_csv.md.html">ex;port_hw_weir_to_csv.md</a><a href="export_hw_conduit_data_to_csv.md.html">export_hw_conduit_data_to_csv.md</a><a href="export_hw_pump_to_csv.md.html">export_hw_pump_to_csv.md</a><a href="export_hw_subcatchments_to_csv.md.html">export_hw_subcatchments_to_csv.md</a><a href="export_sw_conduit_data_to_csv.md.html">export_sw_conduit_data_to_csv.md</a><a href="export_sw_node_data_to_csv.md.html">export_sw_node_data_to_csv.md</a><a href="export_sw_orifice_to_csv.md.html">export_sw_orifice_to_csv.md</a><a href="export_sw_subcatchments_to_csv.md.html">export_sw_subcatchments_to_csv.md</a><a href="export_sw_weir_to_csv.md.html">export_sw_weir_to_csv.md</a><a href="hw_sw_all_table_reader.md.html">hw_sw_all_table_reader.md</a><a href="README.md.html">README.md</a></div></div>
+  <nav class="toc"><strong>Scripts in this folder</strong><ol><li><a href="#fix-ex-script-icm-binary-results-exportrb">fix_EX_script_ICM Binary Results Export.rb</a></li><li><a href="#fix-ie-dashboardexportrb">fix_IE-DashboardExport.rb</a></li><li><a href="#fix-ie-snapshot-bulk-importrb">fix_IE-Snapshot-Bulk-Import.rb</a></li><li><a href="#fix-ie-befdss-exportrb">fix_IE-befdss_export.rb</a></li><li><a href="#fix-ie-befdss-import-cctv-bulkimportrb">fix_IE-befdss_import_cctv-BulkImport.rb</a></li><li><a href="#fix-ie-befdss-import-cctvrb">fix_IE-befdss_import_cctv.rb</a></li><li><a href="#fix-ie-befdss-import-manhole-surveysrb">fix_IE-befdss_import_manhole_surveys.rb</a></li><li><a href="#fix-ie-csv-changesrb">fix_IE-csv_changes.rb</a></li><li><a href="#fix-ie-snapshot-export-exrb">fix_IE-snapshot_export_ex.rb</a></li><li><a href="#fix-ui-csv-export-selectionrb">fix_UI-CSV_export-selection.rb</a></li><li><a href="#fix-ui-csv-exportrb">fix_UI-CSV_export.rb</a></li><li><a href="#fix-ui-exportchoicelistvaluesrb">fix_UI-ExportChoiceListValues.rb</a></li><li><a href="#fix-ui-exportpipearraycsvrb">fix_UI-ExportPipeArrayCSV.rb</a></li><li><a href="#fix-ui-snapshot-bulk-import-filenamerb">fix_UI-Snapshot-Bulk-Import-Filename.rb</a></li><li><a href="#fix-ui-snapshot-bulk-importrb">fix_UI-Snapshot-Bulk-Import.rb</a></li><li><a href="#fix-ui-snapshot-export-exrb">fix_UI-snapshot_export_ex.rb</a></li><li><a href="#fix-ui-updatefromexternalcsvrb">fix_UI-UpdateFromExternalCSV.rb</a></li><li><a href="#fix-uiie-csv-exportrb">fix_UIIE-CSV_export.rb</a></li><li><a href="#fix-ui-script-odec-export-node-and-conduit-tables-to-csv-and-mifrb">fix_UI_script_ODEC Export Node and Conduit tables to CSV and MIF.rb</a></li><li><a href="#fix-ui-script-output-csv-of-calcs-based-on-subcatchment-datarb">fix_UI_script_Output CSV of calcs based on Subcatchment Data.rb</a></li><li><a href="#fix-all-for-one-and-one-for-allrb">fix_all_for_one_and_one_for_all.rb</a></li><li><a href="#fix-check-fieldsrb">fix_check_fields.rb</a></li><li><a href="#fix-export-hw-orifice-to-csvrb">fix_ex;port_hw_orifice_to_csv.rb</a></li><li><a href="#fix-export-hw-weir-to-csvrb">fix_ex;port_hw_weir_to_csv.rb</a></li><li><a href="#fix-export-hw-conduit-data-to-csvrb">fix_export_hw_conduit_data_to_csv.rb</a></li><li><a href="#fix-export-hw-node-data-to-csvrb">fix_export_hw_node_data_to_csv.rb</a></li><li><a href="#fix-export-hw-pump-to-csvrb">fix_export_hw_pump_to_csv.rb</a></li><li><a href="#fix-export-hw-subcatchments-to-csvrb">fix_export_hw_subcatchments_to_csv.rb</a></li><li><a href="#fix-export-sw-conduit-data-to-csv-rb">fix_export_sw_conduit_data_to_csv .rb</a></li><li><a href="#fix-export-sw-node-data-to-csvrb">fix_export_sw_node_data_to_csv.rb</a></li><li><a href="#fix-export-sw-orifice-to-csvrb">fix_export_sw_orifice_to_csv.rb</a></li><li><a href="#fix-export-sw-pump-to-csvrb">fix_export_sw_pump_to_csv.rb</a></li><li><a href="#fix-export-sw-subcatchments-to-csvrb">fix_export_sw_subcatchments_to_csv.rb</a></li><li><a href="#fix-export-sw-weir-to-csvrb">fix_export_sw_weir_to_csv.rb</a></li><li><a href="#fix-hw-ui-gis-exportrb">fix_hw_UI-GIS_export.rb</a></li><li><a href="#fix-hw-parametersrb">fix_hw_parameters.rb</a></li><li><a href="#fix-hw-simulation-parametersrb">fix_hw_simulation_parameters.rb</a></li><li><a href="#fix-hw-sw-all-table-readerrb">fix_hw_sw_all_table_reader.rb</a></li><li><a href="#fix-sw-ui-gis-exportrb">fix_sw_UI-GIS_export.rb</a></li><li><a href="#fix-sw-parametersrb">fix_sw_parameters.rb</a></li></ol></nav>
+  <section class="content">
+    <h1 id="fixes-for-0005-import-export-of-data-tables">Fixes for 0005 - Import Export of Data Tables</h1>
+<p>Hardened <code>fix_*.rb</code> versions of every Ruby script in this folder. The originals
+are preserved unchanged. The fixes apply a consistent template:</p>
+<ul>
+<li><code># frozen_string_literal: true</code> pragma.</li>
+<li>Header comment with purpose, inputs, outputs, type (UI/EX), hardening notes.</li>
+<li><code>begin / rescue =&gt; e / ensure</code> around the main logic.</li>
+<li>Validation of <code>WSApplication</code>, <code>current_network</code>, prompts not cancelled,
+  source files / directories exist via <code>File.exist?</code> / <code>Dir.exist?</code>,
+  selections non-empty when used.</li>
+<li>File I/O via <code>File.open(...) do |f| ... end</code> and
+  <code>CSV.open(...) do |csv| ... end</code> so handles always close.</li>
+<li><code>transaction_begin</code> paired with <code>transaction_rollback</code> in the rescue branch.</li>
+<li>Nil-safety (<code>&amp;.</code>, <code>next if obj.nil?</code>).</li>
+<li>Timestamped progress logging via a small <code>log</code> helper.</li>
+</ul>
+<p>For the very large per-table CSV exporters (<code>export_*_to_csv.rb</code>,
+<code>all_for_one_and_one_for_all.rb</code>, <code>hw_sw_all_table_reader.rb</code>,
+<code>ex;port_*_to_csv.rb</code>, <code>hw_parameters.rb</code>, <code>sw_parameters.rb</code>), the fix
+files are hardened wrappers that pre-validate the environment then delegate
+to the original via <code>Kernel#load</code>, preserving 100% of the original behavior
+while adding the safety wrapper.</p>
+<h2 id="fix_ex_script_icm-binary-results-exportrb">fix_EX_script_ICM Binary Results Export.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Pure-Ruby parser for the ICM binary results format (no
+  WSApplication dependency).  Provides ICMBinaryReader + helper classes and
+  a CLI for listing tables/attributes/objects and dumping results.</li>
+<li><strong>Hardening</strong>: validates input file exists, closes file via ensure block,
+  per-action rescue.</li>
+<li><strong>How to run</strong>: <code>ruby "fix_EX_script_ICM Binary Results Export.rb" file.bin T</code></li>
+</ul>
+<h2 id="fix_ie-dashboardexportrb">fix_IE-DashboardExport.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Update and export an InfoAsset Manager Dashboard to HTML.</li>
+<li><strong>Hardening</strong>: validates DB open, model object found, output dir exists.</li>
+<li><strong>How to run</strong>: <code>iexchange ... "fix_IE-DashboardExport.rb"</code> (edit DB_URL,
+  DASH_PATH, OUT_PATH constants first).</li>
+</ul>
+<h2 id="fix_ie-snapshot-bulk-importrb">fix_IE-Snapshot-Bulk-Import.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Bulk-import all .isfc/.isf snapshots in a directory into a
+  Collection Network and commit.</li>
+<li><strong>Hardening</strong>: per-file rescue, only commits on success, source dir check.</li>
+<li><strong>How to run</strong>: edit DB_URL, NETWORK_ID, SOURCE_DIR; run via Exchange.</li>
+</ul>
+<h2 id="fix_ie-befdss_exportrb">fix_IE-befdss_export.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Run <code>befdss_export</code> on a Collection Network to XML.</li>
+<li><strong>Hardening</strong>: ensures output and log directories exist.</li>
+<li><strong>How to run</strong>: edit constants; run via Exchange.</li>
+</ul>
+<h2 id="fix_ie-befdss_import_cctv-bulkimportrb">fix_IE-befdss_import_cctv-BulkImport.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Bulk-import every BEFDSS XML in SOURCE_DIR via
+  <code>befdss_import_cctv</code> with a per-file log.</li>
+<li><strong>Hardening</strong>: per-file rescue keeps the run going.</li>
+<li><strong>How to run</strong>: edit constants; run via Exchange.</li>
+</ul>
+<h2 id="fix_ie-befdss_import_cctvrb">fix_IE-befdss_import_cctv.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Import a single BEFDSS CCTV XML file.</li>
+<li><strong>Hardening</strong>: validates input file exists.</li>
+<li><strong>How to run</strong>: edit constants; run via Exchange.</li>
+</ul>
+<h2 id="fix_ie-befdss_import_manhole_surveysrb">fix_IE-befdss_import_manhole_surveys.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Import a BEFDSS manhole surveys XML file.</li>
+<li><strong>Hardening</strong>: validates input file exists.</li>
+<li><strong>How to run</strong>: edit constants; run via Exchange.</li>
+</ul>
+<h2 id="fix_ie-csv_changesrb">fix_IE-csv_changes.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Generate CSV diff between two commits of a Collection Network.</li>
+<li><strong>Hardening</strong>: ensures output dir exists.</li>
+<li><strong>How to run</strong>: edit DB_URL, NETWORK_ID, COMMIT_FROM/TO; run via Exchange.</li>
+</ul>
+<h2 id="fix_ie-snapshot_export_exrb">fix_IE-snapshot_export_ex.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Export a snapshot (.isfc) for a Collection Network.</li>
+<li><strong>Hardening</strong>: ensures output dir exists.</li>
+<li><strong>How to run</strong>: edit constants; run via Exchange.</li>
+</ul>
+<h2 id="fix_ui-csv_export-selectionrb">fix_UI-CSV_export-selection.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Build a <code>cams_cctv_survey</code> selection and export to CSV.</li>
+<li><strong>Hardening</strong>: ensures output dir exists.</li>
+<li><strong>How to run</strong>: open a network, run via UI.</li>
+</ul>
+<h2 id="fix_ui-csv_exportrb">fix_UI-CSV_export.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Export the entire current network to CSV (fixes the missing
+  comma in the original arg list).</li>
+<li><strong>Hardening</strong>: validates current_network and ensures output dir exists.</li>
+<li><strong>How to run</strong>: open a network, run via UI.</li>
+</ul>
+<h2 id="fix_ui-exportchoicelistvaluesrb">fix_UI-ExportChoiceListValues.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Export choice-list codes/descriptions for a field to CSV.</li>
+<li><strong>Hardening</strong>: nil-safety on choices/descriptions; CSV.open block.</li>
+<li><strong>How to run</strong>: open a network, run via UI.</li>
+</ul>
+<h2 id="fix_ui-exportpipearraycsvrb">fix_UI-ExportPipeArrayCSV.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Export point_array of selected <code>cams_pipe</code> rows to CSV.</li>
+<li><strong>Hardening</strong>: validates non-empty selection; CSV.open block.</li>
+<li><strong>How to run</strong>: select pipes, run via UI.</li>
+</ul>
+<h2 id="fix_ui-snapshot-bulk-import-filenamerb">fix_UI-Snapshot-Bulk-Import-Filename.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Import every <code>*survey*.isfc</code> under a directory tree.</li>
+<li><strong>Hardening</strong>: per-file rescue.</li>
+<li><strong>How to run</strong>: open a network, run via UI.</li>
+</ul>
+<h2 id="fix_ui-snapshot-bulk-importrb">fix_UI-Snapshot-Bulk-Import.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Import every <code>.isfc/.isf</code> under a directory tree.</li>
+<li><strong>Hardening</strong>: per-file rescue.</li>
+<li><strong>How to run</strong>: open a network, run via UI.</li>
+</ul>
+<h2 id="fix_ui-snapshot_export_exrb">fix_UI-snapshot_export_ex.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Export selected CCTV + manhole surveys to a chosen .isfc.</li>
+<li><strong>Hardening</strong>: validates dialog and current_network.</li>
+<li><strong>How to run</strong>: select rows, run via UI.</li>
+</ul>
+<h2 id="fix_ui-updatefromexternalcsvrb">fix_UI-UpdateFromExternalCSV.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Read a CSV next to the script, update <code>cams_manhole.user_text_2</code>
+  via a transaction.</li>
+<li><strong>Hardening</strong>: validates CSV exists; transaction with rollback.</li>
+<li><strong>How to run</strong>: place test.csv next to the script, run via UI.</li>
+</ul>
+<h2 id="fix_uiie-csv_exportrb">fix_UIIE-CSV_export.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Dual-mode CSV export (UI -&gt; current network, EX -&gt; open by ID).</li>
+<li><strong>Hardening</strong>: validates network, ensures output dir exists.</li>
+<li><strong>How to run</strong>: open a network in UI, or run via Exchange with NETWORK_ID set.</li>
+</ul>
+<h2 id="fix_ui_script_odec-export-node-and-conduit-tables-to-csv-and-mifrb">fix_UI_script_ODEC Export Node and Conduit tables to CSV and MIF.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: ODEC export of Node + Conduit to CSV and MIF using a
+  configuration mapping file.</li>
+<li><strong>Hardening</strong>: validates working dir and config file exist.</li>
+<li><strong>How to run</strong>: ensure WORK_DIR and CFG_FILE point to your setup, run via UI.</li>
+</ul>
+<h2 id="fix_ui_script_output-csv-of-calcs-based-on-subcatchment-datarb">fix_UI_script_Output CSV of calcs based on Subcatchment Data.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Aggregate selected <code>_subcatchments</code> stats by system_type and
+  write a single summary row to a chosen CSV.</li>
+<li><strong>Hardening</strong>: validates dialog choice, network; File.open block.</li>
+<li><strong>How to run</strong>: select subcatchments, run via UI, choose CSV.</li>
+</ul>
+<h2 id="fix_all_for_one_and_one_for_allrb">fix_all_for_one_and_one_for_all.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Wrapper around the generic SWMM table exporter
+  (all_for_one_and_one_for_all.rb).  Pre-validates and delegates via <code>load</code>.</li>
+<li><strong>Hardening</strong>: WSApplication / current_network checks; original existence
+  check.</li>
+<li><strong>How to run</strong>: open a network, run the fix in UI.</li>
+</ul>
+<h2 id="fix_check_fieldsrb">fix_check_fields.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Diagnostic that lists <code>.fields</code> and selected methods on the
+  first <code>sw_conduit</code> row.</li>
+<li><strong>Hardening</strong>: per-call rescue; nil-safety.</li>
+<li><strong>How to run</strong>: open a SWMM network with conduits, run via UI.</li>
+</ul>
+<h2 id="fix_export_hw_orifice_to_csvrb">fix_ex;port_hw_orifice_to_csv.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Wrapper around the hw_orifice exporter.  Note literal <code>;</code> in
+  filename.  Delegates via <code>load</code>.</li>
+<li><strong>Hardening</strong>: WSApplication and network checks.</li>
+<li><strong>How to run</strong>: open a network with orifices selected, run via UI.</li>
+</ul>
+<h2 id="fix_export_hw_weir_to_csvrb">fix_ex;port_hw_weir_to_csv.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Wrapper around the hw_weir exporter.  Note literal <code>;</code> in
+  filename.  Delegates via <code>load</code>.</li>
+<li><strong>Hardening</strong>: WSApplication and network checks.</li>
+<li><strong>How to run</strong>: select weirs, run via UI.</li>
+</ul>
+<h2 id="fix_export_hw_conduit_data_to_csvrb">fix_export_hw_conduit_data_to_csv.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Wrapper around hw_conduit CSV exporter.</li>
+<li><strong>Hardening</strong>: standard wrapper checks.</li>
+<li><strong>How to run</strong>: select conduits, run via UI.</li>
+</ul>
+<h2 id="fix_export_hw_node_data_to_csvrb">fix_export_hw_node_data_to_csv.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Wrapper around hw_node CSV exporter.</li>
+<li><strong>Hardening</strong>: standard wrapper checks.</li>
+<li><strong>How to run</strong>: select nodes, run via UI.</li>
+</ul>
+<h2 id="fix_export_hw_pump_to_csvrb">fix_export_hw_pump_to_csv.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Wrapper around hw_pump CSV exporter.</li>
+<li><strong>Hardening</strong>: standard wrapper checks.</li>
+<li><strong>How to run</strong>: select pumps, run via UI.</li>
+</ul>
+<h2 id="fix_export_hw_subcatchments_to_csvrb">fix_export_hw_subcatchments_to_csv.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Wrapper around hw_subcatchment CSV exporter.</li>
+<li><strong>Hardening</strong>: standard wrapper checks.</li>
+<li><strong>How to run</strong>: select subcatchments, run via UI.</li>
+</ul>
+<h2 id="fix_export_sw_conduit_data_to_csv-rb">fix_export_sw_conduit_data_to_csv .rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Wrapper around sw_conduit CSV exporter (note trailing space
+  in filename, preserved as required).</li>
+<li><strong>Hardening</strong>: standard wrapper checks.</li>
+<li><strong>How to run</strong>: select sw_conduit rows, run via UI.</li>
+</ul>
+<h2 id="fix_export_sw_node_data_to_csvrb">fix_export_sw_node_data_to_csv.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Wrapper around sw_node CSV exporter.</li>
+<li><strong>Hardening</strong>: standard wrapper checks.</li>
+<li><strong>How to run</strong>: select sw_node rows, run via UI.</li>
+</ul>
+<h2 id="fix_export_sw_orifice_to_csvrb">fix_export_sw_orifice_to_csv.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Wrapper around sw_orifice CSV exporter.</li>
+<li><strong>Hardening</strong>: standard wrapper checks.</li>
+<li><strong>How to run</strong>: select sw_orifice rows, run via UI.</li>
+</ul>
+<h2 id="fix_export_sw_pump_to_csvrb">fix_export_sw_pump_to_csv.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Wrapper around sw_pump CSV exporter.</li>
+<li><strong>Hardening</strong>: standard wrapper checks.</li>
+<li><strong>How to run</strong>: select sw_pump rows, run via UI.</li>
+</ul>
+<h2 id="fix_export_sw_subcatchments_to_csvrb">fix_export_sw_subcatchments_to_csv.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Wrapper around sw_subcatchment CSV exporter.</li>
+<li><strong>Hardening</strong>: standard wrapper checks.</li>
+<li><strong>How to run</strong>: select sw_subcatchment rows, run via UI.</li>
+</ul>
+<h2 id="fix_export_sw_weir_to_csvrb">fix_export_sw_weir_to_csv.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Wrapper around sw_weir CSV exporter.</li>
+<li><strong>Hardening</strong>: standard wrapper checks.</li>
+<li><strong>How to run</strong>: select sw_weir rows, run via UI.</li>
+</ul>
+<h2 id="fix_hw_ui-gis_exportrb">fix_hw_UI-GIS_export.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Export hw_node/conduit/subcatchment to SHP via GIS_export.</li>
+<li><strong>Hardening</strong>: validates folder picked and ensures it exists.</li>
+<li><strong>How to run</strong>: open InfoWorks network, run via UI, pick folder.</li>
+</ul>
+<h2 id="fix_hw_parametersrb">fix_hw_parameters.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Reference file enumerating hw_* tables.  Shim verifies
+  presence of the original.</li>
+<li><strong>Hardening</strong>: file existence and readability checks.</li>
+<li><strong>How to run</strong>: usually loaded indirectly by the all-table reader; running
+  this fix directly just confirms the file is present.</li>
+</ul>
+<h2 id="fix_hw_simulation_parametersrb">fix_hw_simulation_parameters.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Diagnostic for parameter-table access patterns.</li>
+<li><strong>Hardening</strong>: per-call rescue, nil-safety.</li>
+<li><strong>How to run</strong>: open an ICM network, run via UI.</li>
+</ul>
+<h2 id="fix_hw_sw_all_table_readerrb">fix_hw_sw_all_table_reader.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Wrapper around the combined hw/sw table reader/exporter.</li>
+<li><strong>Hardening</strong>: pre-checks parameter files; delegates via <code>load</code>.</li>
+<li><strong>How to run</strong>: open an ICM network, run via UI.</li>
+</ul>
+<h2 id="fix_sw_ui-gis_exportrb">fix_sw_UI-GIS_export.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Export sw_node/conduit/subcatchment to SHP via GIS_export.</li>
+<li><strong>Hardening</strong>: validates current_network and ensures OUT_DIR exists.</li>
+<li><strong>How to run</strong>: open an ICM SWMM network, run via UI.</li>
+</ul>
+<h2 id="fix_sw_parametersrb">fix_sw_parameters.rb</h2>
+<ul>
+<li><strong>Purpose</strong>: Reference file enumerating sw_* tables.  Shim verifies
+  presence of the original.</li>
+<li><strong>Hardening</strong>: file existence and readability checks.</li>
+<li><strong>How to run</strong>: usually loaded indirectly; running this fix directly just
+  confirms the file is present.</li>
+</ul>
+  </section>
+  <footer>
+    Auto-generated from _Fixes.md &middot; InfoWorks ICM Ruby scripts hardened with begin/rescue/ensure, input validation, block-form file I/O, progress logging.
+  </footer>
+</div>
+</body>
+</html>

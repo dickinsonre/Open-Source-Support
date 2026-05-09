@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>asset_id_to_icm_link_id.rb</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+<style>pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehl .hll { background-color: #49483e }
+.codehl { background: #272822; color: #f8f8f2 }
+.codehl .c { color: #75715e } /* Comment */
+.codehl .err { color: #960050; background-color: #1e0010 } /* Error */
+.codehl .esc { color: #f8f8f2 } /* Escape */
+.codehl .g { color: #f8f8f2 } /* Generic */
+.codehl .k { color: #66d9ef } /* Keyword */
+.codehl .l { color: #ae81ff } /* Literal */
+.codehl .n { color: #f8f8f2 } /* Name */
+.codehl .o { color: #f92672 } /* Operator */
+.codehl .x { color: #f8f8f2 } /* Other */
+.codehl .p { color: #f8f8f2 } /* Punctuation */
+.codehl .ch { color: #75715e } /* Comment.Hashbang */
+.codehl .cm { color: #75715e } /* Comment.Multiline */
+.codehl .cp { color: #75715e } /* Comment.Preproc */
+.codehl .cpf { color: #75715e } /* Comment.PreprocFile */
+.codehl .c1 { color: #75715e } /* Comment.Single */
+.codehl .cs { color: #75715e } /* Comment.Special */
+.codehl .gd { color: #f92672 } /* Generic.Deleted */
+.codehl .ge { color: #f8f8f2; font-style: italic } /* Generic.Emph */
+.codehl .gr { color: #f8f8f2 } /* Generic.Error */
+.codehl .gh { color: #f8f8f2 } /* Generic.Heading */
+.codehl .gi { color: #a6e22e } /* Generic.Inserted */
+.codehl .go { color: #66d9ef } /* Generic.Output */
+.codehl .gp { color: #f92672; font-weight: bold } /* Generic.Prompt */
+.codehl .gs { color: #f8f8f2; font-weight: bold } /* Generic.Strong */
+.codehl .gu { color: #75715e } /* Generic.Subheading */
+.codehl .gt { color: #f8f8f2 } /* Generic.Traceback */
+.codehl .kc { color: #66d9ef } /* Keyword.Constant */
+.codehl .kd { color: #66d9ef } /* Keyword.Declaration */
+.codehl .kn { color: #f92672 } /* Keyword.Namespace */
+.codehl .kp { color: #66d9ef } /* Keyword.Pseudo */
+.codehl .kr { color: #66d9ef } /* Keyword.Reserved */
+.codehl .kt { color: #66d9ef } /* Keyword.Type */
+.codehl .ld { color: #e6db74 } /* Literal.Date */
+.codehl .m { color: #ae81ff } /* Literal.Number */
+.codehl .s { color: #e6db74 } /* Literal.String */
+.codehl .na { color: #a6e22e } /* Name.Attribute */
+.codehl .nb { color: #f8f8f2 } /* Name.Builtin */
+.codehl .nc { color: #a6e22e } /* Name.Class */
+.codehl .no { color: #66d9ef } /* Name.Constant */
+.codehl .nd { color: #a6e22e } /* Name.Decorator */
+.codehl .ni { color: #f8f8f2 } /* Name.Entity */
+.codehl .ne { color: #a6e22e } /* Name.Exception */
+.codehl .nf { color: #a6e22e } /* Name.Function */
+.codehl .nl { color: #f8f8f2 } /* Name.Label */
+.codehl .nn { color: #f8f8f2 } /* Name.Namespace */
+.codehl .nx { color: #a6e22e } /* Name.Other */
+.codehl .py { color: #f8f8f2 } /* Name.Property */
+.codehl .nt { color: #f92672 } /* Name.Tag */
+.codehl .nv { color: #f8f8f2 } /* Name.Variable */
+.codehl .ow { color: #f92672 } /* Operator.Word */
+.codehl .w { color: #f8f8f2 } /* Text.Whitespace */
+.codehl .mb { color: #ae81ff } /* Literal.Number.Bin */
+.codehl .mf { color: #ae81ff } /* Literal.Number.Float */
+.codehl .mh { color: #ae81ff } /* Literal.Number.Hex */
+.codehl .mi { color: #ae81ff } /* Literal.Number.Integer */
+.codehl .mo { color: #ae81ff } /* Literal.Number.Oct */
+.codehl .sa { color: #e6db74 } /* Literal.String.Affix */
+.codehl .sb { color: #e6db74 } /* Literal.String.Backtick */
+.codehl .sc { color: #e6db74 } /* Literal.String.Char */
+.codehl .dl { color: #e6db74 } /* Literal.String.Delimiter */
+.codehl .sd { color: #e6db74 } /* Literal.String.Doc */
+.codehl .s2 { color: #e6db74 } /* Literal.String.Double */
+.codehl .se { color: #ae81ff } /* Literal.String.Escape */
+.codehl .sh { color: #e6db74 } /* Literal.String.Heredoc */
+.codehl .si { color: #e6db74 } /* Literal.String.Interpol */
+.codehl .sx { color: #e6db74 } /* Literal.String.Other */
+.codehl .sr { color: #e6db74 } /* Literal.String.Regex */
+.codehl .s1 { color: #e6db74 } /* Literal.String.Single */
+.codehl .ss { color: #e6db74 } /* Literal.String.Symbol */
+.codehl .bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
+.codehl .fm { color: #a6e22e } /* Name.Function.Magic */
+.codehl .vc { color: #f8f8f2 } /* Name.Variable.Class */
+.codehl .vg { color: #f8f8f2 } /* Name.Variable.Global */
+.codehl .vi { color: #f8f8f2 } /* Name.Variable.Instance */
+.codehl .vm { color: #f8f8f2 } /* Name.Variable.Magic */
+.codehl .il { color: #ae81ff } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0024 - Utilities</div>
+    <h1>asset_id_to_icm_link_id.rb</h1>
+    <div class="meta">Ruby script &middot; 0024 - Utilities</div>
+    <div class="badges"><span class="badge rb">Ruby</span><span class="badge fix">Hardened: <a href="fix_asset_id_to_icm_link_id.rb.html">fix_asset_id_to_icm_link_id.rb</a></span><span class="badge lines">37 lines &middot; 4,306 bytes</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h2>Source</h2><div class="codewrap"><table class="codehltable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span></pre></div></td><td class="code"><div class="codehl"><pre><span></span><code><span class="c1"># Input string containing the IDs</span>
+<span class="n">input_string</span> <span class="o">=</span> <span class="s2">&quot;Time</span><span class="se">\t</span><span class="s2">1 (mgd)</span><span class="se">\t</span><span class="s2">6 (mgd)</span><span class="se">\t</span><span class="s2">7 (mgd)</span><span class="se">\t</span><span class="s2">8 (mgd)</span><span class="se">\t</span><span class="s2">9 (mgd)</span><span class="se">\t</span><span class="s2">10 (mgd)</span><span class="se">\t</span><span class="s2">13 (mgd)</span><span class="se">\t</span><span class="s2">14 (mgd)</span><span class="se">\t</span><span class="s2">15 (mgd)</span><span class="se">\t</span><span class="s2">16 (mgd)</span><span class="se">\t</span><span class="s2">17 (mgd)</span><span class="se">\t</span><span class="s2">18 (mgd)</span><span class="se">\t</span><span class="s2">19 (mgd)</span><span class="se">\t</span><span class="s2">20 (mgd)</span><span class="se">\t</span><span class="s2">21 (mgd)</span><span class="se">\t</span><span class="s2">22 (mgd)</span><span class="se">\t</span><span class="s2">23 (mgd)</span><span class="se">\t</span><span class="s2">24 (mgd)</span><span class="se">\t</span><span class="s2">25 (mgd)</span><span class="se">\t</span><span class="s2">26 (mgd)</span><span class="se">\t</span><span class="s2">27 (mgd)</span><span class="se">\t</span><span class="s2">28 (mgd)</span><span class="se">\t</span><span class="s2">29 (mgd)</span><span class="se">\t</span><span class="s2">30 (mgd)</span><span class="se">\t</span><span class="s2">31 (mgd)</span><span class="se">\t</span><span class="s2">32 (mgd)</span><span class="se">\t</span><span class="s2">33 (mgd)</span><span class="se">\t</span><span class="s2">34 (mgd)</span><span class="se">\t</span><span class="s2">35 (mgd)</span><span class="se">\t</span><span class="s2">36 (mgd)</span><span class="se">\t</span><span class="s2">37 (mgd)</span><span class="se">\t</span><span class="s2">38 (mgd)</span><span class="se">\t</span><span class="s2">39 (mgd)</span><span class="se">\t</span><span class="s2">41 (mgd)</span><span class="se">\t</span><span class="s2">42 (mgd)</span><span class="se">\t</span><span class="s2">43 (mgd)</span><span class="se">\t</span><span class="s2">44 (mgd)</span><span class="se">\t</span><span class="s2">45 (mgd)</span><span class="se">\t</span><span class="s2">46 (mgd)</span><span class="se">\t</span><span class="s2">48 (mgd)</span><span class="se">\t</span><span class="s2">49 (mgd)</span><span class="se">\t</span><span class="s2">50 (mgd)</span><span class="se">\t</span><span class="s2">51 (mgd)</span><span class="se">\t</span><span class="s2">52 (mgd)</span><span class="se">\t</span><span class="s2">53 (mgd)</span><span class="se">\t</span><span class="s2">54 (mgd)</span><span class="se">\t</span><span class="s2">55 (mgd)</span><span class="se">\t</span><span class="s2">56 (mgd)</span><span class="se">\t</span><span class="s2">57 (mgd)</span><span class="se">\t</span><span class="s2">58 (mgd)</span><span class="se">\t</span><span class="s2">59 (mgd)</span><span class="se">\t</span><span class="s2">60 (mgd)</span><span class="se">\t</span><span class="s2">61 (mgd)</span><span class="se">\t</span><span class="s2">62 (mgd)</span><span class="se">\t</span><span class="s2">63 (mgd)</span><span class="se">\t</span><span class="s2">64 (mgd)</span><span class="se">\t</span><span class="s2">65 (mgd)</span><span class="se">\t</span><span class="s2">66 (mgd)</span><span class="se">\t</span><span class="s2">67 (mgd)</span><span class="se">\t</span><span class="s2">68 (mgd)</span><span class="se">\t</span><span class="s2">69 (mgd)</span><span class="se">\t</span><span class="s2">70 (mgd)</span><span class="se">\t</span><span class="s2">71 (mgd)</span><span class="se">\t</span><span class="s2">72 (mgd)</span><span class="se">\t</span><span class="s2">74 (mgd)</span><span class="se">\t</span><span class="s2">76 (mgd)</span><span class="se">\t</span><span class="s2">77 (mgd)</span><span class="se">\t</span><span class="s2">78 (mgd)</span><span class="se">\t</span><span class="s2">79 (mgd)</span><span class="se">\t</span><span class="s2">80 (mgd)</span><span class="se">\t</span><span class="s2">81 (mgd)</span><span class="se">\t</span><span class="s2">82 (mgd)</span><span class="se">\t</span><span class="s2">86 (mgd)</span><span class="se">\t</span><span class="s2">87 (mgd)</span><span class="se">\t</span><span class="s2">88 (mgd)</span><span class="se">\t</span><span class="s2">89 (mgd)</span><span class="se">\t</span><span class="s2">90 (mgd)</span><span class="se">\t</span><span class="s2">91 (mgd)</span><span class="se">\t</span><span class="s2">92 (mgd)</span><span class="se">\t</span><span class="s2">93 (mgd)</span><span class="se">\t</span><span class="s2">94 (mgd)</span><span class="se">\t</span><span class="s2">95 (mgd)</span><span class="se">\t</span><span class="s2">96 (mgd)</span><span class="se">\t</span><span class="s2">97 (mgd)</span><span class="se">\t</span><span class="s2">98 (mgd)</span><span class="se">\t</span><span class="s2">99 (mgd)</span><span class="se">\t</span><span class="s2">100 (mgd)</span><span class="se">\t</span><span class="s2">101 (mgd)</span><span class="se">\t</span><span class="s2">102 (mgd)</span><span class="se">\t</span><span class="s2">103 (mgd)</span><span class="se">\t</span><span class="s2">105 (mgd)</span><span class="se">\t</span><span class="s2">106 (mgd)</span><span class="se">\t</span><span class="s2">107 (mgd)</span><span class="se">\t</span><span class="s2">110 (mgd)</span><span class="se">\t</span><span class="s2">111 (mgd)</span><span class="se">\t</span><span class="s2">112 (mgd)</span><span class="se">\t</span><span class="s2">113 (mgd)</span><span class="se">\t</span><span class="s2">121 (mgd)</span><span class="se">\t</span><span class="s2">123 (mgd)</span><span class="se">\t</span><span class="s2">124 (mgd)</span><span class="se">\t</span><span class="s2">126 (mgd)</span><span class="se">\t</span><span class="s2">128 (mgd)</span><span class="se">\t</span><span class="s2">133 (mgd)</span><span class="se">\t</span><span class="s2">134 (mgd)</span><span class="se">\t</span><span class="s2">135 (mgd)</span><span class="se">\t</span><span class="s2">136 (mgd)</span><span class="se">\t</span><span class="s2">137 (mgd)</span><span class="se">\t</span><span class="s2">138 (mgd)</span><span class="se">\t</span><span class="s2">139 (mgd)</span><span class="se">\t</span><span class="s2">140 (mgd)</span><span class="se">\t</span><span class="s2">141 (mgd)</span><span class="se">\t</span><span class="s2">142 (mgd)</span><span class="se">\t</span><span class="s2">143 (mgd)</span><span class="se">\t</span><span class="s2">144 (mgd)</span><span class="se">\t</span><span class="s2">145 (mgd)</span><span class="se">\t</span><span class="s2">146 (mgd)</span><span class="se">\t</span><span class="s2">147 (mgd)</span><span class="se">\t</span><span class="s2">148 (mgd)</span><span class="se">\t</span><span class="s2">149 (mgd)</span><span class="se">\t</span><span class="s2">150 (mgd)</span><span class="se">\t</span><span class="s2">151 (mgd)</span><span class="se">\t</span><span class="s2">152 (mgd)</span><span class="se">\t</span><span class="s2">153 (mgd)</span><span class="se">\t</span><span class="s2">154 (mgd)</span><span class="se">\t</span><span class="s2">155 (mgd)</span><span class="se">\t</span><span class="s2">159 (mgd)</span><span class="se">\t</span><span class="s2">160 (mgd)</span><span class="se">\t</span><span class="s2">163 (mgd)</span><span class="se">\t</span><span class="s2">165 (mgd)</span><span class="se">\t</span><span class="s2">166 (mgd)</span><span class="se">\t</span><span class="s2">169 (mgd)</span><span class="se">\t</span><span class="s2">170 (mgd)</span><span class="se">\t</span><span class="s2">171 (mgd)</span><span class="se">\t</span><span class="s2">172 (mgd)</span><span class="se">\t</span><span class="s2">173 (mgd)</span><span class="se">\t</span><span class="s2">174 (mgd)</span><span class="se">\t</span><span class="s2">175 (mgd)</span><span class="se">\t</span><span class="s2">176 (mgd)</span><span class="se">\t</span><span class="s2">177 (mgd)</span><span class="se">\t</span><span class="s2">178 (mgd)</span><span class="se">\t</span><span class="s2">179 (mgd)</span><span class="se">\t</span><span class="s2">180 (mgd)</span><span class="se">\t</span><span class="s2">181 (mgd)</span><span class="se">\t</span><span class="s2">182 (mgd)</span><span class="se">\t</span><span class="s2">183 (mgd)</span><span class="se">\t</span><span class="s2">184 (mgd)</span><span class="se">\t</span><span class="s2">185 (mgd)</span><span class="se">\t</span><span class="s2">186 (mgd)</span><span class="se">\t</span><span class="s2">187 (mgd)</span><span class="se">\t</span><span class="s2">188 (mgd)</span><span class="se">\t</span><span class="s2">189 (mgd)</span><span class="se">\t</span><span class="s2">190 (mgd)</span><span class="se">\t</span><span class="s2">191 (mgd)</span><span class="se">\t</span><span class="s2">194 (mgd)</span><span class="se">\t</span><span class="s2">195 (mgd)</span><span class="se">\t</span><span class="s2">196 (mgd)</span><span class="se">\t</span><span class="s2">197 (mgd)</span><span class="se">\t</span><span class="s2">198 (mgd)</span><span class="se">\t</span><span class="s2">199 (mgd)</span><span class="se">\t</span><span class="s2">200 (mgd)</span><span class="se">\t</span><span class="s2">201 (mgd)</span><span class="se">\t</span><span class="s2">202 (mgd)</span><span class="se">\t</span><span class="s2">203 (mgd)</span><span class="se">\t</span><span class="s2">204 (mgd)</span><span class="se">\t</span><span class="s2">205 (mgd)</span><span class="se">\t</span><span class="s2">206 (mgd)</span><span class="se">\t</span><span class="s2">207 (mgd)</span><span class="se">\t</span><span class="s2">208 (mgd)</span><span class="se">\t</span><span class="s2">209 (mgd)</span><span class="se">\t</span><span class="s2">210 (mgd)</span><span class="se">\t</span><span class="s2">211 (mgd)</span><span class="se">\t</span><span class="s2">212 (mgd)</span><span class="se">\t</span><span class="s2">213 (mgd)</span><span class="se">\t</span><span class="s2">214 (mgd)</span><span class="se">\t</span><span class="s2">215 (mgd)</span><span class="se">\t</span><span class="s2">216 (mgd)</span><span class="se">\t</span><span class="s2">217 (mgd)</span><span class="se">\t</span><span class="s2">218 (mgd)</span><span class="se">\t</span><span class="s2">219 (mgd)</span><span class="se">\t</span><span class="s2">220 (mgd)</span><span class="se">\t</span><span class="s2">221 (mgd)</span><span class="se">\t</span><span class="s2">222 (mgd)</span><span class="se">\t</span><span class="s2">223 (mgd)</span><span class="se">\t</span><span class="s2">224 (mgd)</span><span class="se">\t</span><span class="s2">225 (mgd)</span><span class="se">\t</span><span class="s2">226 (mgd)</span><span class="se">\t</span><span class="s2">227 (mgd)</span><span class="se">\t</span><span class="s2">229 (mgd)</span><span class="se">\t</span><span class="s2">230 (mgd)</span><span class="se">\t</span><span class="s2">231 (mgd)</span><span class="se">\t</span><span class="s2">232 (mgd)</span><span class="se">\t</span><span class="s2">233 (mgd)</span><span class="se">\t</span><span class="s2">234 (mgd)</span><span class="se">\t</span><span class="s2">235 (mgd)</span><span class="se">\t</span><span class="s2">236 (mgd)</span><span class="se">\t</span><span class="s2">237 (mgd)</span><span class="se">\t</span><span class="s2">238 (mgd)</span><span class="se">\t</span><span class="s2">239 (mgd)</span><span class="se">\t</span><span class="s2">240 (mgd)</span><span class="se">\t</span><span class="s2">241 (mgd)</span><span class="se">\t</span><span class="s2">242 (mgd)</span><span class="se">\t</span><span class="s2">243 (mgd)</span><span class="se">\t</span><span class="s2">244 (mgd)</span><span class="se">\t</span><span class="s2">245 (mgd)</span><span class="se">\t</span><span class="s2">246 (mgd)</span><span class="se">\t</span><span class="s2">247 (mgd)</span><span class="se">\t</span><span class="s2">248 (mgd)</span><span class="se">\t</span><span class="s2">249 (mgd)</span><span class="se">\t</span><span class="s2">250 (mgd)</span><span class="se">\t</span><span class="s2">251 (mgd)</span><span class="se">\t</span><span class="s2">252 (mgd)</span><span class="se">\t</span><span class="s2">253 (mgd)</span><span class="se">\t</span><span class="s2">259 (mgd)</span><span class="se">\t</span><span class="s2">260 (mgd)</span><span class="se">\t</span><span class="s2">261 (mgd)</span><span class="se">\t</span><span class="s2">262 (mgd)</span><span class="se">\t</span><span class="s2">263 (mgd)</span><span class="se">\t</span><span class="s2">264 (mgd)</span><span class="se">\t</span><span class="s2">265 (mgd)</span><span class="se">\t</span><span class="s2">266 (mgd)</span><span class="se">\t</span><span class="s2">267 (mgd)</span><span class="se">\t</span><span class="s2">268 (mgd)</span><span class="se">\t</span><span class="s2">269 (mgd)</span><span class="se">\t</span><span class="s2">270 (mgd)</span><span class="se">\t</span><span class="s2">271 (mgd)</span><span class="se">\t</span><span class="s2">272 (mgd)</span><span class="se">\t</span><span class="s2">273 (mgd)</span><span class="se">\t</span><span class="s2">274 (mgd)</span><span class="se">\t</span><span class="s2">275 (mgd)</span><span class="se">\t</span><span class="s2">276 (mgd)</span><span class="se">\t</span><span class="s2">278 (mgd)</span><span class="se">\t</span><span class="s2">283 (mgd)</span><span class="se">\t</span><span class="s2">284 (mgd)</span><span class="se">\t</span><span class="s2">285 (mgd)</span><span class="se">\t</span><span class="s2">286 (mgd)</span><span class="se">\t</span><span class="s2">287 (mgd)</span><span class="se">\t</span><span class="s2">288 (mgd)</span><span class="se">\t</span><span class="s2">289 (mgd)</span><span class="se">\t</span><span class="s2">290 (mgd)</span><span class="se">\t</span><span class="s2">291 (mgd)</span><span class="se">\t</span><span class="s2">292 (mgd)</span><span class="se">\t</span><span class="s2">293 (mgd)</span><span class="se">\t</span><span class="s2">294 (mgd)</span><span class="se">\t</span><span class="s2">295 (mgd)</span><span class="se">\t</span><span class="s2">296 (mgd)</span><span class="se">\t</span><span class="s2">297 (mgd)</span><span class="se">\t</span><span class="s2">298 (mgd)</span><span class="se">\t</span><span class="s2">299 (mgd)</span><span class="se">\t</span><span class="s2">300 (mgd)</span><span class="se">\t</span><span class="s2">301 (mgd)</span><span class="se">\t</span><span class="s2">302 (mgd)</span><span class="se">\t</span><span class="s2">303 (mgd)</span><span class="se">\t</span><span class="s2">304 (mgd)</span><span class="se">\t</span><span class="s2">305 (mgd)</span><span class="se">\t</span><span class="s2">306 (mgd)</span><span class="se">\t</span><span class="s2">307 (mgd)</span><span class="se">\t</span><span class="s2">308 (mgd)</span><span class="se">\t</span><span class="s2">309 (mgd)</span><span class="se">\t</span><span class="s2">310 (mgd)</span><span class="se">\t</span><span class="s2">311 (mgd)</span><span class="se">\t</span><span class="s2">315 (mgd)</span><span class="se">\t</span><span class="s2">316 (mgd)</span><span class="se">\t</span><span class="s2">317 (mgd)</span><span class="se">\t</span><span class="s2">321 (mgd)</span><span class="se">\t</span><span class="s2">322 (mgd)</span><span class="se">\t</span><span class="s2">323 (mgd)</span><span class="se">\t</span><span class="s2">324 (mgd)</span><span class="se">\t</span><span class="s2">325 (mgd)</span><span class="se">\t</span><span class="s2">326 (mgd)</span><span class="se">\t</span><span class="s2">327 (mgd)</span><span class="se">\t</span><span class="s2">328 (mgd)</span><span class="se">\t</span><span class="s2">329 (mgd)</span><span class="se">\t</span><span class="s2">330 (mgd)</span><span class="se">\t</span><span class="s2">331 (mgd)</span><span class="se">\t</span><span class="s2">332 (mgd)</span><span class="se">\t</span><span class="s2">333 (mgd)</span><span class="se">\t</span><span class="s2">334 (mgd)</span><span class="se">\t</span><span class="s2">335 (mgd)</span><span class="se">\t</span><span class="s2">336 (mgd)</span><span class="se">\t</span><span class="s2">337 (mgd)</span><span class="se">\t</span><span class="s2">338 (mgd)</span><span class="se">\t</span><span class="s2">339 (mgd)</span><span class="se">\t</span><span class="s2">340 (mgd)</span><span class="se">\t</span><span class="s2">341 (mgd)</span><span class="se">\t</span><span class="s2">342 (mgd)</span><span class="se">\t</span><span class="s2">343 (mgd)</span><span class="se">\t</span><span class="s2">344 (mgd)</span><span class="se">\t</span><span class="s2">345 (mgd)</span><span class="se">\t</span><span class="s2">346 (mgd)</span><span class="se">\t</span><span class="s2">347 (mgd)</span><span class="se">\t</span><span class="s2">351 (mgd)</span><span class="se">\t</span><span class="s2">352 (mgd)</span><span class="se">\t</span><span class="s2">353 (mgd)</span><span class="se">\t</span><span class="s2">354 (mgd)</span><span class="se">\t</span><span class="s2">355 (mgd)</span><span class="se">\t</span><span class="s2">356 (mgd)</span><span class="se">\t</span><span class="s2">357 (mgd)</span><span class="se">\t</span><span class="s2">358 (mgd)</span><span class="se">\t</span><span class="s2">359 (mgd)</span><span class="se">\t</span><span class="s2">360 (mgd)</span><span class="se">\t</span><span class="s2">361 (mgd)</span><span class="se">\t</span><span class="s2">362 (mgd)</span><span class="se">\t</span><span class="s2">363 (mgd)</span><span class="se">\t</span><span class="s2">364 (mgd)</span><span class="se">\t</span><span class="s2">365 (mgd)</span><span class="se">\t</span><span class="s2">366 (mgd)</span><span class="se">\t</span><span class="s2">367 (mgd)</span><span class="se">\t</span><span class="s2">368 (mgd)</span><span class="se">\t</span><span class="s2">369 (mgd)</span><span class="se">\t</span><span class="s2">372 (mgd)</span><span class="se">\t</span><span class="s2">373 (mgd)</span><span class="se">\t</span><span class="s2">375 (mgd)</span><span class="se">\t</span><span class="s2">376 (mgd)</span><span class="se">\t</span><span class="s2">377 (mgd)</span><span class="se">\t</span><span class="s2">382 (mgd)&quot;</span>
+
+<span class="c1"># Split the input string by tabs to get individual IDs</span>
+<span class="n">ids</span> <span class="o">=</span> <span class="n">input_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Remove the first element (&quot;Time&quot;) as it is not an ID</span>
+<span class="n">ids</span><span class="o">.</span><span class="n">shift</span>
+
+<span class="c1"># Initialize an array to store the new IDs</span>
+<span class="n">new_ids</span> <span class="o">=</span> <span class="o">[]</span>
+
+<span class="c1"># Process each ID to remove the units and convert to the new format</span>
+<span class="n">ids</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="nb">id</span><span class="o">|</span>
+  <span class="c1"># Remove the units (e.g., &quot; (mgd)&quot;)</span>
+  <span class="n">id_without_units</span> <span class="o">=</span> <span class="nb">id</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/\s*\(mgd\)/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+  <span class="n">cn</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">current_network</span>
+
+  <span class="n">cn</span><span class="o">.</span><span class="n">row_object_collection</span><span class="p">(</span><span class="s1">&#39;hw_conduit&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">conduit</span><span class="o">|</span>
+    <span class="n">us_node</span> <span class="o">=</span> <span class="n">conduit</span><span class="o">.</span><span class="n">us_node_id</span>
+    <span class="n">asset_id</span> <span class="o">=</span> <span class="n">conduit</span><span class="o">.</span><span class="n">asset_id</span>
+    <span class="n">suffix</span> <span class="o">=</span> <span class="n">conduit</span><span class="o">.</span><span class="n">link_suffix</span>
+
+    <span class="c1"># Check if id_without_units matches asset_id</span>
+    <span class="k">if</span> <span class="n">id_without_units</span> <span class="o">==</span> <span class="n">asset_id</span>
+      <span class="c1"># Convert to the new format (US node + suffix)</span>
+      <span class="n">new_id</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">us_node</span><span class="si">}</span><span class="s2">.</span><span class="si">#{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+      <span class="n">new_ids</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">new_id</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># Print each new ID on a new line</span>
+<span class="n">new_ids</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">new_id</span><span class="o">|</span>
+  <span class="nb">puts</span> <span class="n">new_id</span>
+<span class="k">end</span>
+</code></pre></div>
+</td></tr></table></div></section>
+  <footer>Auto-generated &middot; Original file unmodified</footer>
+</div>
+</body>
+</html>

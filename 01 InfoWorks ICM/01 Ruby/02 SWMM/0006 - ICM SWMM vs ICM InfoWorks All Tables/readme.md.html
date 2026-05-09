@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>readme.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0006 - ICM SWMM vs ICM InfoWorks All Tables</div>
+    <h1>readme.md</h1>
+    <div class="meta">Markdown document &middot; 0006 - ICM SWMM vs ICM InfoWorks All Tables</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">90 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><p>markdown</p>
+<h1 id="folder-structure">Folder Structure</h1>
+<h2 id="open-source-support">OPEN-SOURCE-SUPPORT</h2>
+<ul>
+<li><strong>01 InfoWorks ICM</strong></li>
+<li><strong>01 Ruby</strong></li>
+<li><strong>01 InfoWorks</strong></li>
+<li><strong>02 SWMM</strong><ul>
+<li><strong>0001 - Element and Field Statistics</strong></li>
+<li><em>(Content omitted for brevity)</em></li>
+<li><strong>0002 - Tracing Tools</strong></li>
+<li><em>(Content omitted for brevity)</em></li>
+<li><strong>0003 - Scenario Tools</strong></li>
+<li><em>(Content omitted for brevity)</em></li>
+<li><strong>0004 - Scenario Sensitivity - InfoWorks</strong></li>
+<li><em>(Content omitted for brevity)</em></li>
+<li><strong>0005 - Import Export of Data Tables</strong></li>
+<li><em>(Content omitted for brevity)</em></li>
+<li><strong>0006 - ICM SWMM vs ICM InfoWorks All Tables</strong></li>
+<li><code>compare_icm_swmm_icm_files.rb</code></li>
+<li><code>EX Run Parameters.rb</code></li>
+<li><code>ICM InfoWorks All Table Names.rb</code></li>
+<li><code>ICM SWMM All Tables.rb</code></li>
+<li><code>ICM SWMM Network Overview.rb</code></li>
+<li><code>readme.md</code></li>
+<li><code>Sensor_Comparison.rb</code></li>
+<li><code>sw_hw_UI_Set_Script_CN_BN.rb</code></li>
+<li><code>sw_UI_Get_script_CN_BN.rb</code></li>
+<li><code>sw_UI_Script_additional_dwf_nodes_icm_swmm.rb</code></li>
+<li><code>sw_UI_Script_Calculate statistics for baseline data.rb</code></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="description">Description</h3>
+<p>This section focuses on the <strong>0006 - ICM SWMM vs ICM InfoWorks All Tables</strong> directory under the <code>02 SWMM</code> folder, which contains Ruby scripts for comparing and analyzing data between ICM SWMM and ICM InfoWorks:</p>
+<ul>
+<li><strong>File Comparison:</strong> <code>compare_icm_swmm_icm_files.rb</code> is designed to compare files between ICM SWMM and ICM InfoWorks.</li>
+<li><strong>Run Parameters:</strong> <code>EX Run Parameters.rb</code> likely deals with setting or extracting run parameters for simulations or analyses.</li>
+<li><strong>Table Names:</strong> <code>ICM InfoWorks All Table Names.rb</code> retrieves or lists all table names within ICM InfoWorks.</li>
+<li><strong>All Tables:</strong> <code>ICM SWMM All Tables.rb</code> provides functionality to work with all tables in ICM SWMM.</li>
+<li><strong>Network Overview:</strong> <code>ICM SWMM Network Overview.rb</code> offers an overview of the network in ICM SWMM, useful for understanding the structure or connectivity.</li>
+<li><strong>Sensor Comparison:</strong> <code>Sensor_Comparison.rb</code> might compare sensor data or configurations between different models or scenarios.</li>
+<li><strong>Script Setting:</strong> <code>sw_hw_UI_Set_Script_CN_BN.rb</code> and <code>sw_UI_Get_script_CN_BN.rb</code> are scripts for setting and getting certain script parameters or data (possibly related to Curve Numbers or Building Numbers).</li>
+<li><strong>Dry Weather Flow Nodes:</strong> <code>sw_UI_Script_additional_dwf_nodes_icm_swmm.rb</code> handles additional dry weather flow nodes in ICM SWMM.</li>
+<li><strong>Baseline Data Statistics:</strong> <code>sw_UI_Script_Calculate statistics for baseline data.rb</code> calculates statistics for baseline data, providing a base for comparison or analysis.</li>
+</ul>
+<h3 id="usage">Usage</h3>
+<p>To use the scripts within the <code>0006 - ICM SWMM vs ICM InfoWorks All Tables</code> directory:</p>
+<ol>
+<li><strong>Environment Setup:</strong> Ensure Ruby is installed on your system.</li>
+<li><strong>Navigation:</strong> Navigate to the <code>0006 - ICM SWMM vs ICM InfoWorks All Tables</code> subdirectory under <code>02 SWMM</code>.</li>
+<li><strong>Execution:</strong> Run the Ruby scripts from the command line or integrate them into your workflow for comparing or analyzing data between ICM SWMM and ICM InfoWorks.</li>
+</ol>
+<p>For example, to compare files:
+```sh
+ruby compare_icm_swmm_icm_files.rb</p>
+<p>Note
+Always check for permissions before running scripts that might access or modify files.
+Backup your data before executing scripts that could alter or process data extensively.
+The readme.md file within this directory might contain specific instructions, notes, or prerequisites for running these comparison scripts.</p>
+<p>This README now focuses exclusively on the <code>0006 - ICM SWMM vs ICM InfoWorks All Tables</code> folder, detailing its contents and usage. </p>
+<h2 id="5-database-field-tools-for-elements-and-resultsflow-surveyrb">5. Database Field Tools for Elements and Results/Flow Survey.rb</h2>
+<p>This script traces upstream nodes and links from selected flow monitors and saves the selection list in the specified group.</p>
+<h3 id="key-features">Key Features:</h3>
+<ul>
+<li>Traces upstream nodes and links from selected flow monitors.</li>
+<li>Saves the selection list in the specified group.</li>
+<li>Includes a prompt for user input to specify the group ID and type (Model group or Master group).</li>
+</ul>
+<h3 id="example-usage">Example Usage:</h3>
+<p>Flow Monitor Input Dialog Box
+This tool traces upstream nodes and links from selected flow monitors and saves the selection list in the specified group. ID of Master Group or Model Group where selection list will be saved: [User Input] Above ID is of Master Group/ Model Group?: [User Input]</p>
+<p>Note
+Always check for permissions before running scripts that might access or modify files.
+Backup your data before executing scripts that could alter or process data extensively.
+The readme.md file within this directory might contain specific instructions, notes, or prerequisites for running these comparison scripts.
+This README now focuses exclusively on the 0006 - ICM SWMM vs ICM InfoWorks All Tables folder, detailing its contents and usage.</p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

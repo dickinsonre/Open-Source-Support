@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>pudgy penguin subs.md</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0021 - Change the Geometry or Rename IDs</div>
+    <h1>pudgy penguin subs.md</h1>
+    <div class="meta">Markdown document &middot; 0021 - Change the Geometry or Rename IDs</div>
+    <div class="badges"><span class="badge md">Markdown</span><span class="badge lines">150 lines</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h1 id="comprehensive-file-analysis-pudgy-penguin-subsrb">📋 Comprehensive File Analysis: pudgy penguin subs.rb</h1>
+<p><strong>🕒 Generated on</strong>: 9/27/2025, 11:27:22 AM<br>
+<strong>📄 File type</strong>: ruby (Ruby script)<br>
+<strong>📏 Size</strong>: 9314 characters, 281 lines<br>
+<strong>🔗 Path</strong>: pudgy penguin subs.rb</p>
+<hr>
+<h2 id="executive-summary">📊 Executive Summary</h2>
+<p>This ruby file is complex in nature with 281 lines of code. It demonstrates standard programming practices and follows space-based indentation conventions.</p>
+<hr>
+<h2 id="code-metrics-statistics">📈 Code Metrics &amp; Statistics</h2>
+<h3 id="line-breakdown">📝 Line Breakdown</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Count</th>
+<th>Percentage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Total Lines</strong></td>
+<td>281</td>
+<td>100%</td>
+</tr>
+<tr>
+<td><strong>Code Lines</strong></td>
+<td>241</td>
+<td>86%</td>
+</tr>
+<tr>
+<td><strong>Comment Lines</strong></td>
+<td>0</td>
+<td>0%</td>
+</tr>
+<tr>
+<td><strong>Blank Lines</strong></td>
+<td>40</td>
+<td>14%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="complexity-metrics">🧮 Complexity Metrics</h3>
+<ul>
+<li><strong>Functions/Methods</strong>: 5</li>
+<li><strong>Classes/Interfaces</strong>: 0</li>
+<li><strong>Conditional Statements</strong>: 6</li>
+<li><strong>Loops</strong>: 4</li>
+<li><strong>Average Line Length</strong>: 32 characters</li>
+<li><strong>Max Line Length</strong>: 128 characters</li>
+</ul>
+<h3 id="documentation-quality">📚 Documentation Quality</h3>
+<ul>
+<li><strong>Comment Ratio</strong>: 0% (0/241)</li>
+<li><strong>Documentation Level</strong>: Needs Improvement (&lt;10%)</li>
+</ul>
+<hr>
+<h2 id="detailed-code-analysis">🔍 Detailed Code Analysis</h2>
+<h3 id="architecture-structure">🏗️ Architecture &amp; Structure</h3>
+<p>Type-driven development with strong interfaces</p>
+<h3 id="functions-methods">🔧 Functions &amp; Methods</h3>
+<p>5 functions detected - moderate modularization</p>
+<h3 id="classes-types">🏛️ Classes &amp; Types</h3>
+<p>No classes detected - functional or procedural approach</p>
+<h3 id="dependencies-imports">📦 Dependencies &amp; Imports</h3>
+<p>Found 0 external dependencies and 0 internal imports. Minimal external dependencies.</p>
+<p><strong>External Dependencies:</strong>
+- No external dependencies found</p>
+<p><strong>Internal Imports:</strong>
+- No internal imports found</p>
+<hr>
+<h2 id="security-quality-analysis">🔒 Security &amp; Quality Analysis</h2>
+<h3 id="security-considerations">🛡️ Security Considerations</h3>
+<p>✅ No obvious security issues detected</p>
+<h3 id="code-quality-insights">📋 Code Quality Insights</h3>
+<ul>
+<li><strong>Naming Convention</strong>: PascalCase/CamelCase convention detected</li>
+<li><strong>Code Complexity</strong>: Low - Simple and readable</li>
+<li><strong>Maintainability</strong>: Needs Improvement - Add documentation and structure</li>
+</ul>
+<hr>
+<h2 id="purpose-functionality">🎯 Purpose &amp; Functionality</h2>
+<p>Based on comprehensive analysis, this file serves the following purposes:</p>
+<ul>
+<li>Ruby script for web development or automation</li>
+<li>Rails application component</li>
+<li>System scripting or data processing</li>
+</ul>
+<h3 id="key-features-identified">🔑 Key Features Identified:</h3>
+<ul>
+<li>Features could not be automatically identified</li>
+</ul>
+<hr>
+<h2 id="complete-source-code">💻 Complete Source Code</h2>
+<pre><code class="language-ruby"># --- Universal Polygon Geometry and ID Changer ---
+# This script modifies the boundary and ID of any selected subcatchment.
+# It automatically detects the network type (SW or HW).
+#
+# It can reshape selected subcatchments into:
+#  - A RECTANGLE that fits the original shape's extents.
+#  - A regular POLYGON (triangle, pentagon, circle, etc.).
+#  - A pre-defined CUSTOM shape (default is a penguin).
+
+# --- USER CONFIGURATION ---
+
+# 1. SHAPE AND ID SETTINGS:
+#    - NEW_BASE_ID: The prefix for renaming selected subcatchments. A number will be appended (e.g., &quot;Penguin_1&quot;, &quot;Penguin_2&quot;).
+#    - SHAPE_TYPE:  'RECTANGLE', 'POLYGON', or 'CUSTOM'.
+NEW_BASE_ID = 'Penguin'
+SHAPE_TYPE = 'CUSTOM'
+
+# 2. POLYGON SETTINGS (only if SHAPE_TYPE is 'POLYGON'):
+#    - For a triangle: 3, pentagon: 5, circle: 50, etc.
+NUMBER_OF_SIDES = 6
+
+# 3. CUSTOM SHAPE SETTINGS (only if SHAPE_TYPE is 'CUSTOM'):
+#    - PRESERVE_AREA: If true, scales the shape to match the original subcatchment area
+#    - SCALE: Base scale for the shape (used if PRESERVE_AREA is false)
+#    - CUSTOM_SHAPE_POINTS: An array of [x, y] coordinates defining the shape.
+#      - The origin [0,0] is the shape's center.
+#      - For symmetrical shapes, you can define one half and the script will mirror it.
+#        To do this, start and end the points list on the centerline (x=0).
+PRESERVE_AREA = true
+SCALE = 15.0
+CUSTOM_SHAPE_POINTS = [
+  # Detailed cute penguin shape (right half only - will be mirrored)
+
+...
+[Content truncated for brevity]
+</code></pre>
+<hr>
+<h2 id="recommendations">🚀 Recommendations</h2>
+<h3 id="potential-improvements">📈 Potential Improvements:</h3>
+<p>📝 Add more inline documentation and comments
+📏 Some lines are too long - consider breaking them up</p>
+<h3 id="refactoring-opportunities">🔧 Refactoring Opportunities:</h3>
+<p>No immediate refactoring needs identified</p>
+<hr>
+<h2 id="technical-notes">📝 Technical Notes</h2>
+<ul>
+<li><strong>Encoding</strong>: UTF-8</li>
+<li><strong>Line Endings</strong>: CRLF (Windows)</li>
+<li><strong>Estimated Reading Time</strong>: 6 minutes</li>
+<li><strong>File Hash</strong>: 7857e50f</li>
+</ul>
+<hr>
+<p><em>📊 Generated by GitHub File Summarizer - Advanced Analysis Engine</em><br>
+<em>🤖 This analysis was generated automatically and may not capture all nuances of the code</em></p></section>
+  <footer>Auto-generated from markdown source</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>export_sw_weir_to_csv.rb</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+<style>pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehl .hll { background-color: #49483e }
+.codehl { background: #272822; color: #f8f8f2 }
+.codehl .c { color: #75715e } /* Comment */
+.codehl .err { color: #960050; background-color: #1e0010 } /* Error */
+.codehl .esc { color: #f8f8f2 } /* Escape */
+.codehl .g { color: #f8f8f2 } /* Generic */
+.codehl .k { color: #66d9ef } /* Keyword */
+.codehl .l { color: #ae81ff } /* Literal */
+.codehl .n { color: #f8f8f2 } /* Name */
+.codehl .o { color: #f92672 } /* Operator */
+.codehl .x { color: #f8f8f2 } /* Other */
+.codehl .p { color: #f8f8f2 } /* Punctuation */
+.codehl .ch { color: #75715e } /* Comment.Hashbang */
+.codehl .cm { color: #75715e } /* Comment.Multiline */
+.codehl .cp { color: #75715e } /* Comment.Preproc */
+.codehl .cpf { color: #75715e } /* Comment.PreprocFile */
+.codehl .c1 { color: #75715e } /* Comment.Single */
+.codehl .cs { color: #75715e } /* Comment.Special */
+.codehl .gd { color: #f92672 } /* Generic.Deleted */
+.codehl .ge { color: #f8f8f2; font-style: italic } /* Generic.Emph */
+.codehl .gr { color: #f8f8f2 } /* Generic.Error */
+.codehl .gh { color: #f8f8f2 } /* Generic.Heading */
+.codehl .gi { color: #a6e22e } /* Generic.Inserted */
+.codehl .go { color: #66d9ef } /* Generic.Output */
+.codehl .gp { color: #f92672; font-weight: bold } /* Generic.Prompt */
+.codehl .gs { color: #f8f8f2; font-weight: bold } /* Generic.Strong */
+.codehl .gu { color: #75715e } /* Generic.Subheading */
+.codehl .gt { color: #f8f8f2 } /* Generic.Traceback */
+.codehl .kc { color: #66d9ef } /* Keyword.Constant */
+.codehl .kd { color: #66d9ef } /* Keyword.Declaration */
+.codehl .kn { color: #f92672 } /* Keyword.Namespace */
+.codehl .kp { color: #66d9ef } /* Keyword.Pseudo */
+.codehl .kr { color: #66d9ef } /* Keyword.Reserved */
+.codehl .kt { color: #66d9ef } /* Keyword.Type */
+.codehl .ld { color: #e6db74 } /* Literal.Date */
+.codehl .m { color: #ae81ff } /* Literal.Number */
+.codehl .s { color: #e6db74 } /* Literal.String */
+.codehl .na { color: #a6e22e } /* Name.Attribute */
+.codehl .nb { color: #f8f8f2 } /* Name.Builtin */
+.codehl .nc { color: #a6e22e } /* Name.Class */
+.codehl .no { color: #66d9ef } /* Name.Constant */
+.codehl .nd { color: #a6e22e } /* Name.Decorator */
+.codehl .ni { color: #f8f8f2 } /* Name.Entity */
+.codehl .ne { color: #a6e22e } /* Name.Exception */
+.codehl .nf { color: #a6e22e } /* Name.Function */
+.codehl .nl { color: #f8f8f2 } /* Name.Label */
+.codehl .nn { color: #f8f8f2 } /* Name.Namespace */
+.codehl .nx { color: #a6e22e } /* Name.Other */
+.codehl .py { color: #f8f8f2 } /* Name.Property */
+.codehl .nt { color: #f92672 } /* Name.Tag */
+.codehl .nv { color: #f8f8f2 } /* Name.Variable */
+.codehl .ow { color: #f92672 } /* Operator.Word */
+.codehl .w { color: #f8f8f2 } /* Text.Whitespace */
+.codehl .mb { color: #ae81ff } /* Literal.Number.Bin */
+.codehl .mf { color: #ae81ff } /* Literal.Number.Float */
+.codehl .mh { color: #ae81ff } /* Literal.Number.Hex */
+.codehl .mi { color: #ae81ff } /* Literal.Number.Integer */
+.codehl .mo { color: #ae81ff } /* Literal.Number.Oct */
+.codehl .sa { color: #e6db74 } /* Literal.String.Affix */
+.codehl .sb { color: #e6db74 } /* Literal.String.Backtick */
+.codehl .sc { color: #e6db74 } /* Literal.String.Char */
+.codehl .dl { color: #e6db74 } /* Literal.String.Delimiter */
+.codehl .sd { color: #e6db74 } /* Literal.String.Doc */
+.codehl .s2 { color: #e6db74 } /* Literal.String.Double */
+.codehl .se { color: #ae81ff } /* Literal.String.Escape */
+.codehl .sh { color: #e6db74 } /* Literal.String.Heredoc */
+.codehl .si { color: #e6db74 } /* Literal.String.Interpol */
+.codehl .sx { color: #e6db74 } /* Literal.String.Other */
+.codehl .sr { color: #e6db74 } /* Literal.String.Regex */
+.codehl .s1 { color: #e6db74 } /* Literal.String.Single */
+.codehl .ss { color: #e6db74 } /* Literal.String.Symbol */
+.codehl .bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
+.codehl .fm { color: #a6e22e } /* Name.Function.Magic */
+.codehl .vc { color: #f8f8f2 } /* Name.Variable.Class */
+.codehl .vg { color: #f8f8f2 } /* Name.Variable.Global */
+.codehl .vi { color: #f8f8f2 } /* Name.Variable.Instance */
+.codehl .vm { color: #f8f8f2 } /* Name.Variable.Magic */
+.codehl .il { color: #ae81ff } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0005 - Import Export of Data Tables</div>
+    <h1>export_sw_weir_to_csv.rb</h1>
+    <div class="meta">Ruby script &middot; 0005 - Import Export of Data Tables</div>
+    <div class="badges"><span class="badge rb">Ruby</span><span class="badge fix">Hardened: <a href="fix_export_sw_weir_to_csv.rb.html">fix_export_sw_weir_to_csv.rb</a></span><span class="badge lines">379 lines &middot; 17,166 bytes</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h2>Source</h2><div class="codewrap"><table class="codehltable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
+<span class="normal">  2</span>
+<span class="normal">  3</span>
+<span class="normal">  4</span>
+<span class="normal">  5</span>
+<span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
+<span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span></pre></div></td><td class="code"><div class="codehl"><pre><span></span><code><span class="nb">require</span> <span class="s1">&#39;csv&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;fileutils&#39;</span>
+
+<span class="c1"># --- Configuration: Define SWMM Weir Fields (from sw_parameters.rb) ---</span>
+<span class="c1"># IMPORTANT: The symbols MUST match the actual method names available on &#39;sw_weir&#39; objects.</span>
+<span class="c1"># UNCOMMENT AND RUN THE DEBUGGING BLOCK BELOW to verify these names if needed.</span>
+<span class="no">FIELDS_TO_EXPORT</span> <span class="o">=</span> <span class="o">[</span>
+  <span class="c1"># Core Weir Identifiers</span>
+  <span class="o">[</span><span class="s1">&#39;Include Weir ID&#39;</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span> <span class="kp">true</span><span class="p">,</span> <span class="s1">&#39;Weir_ID&#39;</span><span class="o">]</span><span class="p">,</span> <span class="c1"># SWMM Weir ID</span>
+  <span class="o">[</span><span class="s1">&#39;Include US Node ID&#39;</span><span class="p">,</span> <span class="ss">:us_node_id</span><span class="p">,</span> <span class="kp">true</span><span class="p">,</span> <span class="s1">&#39;US_Node&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include DS Node ID&#39;</span><span class="p">,</span> <span class="ss">:ds_node_id</span><span class="p">,</span> <span class="kp">true</span><span class="p">,</span> <span class="s1">&#39;DS_Node&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="c1"># Note: SWMM weirs typically don&#39;t have a &#39;link_suffix&#39; like ICM links.</span>
+
+  <span class="c1"># Weir Characteristics &amp; Operation</span>
+  <span class="o">[</span><span class="s1">&#39;Include Link Type&#39;</span><span class="p">,</span> <span class="ss">:link_type</span><span class="p">,</span> <span class="kp">true</span><span class="p">,</span> <span class="s1">&#39;LinkType&#39;</span><span class="o">]</span><span class="p">,</span> <span class="c1"># e.g., TRANSVERSE, SIDEFLOW, V-NOTCH, TRAPEZOIDAL, ROADWAY</span>
+  <span class="o">[</span><span class="s1">&#39;Include Crest Level&#39;</span><span class="p">,</span> <span class="ss">:crest</span><span class="p">,</span> <span class="kp">true</span><span class="p">,</span> <span class="s1">&#39;CrestElev&#39;</span><span class="o">]</span><span class="p">,</span> <span class="c1"># Crest_ht in SWMM5 .inp</span>
+  <span class="o">[</span><span class="s1">&#39;Include Weir Height&#39;</span><span class="p">,</span> <span class="ss">:weir_height</span><span class="p">,</span> <span class="kp">true</span><span class="p">,</span> <span class="s1">&#39;WeirHeight&#39;</span><span class="o">]</span><span class="p">,</span> <span class="c1"># Geom1 for SWMM5 (Height for TRANSVERSE/SIDEFLOW, V-NOTCH; Depth for ROADWAY)</span>
+  <span class="o">[</span><span class="s1">&#39;Include Weir Width&#39;</span><span class="p">,</span> <span class="ss">:weir_width</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;WeirWidth&#39;</span><span class="o">]</span><span class="p">,</span>   <span class="c1"># Geom2 for SWMM5 (Width for TRANSVERSE/SIDEFLOW; Top Width for TRAPEZOIDAL; Surface Width for ROADWAY)</span>
+  <span class="o">[</span><span class="s1">&#39;Include Left Slope (Trapezoidal/Roadway)&#39;</span><span class="p">,</span> <span class="ss">:left_slope</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;LeftSlope&#39;</span><span class="o">]</span><span class="p">,</span> <span class="c1"># Geom3 for SWMM5</span>
+  <span class="o">[</span><span class="s1">&#39;Include Right Slope (Trapezoidal)&#39;</span><span class="p">,</span> <span class="ss">:right_slope</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;RightSlope&#39;</span><span class="o">]</span><span class="p">,</span><span class="c1"># Geom4 for SWMM5</span>
+  <span class="o">[</span><span class="s1">&#39;Include Variable Discharge Coeff&#39;</span><span class="p">,</span> <span class="ss">:var_dis_coeff</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;VarDischCf&#39;</span><span class="o">]</span><span class="p">,</span> <span class="c1"># YES/NO or 1/0, for using weir curve for Cd</span>
+  <span class="o">[</span><span class="s1">&#39;Include Discharge Coefficient&#39;</span><span class="p">,</span> <span class="ss">:discharge_coeff</span><span class="p">,</span> <span class="kp">true</span><span class="p">,</span> <span class="s1">&#39;DischCoeff&#39;</span><span class="o">]</span><span class="p">,</span> <span class="c1"># Cd</span>
+  <span class="o">[</span><span class="s1">&#39;Include Sideflow Discharge Coeff&#39;</span><span class="p">,</span> <span class="ss">:sideflow_discharge_coeff</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;SideFlwCf&#39;</span><span class="o">]</span><span class="p">,</span> <span class="c1"># Cd_side for SIDEFLOW weirs</span>
+  <span class="o">[</span><span class="s1">&#39;Include Weir Curve ID&#39;</span><span class="p">,</span> <span class="ss">:weir_curve</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;WeirCrvID&#39;</span><span class="o">]</span><span class="p">,</span> <span class="c1"># Name of weir curve if var_dis_coeff is YES</span>
+  <span class="o">[</span><span class="s1">&#39;Include Flap Gate Present&#39;</span><span class="p">,</span> <span class="ss">:flap_gate</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;FlapGate&#39;</span><span class="o">]</span><span class="p">,</span> <span class="c1"># YES/NO</span>
+  <span class="o">[</span><span class="s1">&#39;Include End Contractions&#39;</span><span class="p">,</span> <span class="ss">:end_contractions</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;EndContrct&#39;</span><span class="o">]</span><span class="p">,</span> <span class="c1"># Number of end contractions</span>
+  <span class="o">[</span><span class="s1">&#39;Include Secondary Discharge Coeff (Drowned)&#39;</span><span class="p">,</span> <span class="ss">:secondary_discharge_coeff</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;SecDischCf&#39;</span><span class="o">]</span><span class="p">,</span> <span class="c1"># Cd_surch for surcharge algorithm</span>
+  <span class="o">[</span><span class="s1">&#39;Include Allows Surcharge&#39;</span><span class="p">,</span> <span class="ss">:allows_surcharge</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;AllowSurch&#39;</span><span class="o">]</span><span class="p">,</span> <span class="c1"># YES/NO for surcharge algorithm</span>
+  
+  <span class="c1"># Roadway Weir Specific (if applicable and distinct from general width/height)</span>
+  <span class="c1"># [&#39;Include Roadway Width&#39;, :width, false, &#39;RoadWidth&#39;], # Often covered by weir_width for ROADWAY type</span>
+  <span class="c1"># [&#39;Include Roadway Surface Type&#39;, :surface, false, &#39;RoadSurf&#39;], # PAVED/GRAVEL</span>
+
+  <span class="c1"># Geometry &amp; Network Info</span>
+  <span class="o">[</span><span class="s1">&#39;Include Point Array (Vertices)&#39;</span><span class="p">,</span> <span class="ss">:point_array</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;VerticesXY&#39;</span><span class="o">]</span><span class="p">,</span> <span class="c1"># X1,Y1;X2,Y2;...</span>
+  <span class="o">[</span><span class="s1">&#39;Include Branch ID&#39;</span><span class="p">,</span> <span class="ss">:branch_id</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;BranchID&#39;</span><span class="o">]</span><span class="p">,</span> <span class="c1"># If applicable</span>
+
+  <span class="c1"># User Data and Notes</span>
+  <span class="o">[</span><span class="s1">&#39;Include Notes&#39;</span><span class="p">,</span> <span class="ss">:notes</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;Notes&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include Hyperlinks&#39;</span><span class="p">,</span> <span class="ss">:hyperlinks</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;Hyperlinks&#39;</span><span class="o">]</span><span class="p">,</span> <span class="c1"># Desc1,URL1;Desc2,URL2;...</span>
+  <span class="o">[</span><span class="s1">&#39;Include User Number 1&#39;</span><span class="p">,</span> <span class="ss">:user_number_1</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;UserNum1&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include User Number 2&#39;</span><span class="p">,</span> <span class="ss">:user_number_2</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;UserNum2&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include User Number 3&#39;</span><span class="p">,</span> <span class="ss">:user_number_3</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;UserNum3&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include User Number 4&#39;</span><span class="p">,</span> <span class="ss">:user_number_4</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;UserNum4&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include User Number 5&#39;</span><span class="p">,</span> <span class="ss">:user_number_5</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;UserNum5&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include User Number 6&#39;</span><span class="p">,</span> <span class="ss">:user_number_6</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;UserNum6&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include User Number 7&#39;</span><span class="p">,</span> <span class="ss">:user_number_7</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;UserNum7&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include User Number 8&#39;</span><span class="p">,</span> <span class="ss">:user_number_8</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;UserNum8&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include User Number 9&#39;</span><span class="p">,</span> <span class="ss">:user_number_9</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;UserNum9&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include User Number 10&#39;</span><span class="p">,</span> <span class="ss">:user_number_10</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;UserNum10&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include User Text 1&#39;</span><span class="p">,</span> <span class="ss">:user_text_1</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;UserTxt1&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include User Text 2&#39;</span><span class="p">,</span> <span class="ss">:user_text_2</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;UserTxt2&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include User Text 3&#39;</span><span class="p">,</span> <span class="ss">:user_text_3</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;UserTxt3&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include User Text 4&#39;</span><span class="p">,</span> <span class="ss">:user_text_4</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;UserTxt4&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include User Text 5&#39;</span><span class="p">,</span> <span class="ss">:user_text_5</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;UserTxt5&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include User Text 6&#39;</span><span class="p">,</span> <span class="ss">:user_text_6</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;UserTxt6&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include User Text 7&#39;</span><span class="p">,</span> <span class="ss">:user_text_7</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;UserTxt7&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include User Text 8&#39;</span><span class="p">,</span> <span class="ss">:user_text_8</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;UserTxt8&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include User Text 9&#39;</span><span class="p">,</span> <span class="ss">:user_text_9</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;UserTxt9&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Include User Text 10&#39;</span><span class="p">,</span> <span class="ss">:user_text_10</span><span class="p">,</span> <span class="kp">false</span><span class="p">,</span> <span class="s1">&#39;UserTxt10&#39;</span><span class="o">]</span>
+<span class="o">].</span><span class="n">freeze</span>
+
+<span class="c1"># --- Helper Functions for Statistics ---</span>
+<span class="k">def</span> <span class="nf">calculate_mean</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+  <span class="k">return</span> <span class="kp">nil</span> <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">nil?</span> <span class="o">||</span> <span class="n">arr</span><span class="o">.</span><span class="n">empty?</span>
+  <span class="n">arr</span><span class="o">.</span><span class="n">sum</span><span class="o">.</span><span class="n">to_f</span> <span class="o">/</span> <span class="n">arr</span><span class="o">.</span><span class="n">length</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">calculate_std_dev</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">mean</span><span class="p">)</span>
+  <span class="k">return</span> <span class="kp">nil</span> <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">nil?</span> <span class="o">||</span> <span class="n">arr</span><span class="o">.</span><span class="n">empty?</span> <span class="o">||</span> <span class="n">mean</span><span class="o">.</span><span class="n">nil?</span> <span class="o">||</span> <span class="n">arr</span><span class="o">.</span><span class="n">length</span> <span class="o">&lt;</span> <span class="mi">2</span>
+  <span class="n">sum_sq_diff</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">}</span><span class="o">.</span><span class="n">sum</span>
+  <span class="no">Math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sum_sq_diff</span> <span class="o">/</span> <span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+<span class="k">end</span>
+
+<span class="c1"># --- Main Script Logic ---</span>
+
+<span class="k">begin</span>
+  <span class="c1"># Get the current network</span>
+  <span class="n">cn</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">current_network</span>
+  <span class="k">raise</span> <span class="s2">&quot;No network loaded. Please open a network before running the script.&quot;</span> <span class="k">if</span> <span class="n">cn</span><span class="o">.</span><span class="n">nil?</span>
+<span class="k">rescue</span> <span class="no">NameError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+  <span class="nb">puts</span> <span class="s2">&quot;ERROR: WSApplication not found. Are you running this script within the application environment (e.g., InfoSWMM, InfoWorks ICM)?&quot;</span>
+  <span class="nb">puts</span> <span class="s2">&quot;Details: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nb">exit</span>
+<span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+  <span class="nb">puts</span> <span class="s2">&quot;ERROR: Could not get current network.&quot;</span>
+  <span class="nb">puts</span> <span class="s2">&quot;Details: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">class</span><span class="si">}</span><span class="s2"> - </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nb">exit</span>
+<span class="k">end</span>
+
+<span class="c1"># --- Optional Debugging Block ---</span>
+<span class="c1"># weir_example = cn.row_objects(&#39;sw_weir&#39;).first</span>
+<span class="c1"># if weir_example</span>
+<span class="c1">#   puts &quot;--- DEBUG: Available methods for the first &#39;sw_weir&#39; object ---&quot;</span>
+<span class="c1">#   puts weir_example.methods.sort.inspect</span>
+<span class="c1">#   if weir_example.respond_to?(:fields)</span>
+<span class="c1">#      puts &quot;\n--- DEBUG: Output of &#39;.fields&#39; method for the first &#39;sw_weir&#39; object ---&quot;</span>
+<span class="c1">#      puts weir_example.fields.inspect</span>
+<span class="c1">#   end</span>
+<span class="c1">#   puts &quot;--- END DEBUG ---&quot;</span>
+<span class="c1">#   # exit</span>
+<span class="c1"># else</span>
+<span class="c1">#   puts &quot;DEBUG: No &#39;sw_weir&#39; objects found in the network to inspect.&quot;</span>
+<span class="c1"># end</span>
+<span class="c1"># --- End Optional Debugging Block ---</span>
+
+<span class="n">prompt_options</span> <span class="o">=</span> <span class="o">[</span>
+  <span class="o">[</span><span class="s1">&#39;Folder for Exported File&#39;</span><span class="p">,</span> <span class="s1">&#39;String&#39;</span><span class="p">,</span> <span class="kp">nil</span><span class="p">,</span> <span class="kp">nil</span><span class="p">,</span> <span class="s1">&#39;FOLDER&#39;</span><span class="p">,</span> <span class="s1">&#39;Export Folder&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;SELECT/DESELECT ALL FIELDS&#39;</span><span class="p">,</span> <span class="s1">&#39;Boolean&#39;</span><span class="p">,</span> <span class="kp">false</span><span class="o">]</span><span class="p">,</span>
+  <span class="o">[</span><span class="s1">&#39;Calculate Statistics for Numeric Fields&#39;</span><span class="p">,</span> <span class="s1">&#39;Boolean&#39;</span><span class="p">,</span> <span class="kp">false</span><span class="o">]</span> <span class="c1"># New option for statistics</span>
+<span class="o">]</span>
+<span class="no">FIELDS_TO_EXPORT</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">field_config</span><span class="o">|</span>
+  <span class="k">if</span> <span class="n">field_config</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="nb">Array</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">field_config</span><span class="o">.</span><span class="n">length</span> <span class="o">&gt;=</span> <span class="mi">3</span> <span class="o">&amp;&amp;</span> <span class="n">field_config</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="n">is_a?</span><span class="p">(</span><span class="nb">String</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">field_config</span><span class="o">[</span><span class="mi">2</span><span class="o">].</span><span class="n">is_a?</span><span class="p">(</span><span class="no">TrueClass</span><span class="p">)</span> <span class="o">||</span> <span class="n">field_config</span><span class="o">[</span><span class="mi">2</span><span class="o">].</span><span class="n">is_a?</span><span class="p">(</span><span class="no">FalseClass</span><span class="p">))</span>
+    <span class="n">prompt_options</span> <span class="o">&lt;&lt;</span> <span class="o">[</span><span class="n">field_config</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">,</span> <span class="s1">&#39;Boolean&#39;</span><span class="p">,</span> <span class="n">field_config</span><span class="o">[</span><span class="mi">2</span><span class="o">]]</span>
+  <span class="k">else</span>
+    <span class="nb">puts</span> <span class="s2">&quot;Warning: Skipping invalid entry in FIELDS_TO_EXPORT when building prompt: </span><span class="si">#{</span><span class="n">field_config</span><span class="o">.</span><span class="n">inspect</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">options</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">prompt</span><span class="p">(</span><span class="s2">&quot;Select options for CSV export of SELECTED SWMM Weir Objects&quot;</span><span class="p">,</span> <span class="n">prompt_options</span><span class="p">,</span> <span class="kp">false</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">nil?</span>
+  <span class="nb">puts</span> <span class="s2">&quot;User cancelled the operation. Exiting.&quot;</span>
+  <span class="nb">exit</span>
+<span class="k">end</span>
+
+<span class="nb">puts</span> <span class="s2">&quot;Starting script for SWMM Weir export at </span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="n">start_time</span> <span class="o">=</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span>
+
+<span class="n">export_folder</span> <span class="o">=</span> <span class="n">options</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+<span class="n">select_all_state</span> <span class="o">=</span> <span class="n">options</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span>
+<span class="n">calculate_stats</span> <span class="o">=</span> <span class="n">options</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span> <span class="c1"># Get the state of the new checkbox</span>
+
+<span class="k">unless</span> <span class="n">export_folder</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">export_folder</span><span class="o">.</span><span class="n">empty?</span>
+  <span class="nb">puts</span> <span class="s2">&quot;ERROR: Export folder not specified. Exiting.&quot;</span>
+  <span class="nb">exit</span>
+<span class="k">end</span>
+
+<span class="k">begin</span>
+  <span class="no">Dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">export_folder</span><span class="p">)</span> <span class="k">unless</span> <span class="no">Dir</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">export_folder</span><span class="p">)</span>
+<span class="k">rescue</span> <span class="no">Errno</span><span class="o">::</span><span class="no">EACCES</span> <span class="o">=&gt;</span> <span class="n">e</span>
+  <span class="nb">puts</span> <span class="s2">&quot;ERROR: Permission denied creating directory &#39;</span><span class="si">#{</span><span class="n">export_folder</span><span class="si">}</span><span class="s2">&#39;. Check permissions. - </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nb">exit</span>
+<span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+  <span class="nb">puts</span> <span class="s2">&quot;ERROR: Could not create directory &#39;</span><span class="si">#{</span><span class="n">export_folder</span><span class="si">}</span><span class="s2">&#39;. - </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nb">exit</span>
+<span class="k">end</span>
+<span class="n">timestamp</span> <span class="o">=</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m%d_%H%M%S&#39;</span><span class="p">)</span>
+<span class="n">file_path</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">export_folder</span><span class="p">,</span> <span class="s2">&quot;selected_swmm_weirs_export_</span><span class="si">#{</span><span class="n">timestamp</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">)</span>
+
+<span class="n">selected_fields_config</span> <span class="o">=</span> <span class="o">[]</span>
+<span class="n">header</span> <span class="o">=</span> <span class="o">[]</span>
+<span class="c1"># Adjust index for reading field selection options due to the new &quot;Calculate Statistics&quot; option</span>
+<span class="n">field_option_start_index</span> <span class="o">=</span> <span class="mi">3</span> 
+<span class="no">FIELDS_TO_EXPORT</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">field_config</span><span class="p">,</span> <span class="n">index</span><span class="o">|</span>
+  <span class="k">unless</span> <span class="n">field_config</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="nb">Array</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">field_config</span><span class="o">.</span><span class="n">length</span> <span class="o">&gt;=</span> <span class="mi">4</span>
+    <span class="nb">puts</span> <span class="s2">&quot;Warning: Skipping invalid field_config during header/selection setup: </span><span class="si">#{</span><span class="n">field_config</span><span class="o">.</span><span class="n">inspect</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">next</span>
+  <span class="k">end</span>
+  <span class="n">individual_field_selected</span> <span class="o">=</span> <span class="n">options</span><span class="o">[</span><span class="n">index</span> <span class="o">+</span> <span class="n">field_option_start_index</span><span class="o">]</span>
+  <span class="k">if</span> <span class="n">select_all_state</span> <span class="o">||</span> <span class="n">individual_field_selected</span>
+    <span class="n">selected_fields_config</span> <span class="o">&lt;&lt;</span> <span class="p">{</span> <span class="ss">attribute</span><span class="p">:</span> <span class="n">field_config</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">,</span> <span class="ss">header</span><span class="p">:</span> <span class="n">field_config</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span><span class="p">,</span> <span class="ss">original_label</span><span class="p">:</span> <span class="n">field_config</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="p">}</span>
+    <span class="n">header</span> <span class="o">&lt;&lt;</span> <span class="n">field_config</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">if</span> <span class="n">selected_fields_config</span><span class="o">.</span><span class="n">empty?</span>
+  <span class="nb">puts</span> <span class="s2">&quot;No fields selected for export. Exiting.&quot;</span>
+  <span class="nb">exit</span>
+<span class="k">end</span>
+
+<span class="n">weirs_iterated_count</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">weirs_written_count</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">numeric_data_for_stats</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># To store numeric data for statistics calculation</span>
+
+<span class="k">begin</span>
+  <span class="no">CSV</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">csv</span><span class="o">|</span>
+    <span class="nb">puts</span> <span class="s2">&quot;Writing header to </span><span class="si">#{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">header</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">csv</span> <span class="o">&lt;&lt;</span> <span class="n">header</span>
+
+    <span class="nb">puts</span> <span class="s2">&quot;Processing SWMM Weir objects... (Checking selection status for each)&quot;</span>
+    
+    <span class="n">row_objects_iterator</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">row_objects</span><span class="p">(</span><span class="s1">&#39;sw_weir&#39;</span><span class="p">)</span> <span class="c1"># Target &#39;sw_weir&#39;</span>
+    <span class="k">raise</span> <span class="s2">&quot;Failed to retrieve &#39;sw_weir&#39; objects.&quot;</span> <span class="k">if</span> <span class="n">row_objects_iterator</span><span class="o">.</span><span class="n">nil?</span>
+
+    <span class="n">row_objects_iterator</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">weir_obj</span><span class="o">|</span>
+      <span class="n">weirs_iterated_count</span> <span class="o">+=</span> <span class="mi">1</span>
+      <span class="n">current_weir_id_for_log</span> <span class="o">=</span> <span class="s2">&quot;UNKNOWN_WEIR_ITER_</span><span class="si">#{</span><span class="n">weirs_iterated_count</span><span class="si">}</span><span class="s2">&quot;</span>
+      <span class="k">if</span> <span class="n">weir_obj</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:id</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">weir_obj</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">current_weir_id_for_log</span> <span class="o">=</span> <span class="n">weir_obj</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">to_s</span>
+      <span class="k">end</span>
+
+      <span class="k">if</span> <span class="n">weir_obj</span> <span class="o">&amp;&amp;</span> <span class="n">weir_obj</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:selected</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">weir_obj</span><span class="o">.</span><span class="n">selected</span>
+        <span class="n">weirs_written_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">row_data</span> <span class="o">=</span> <span class="o">[]</span>
+        
+        <span class="n">selected_fields_config</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">field_info</span><span class="o">|</span>
+          <span class="n">attr_sym</span> <span class="o">=</span> <span class="n">field_info</span><span class="o">[</span><span class="ss">:attribute</span><span class="o">]</span>
+          <span class="n">value_for_csv</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+          <span class="n">value_for_stats</span> <span class="o">=</span> <span class="kp">nil</span>
+          <span class="k">begin</span>
+            <span class="n">raw_value</span> <span class="o">=</span> <span class="n">weir_obj</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">attr_sym</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">raw_value</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="nb">Array</span><span class="p">)</span>
+              <span class="k">case</span> <span class="n">attr_sym</span>
+              <span class="k">when</span> <span class="ss">:point_array</span>
+                <span class="n">value_for_csv</span> <span class="o">=</span> <span class="n">raw_value</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">pt</span><span class="o">|</span>
+                  <span class="n">x_val</span> <span class="o">=</span> <span class="s1">&#39;N/A&#39;</span><span class="p">;</span> <span class="n">y_val</span> <span class="o">=</span> <span class="s1">&#39;N/A&#39;</span>
+                  <span class="k">if</span> <span class="n">pt</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Hash</span><span class="p">)</span>
+                    <span class="n">x_val</span> <span class="o">=</span> <span class="n">pt</span><span class="o">[</span><span class="ss">:x</span><span class="o">]</span> <span class="o">||</span> <span class="n">pt</span><span class="o">[</span><span class="s1">&#39;x&#39;</span><span class="o">]</span><span class="p">;</span> <span class="n">y_val</span> <span class="o">=</span> <span class="n">pt</span><span class="o">[</span><span class="ss">:y</span><span class="o">]</span> <span class="o">||</span> <span class="n">pt</span><span class="o">[</span><span class="s1">&#39;y&#39;</span><span class="o">]</span>
+                  <span class="k">elsif</span> <span class="n">pt</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="nb">Array</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">pt</span><span class="o">.</span><span class="n">length</span> <span class="o">&gt;=</span> <span class="mi">2</span>
+                    <span class="n">x_val</span> <span class="o">=</span> <span class="n">pt</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">;</span> <span class="n">y_val</span> <span class="o">=</span> <span class="n">pt</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span>
+                  <span class="k">elsif</span> <span class="n">pt</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:x</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">pt</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:y</span><span class="p">)</span>
+                     <span class="n">x_val</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">x</span><span class="p">;</span> <span class="n">y_val</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">y</span>
+                  <span class="k">end</span>
+                  <span class="s2">&quot;</span><span class="si">#{</span><span class="n">x_val</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/[;,]/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">,</span><span class="si">#{</span><span class="n">y_val</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/[;,]/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">}</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+              <span class="k">when</span> <span class="ss">:hyperlinks</span>
+                <span class="n">value_for_csv</span> <span class="o">=</span> <span class="n">raw_value</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">hl</span><span class="o">|</span>
+                  <span class="n">desc</span> <span class="o">=</span> <span class="n">hl</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Hash</span><span class="p">)</span> <span class="p">?</span> <span class="p">(</span><span class="n">hl</span><span class="o">[</span><span class="ss">:description</span><span class="o">]</span> <span class="o">||</span> <span class="n">hl</span><span class="o">[</span><span class="s1">&#39;description&#39;</span><span class="o">]</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="n">hl</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:description</span><span class="p">)</span> <span class="p">?</span> <span class="n">hl</span><span class="o">.</span><span class="n">description</span> <span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                  <span class="n">url</span> <span class="o">=</span> <span class="n">hl</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Hash</span><span class="p">)</span> <span class="p">?</span> <span class="p">(</span><span class="n">hl</span><span class="o">[</span><span class="ss">:url</span><span class="o">]</span> <span class="o">||</span> <span class="n">hl</span><span class="o">[</span><span class="s1">&#39;url&#39;</span><span class="o">]</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="n">hl</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:url</span><span class="p">)</span> <span class="p">?</span> <span class="n">hl</span><span class="o">.</span><span class="n">url</span> <span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                  <span class="s2">&quot;</span><span class="si">#{</span><span class="n">desc</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/[;,]/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">,</span><span class="si">#{</span><span class="n">url</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/[;,]/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">}</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+              <span class="k">else</span>
+                <span class="n">value_for_csv</span> <span class="o">=</span> <span class="n">raw_value</span><span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">item</span><span class="o">|</span> <span class="n">item</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/[;,]/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)}</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span>
+              <span class="k">end</span>
+            <span class="k">else</span>
+              <span class="n">value_for_csv</span> <span class="o">=</span> <span class="p">(</span><span class="n">raw_value</span><span class="o">.</span><span class="n">nil?</span> <span class="p">?</span> <span class="s2">&quot;&quot;</span> <span class="p">:</span> <span class="n">raw_value</span><span class="p">)</span>
+              <span class="c1"># Attempt to convert to float for statistics</span>
+              <span class="k">if</span> <span class="n">calculate_stats</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">raw_value</span><span class="o">.</span><span class="n">nil?</span> <span class="o">&amp;&amp;</span> <span class="n">raw_value</span><span class="o">.</span><span class="n">to_s</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">begin</span>
+                  <span class="k">if</span> <span class="n">raw_value</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">TrueClass</span><span class="p">)</span> <span class="c1"># Handle boolean true as 1</span>
+                    <span class="n">value_for_stats</span> <span class="o">=</span> <span class="mi">1</span><span class="o">.</span><span class="mi">0</span>
+                  <span class="k">elsif</span> <span class="n">raw_value</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">FalseClass</span><span class="p">)</span> <span class="c1"># Handle boolean false as 0</span>
+                    <span class="n">value_for_stats</span> <span class="o">=</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span>
+                  <span class="k">else</span>
+                    <span class="n">value_for_stats</span> <span class="o">=</span> <span class="nb">Float</span><span class="p">(</span><span class="n">raw_value</span><span class="p">)</span>
+                  <span class="k">end</span>
+                <span class="k">rescue</span> <span class="no">ArgumentError</span><span class="p">,</span> <span class="no">TypeError</span>
+                  <span class="c1"># Not a number, do nothing for stats for this value</span>
+                <span class="k">end</span>
+              <span class="k">end</span>
+            <span class="k">end</span>
+            <span class="n">row_data</span> <span class="o">&lt;&lt;</span> <span class="n">value_for_csv</span>
+
+            <span class="c1"># Store numeric value for stats</span>
+            <span class="k">if</span> <span class="n">calculate_stats</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">value_for_stats</span><span class="o">.</span><span class="n">nil?</span>
+              <span class="n">numeric_data_for_stats</span><span class="o">[</span><span class="n">attr_sym</span><span class="o">]</span> <span class="o">||=</span> <span class="o">[]</span>
+              <span class="n">numeric_data_for_stats</span><span class="o">[</span><span class="n">attr_sym</span><span class="o">]</span> <span class="o">&lt;&lt;</span> <span class="n">value_for_stats</span>
+            <span class="k">end</span>
+
+          <span class="k">rescue</span> <span class="no">NoMethodError</span>
+            <span class="nb">puts</span> <span class="s2">&quot;Warning: Attribute (method) &#39;:</span><span class="si">#{</span><span class="n">attr_sym</span><span class="si">}</span><span class="s2">&#39; (for field &#39;</span><span class="si">#{</span><span class="n">field_info</span><span class="o">[</span><span class="ss">:original_label</span><span class="o">]</span><span class="si">}</span><span class="s2">&#39;) not found for SWMM Weir &#39;</span><span class="si">#{</span><span class="n">current_weir_id_for_log</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+            <span class="n">row_data</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;AttributeMissing&quot;</span>
+          <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+            <span class="nb">puts</span> <span class="s2">&quot;Error: Accessing attribute &#39;:</span><span class="si">#{</span><span class="n">attr_sym</span><span class="si">}</span><span class="s2">&#39; (for field &#39;</span><span class="si">#{</span><span class="n">field_info</span><span class="o">[</span><span class="ss">:original_label</span><span class="o">]</span><span class="si">}</span><span class="s2">&#39;) for SWMM Weir &#39;</span><span class="si">#{</span><span class="n">current_weir_id_for_log</span><span class="si">}</span><span class="s2">&#39; failed: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">class</span><span class="si">}</span><span class="s2"> - </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">row_data</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;AccessError&quot;</span>
+          <span class="k">end</span>
+        <span class="k">end</span>
+        <span class="n">csv</span> <span class="o">&lt;&lt;</span> <span class="n">row_data</span>
+      <span class="k">end</span> <span class="c1"># if weir_obj selected</span>
+    <span class="k">end</span> <span class="c1"># cn.row_objects.each</span>
+  <span class="k">end</span> <span class="c1"># CSV.open block</span>
+
+  <span class="nb">puts</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Processing Summary (SWMM Weirs) ---&quot;</span>
+  <span class="nb">puts</span> <span class="s2">&quot;Total SWMM Weir objects iterated in network: </span><span class="si">#{</span><span class="n">weirs_iterated_count</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">if</span> <span class="n">weirs_written_count</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="nb">puts</span> <span class="s2">&quot;Successfully wrote </span><span class="si">#{</span><span class="n">weirs_written_count</span><span class="si">}</span><span class="s2"> selected SWMM Weir objects to </span><span class="si">#{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">else</span>
+    <span class="nb">puts</span> <span class="s2">&quot;No SWMM Weir objects were selected or matched criteria for export.&quot;</span>
+    <span class="k">if</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+      <span class="n">header_line_content_size</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">empty?</span> <span class="p">?</span> <span class="mi">0</span> <span class="p">:</span> <span class="no">CSV</span><span class="o">.</span><span class="n">generate_line</span><span class="p">(</span><span class="n">header</span><span class="p">)</span><span class="o">.</span><span class="n">bytesize</span>
+      <span class="n">newline_size</span> <span class="o">=</span> <span class="p">(</span><span class="no">RUBY_PLATFORM</span> <span class="o">=~</span> <span class="sr">/mswin|mingw|cygwin/</span> <span class="p">?</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">1</span><span class="p">)</span>
+      <span class="n">header_only_file_size</span> <span class="o">=</span> <span class="n">header_line_content_size</span> <span class="o">+</span> <span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">empty?</span> <span class="p">?</span> <span class="mi">0</span> <span class="p">:</span> <span class="n">newline_size</span><span class="p">)</span>
+
+      <span class="k">if</span> <span class="no">File</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">header_only_file_size</span>
+        <span class="n">line_count_in_file</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">begin</span><span class="p">;</span> <span class="n">line_count_in_file</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">foreach</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">;</span> <span class="k">rescue</span><span class="p">;</span> <span class="k">end</span>
+        <span class="k">if</span> <span class="n">line_count_in_file</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">empty?</span> <span class="p">?</span> <span class="mi">0</span> <span class="p">:</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="nb">puts</span> <span class="s2">&quot;Deleting CSV file as it&#39;s empty or contains only the header: </span><span class="si">#{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="no">File</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="c1"># Calculate and print statistics if requested</span>
+  <span class="k">if</span> <span class="n">calculate_stats</span> <span class="o">&amp;&amp;</span> <span class="n">weirs_written_count</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Statistics for Exported Numeric Fields (SWMM Weirs) ---&quot;</span>
+    <span class="n">param_col_width</span> <span class="o">=</span> <span class="mi">30</span>
+    <span class="n">count_col_width</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">min_col_width</span> <span class="o">=</span> <span class="mi">12</span>
+    <span class="n">max_col_width</span> <span class="o">=</span> <span class="mi">12</span>
+    <span class="n">mean_col_width</span> <span class="o">=</span> <span class="mi">15</span>
+    <span class="n">std_dev_col_width</span> <span class="o">=</span> <span class="mi">15</span>
+    <span class="n">total_width</span> <span class="o">=</span> <span class="n">param_col_width</span> <span class="o">+</span> <span class="n">count_col_width</span> <span class="o">+</span> <span class="n">min_col_width</span> <span class="o">+</span> <span class="n">max_col_width</span> <span class="o">+</span> <span class="n">mean_col_width</span> <span class="o">+</span> <span class="n">std_dev_col_width</span> <span class="o">+</span> <span class="p">(</span><span class="mi">6</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span> <span class="c1"># 6 columns, 7 separators</span>
+
+    <span class="nb">puts</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="n">total_width</span>
+    <span class="nb">puts</span> <span class="s2">&quot;| %-</span><span class="si">#{</span><span class="n">param_col_width</span><span class="si">}</span><span class="s2">s | %-</span><span class="si">#{</span><span class="n">count_col_width</span><span class="si">}</span><span class="s2">s | %-</span><span class="si">#{</span><span class="n">min_col_width</span><span class="si">}</span><span class="s2">s | %-</span><span class="si">#{</span><span class="n">max_col_width</span><span class="si">}</span><span class="s2">s | %-</span><span class="si">#{</span><span class="n">mean_col_width</span><span class="si">}</span><span class="s2">s | %-</span><span class="si">#{</span><span class="n">std_dev_col_width</span><span class="si">}</span><span class="s2">s |&quot;</span> <span class="o">%</span> 
+         <span class="o">[</span><span class="s2">&quot;Parameter (Header)&quot;</span><span class="p">,</span> <span class="s2">&quot;Count&quot;</span><span class="p">,</span> <span class="s2">&quot;Min&quot;</span><span class="p">,</span> <span class="s2">&quot;Max&quot;</span><span class="p">,</span> <span class="s2">&quot;Mean&quot;</span><span class="p">,</span> <span class="s2">&quot;Std Dev&quot;</span><span class="o">]</span>
+    <span class="nb">puts</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="n">total_width</span>
+    
+    <span class="n">found_numeric_data_for_table</span> <span class="o">=</span> <span class="kp">false</span>
+    <span class="n">selected_fields_config</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">field_info</span><span class="o">|</span>
+      <span class="n">attr_sym</span> <span class="o">=</span> <span class="n">field_info</span><span class="o">[</span><span class="ss">:attribute</span><span class="o">]</span>
+      <span class="n">data_array</span> <span class="o">=</span> <span class="n">numeric_data_for_stats</span><span class="o">[</span><span class="n">attr_sym</span><span class="o">]</span>
+      
+      <span class="c1"># Define symbols that are definitely not numeric or are identifiers/complex types</span>
+      <span class="n">non_numeric_symbols</span> <span class="o">=</span> <span class="o">[</span><span class="ss">:id</span><span class="p">,</span> <span class="ss">:us_node_id</span><span class="p">,</span> <span class="ss">:ds_node_id</span><span class="p">,</span> <span class="ss">:link_type</span><span class="p">,</span> <span class="ss">:weir_curve</span><span class="p">,</span> 
+                             <span class="ss">:point_array</span><span class="p">,</span> <span class="ss">:branch_id</span><span class="p">,</span> <span class="ss">:notes</span><span class="p">,</span> <span class="ss">:hyperlinks</span><span class="o">]</span>
+      
+      <span class="n">is_likely_text_or_id</span> <span class="o">=</span> <span class="n">field_info</span><span class="o">[</span><span class="ss">:header</span><span class="o">].</span><span class="n">downcase</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span> <span class="o">||</span>
+                              <span class="n">field_info</span><span class="o">[</span><span class="ss">:header</span><span class="o">].</span><span class="n">downcase</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="o">||</span>
+                              <span class="n">field_info</span><span class="o">[</span><span class="ss">:header</span><span class="o">].</span><span class="n">downcase</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="s1">&#39;curve&#39;</span><span class="p">)</span> <span class="o">||</span> <span class="c1"># For Weir Curve ID</span>
+                              <span class="n">non_numeric_symbols</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="n">attr_sym</span><span class="p">)</span>
+
+
+      <span class="k">if</span> <span class="n">data_array</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">data_array</span><span class="o">.</span><span class="n">empty?</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">is_likely_text_or_id</span>
+        <span class="n">found_numeric_data_for_table</span> <span class="o">=</span> <span class="kp">true</span>
+        <span class="n">count_val</span> <span class="o">=</span> <span class="n">data_array</span><span class="o">.</span><span class="n">length</span> <span class="c1"># Get count</span>
+        <span class="n">min_val</span> <span class="o">=</span> <span class="n">data_array</span><span class="o">.</span><span class="n">min</span>
+        <span class="n">max_val</span> <span class="o">=</span> <span class="n">data_array</span><span class="o">.</span><span class="n">max</span>
+        <span class="n">mean_val</span> <span class="o">=</span> <span class="n">calculate_mean</span><span class="p">(</span><span class="n">data_array</span><span class="p">)</span>
+        <span class="n">std_dev_val</span> <span class="o">=</span> <span class="n">calculate_std_dev</span><span class="p">(</span><span class="n">data_array</span><span class="p">,</span> <span class="n">mean_val</span><span class="p">)</span>
+        <span class="n">display_header</span> <span class="o">=</span> <span class="n">field_info</span><span class="o">[</span><span class="ss">:header</span><span class="o">].</span><span class="n">length</span> <span class="o">&gt;</span> <span class="n">param_col_width</span> <span class="p">?</span> <span class="n">field_info</span><span class="o">[</span><span class="ss">:header</span><span class="o">][</span><span class="mi">0</span><span class="o">...</span><span class="p">(</span><span class="n">param_col_width</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span><span class="o">]</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span> <span class="p">:</span> <span class="n">field_info</span><span class="o">[</span><span class="ss">:header</span><span class="o">]</span>
+
+
+        <span class="nb">puts</span> <span class="s2">&quot;| %-</span><span class="si">#{</span><span class="n">param_col_width</span><span class="si">}</span><span class="s2">s | %-</span><span class="si">#{</span><span class="n">count_col_width</span><span class="si">}</span><span class="s2">d | %-</span><span class="si">#{</span><span class="n">min_col_width</span><span class="si">}</span><span class="s2">.3f | %-</span><span class="si">#{</span><span class="n">max_col_width</span><span class="si">}</span><span class="s2">.3f | %-</span><span class="si">#{</span><span class="n">mean_col_width</span><span class="si">}</span><span class="s2">.3f | %-</span><span class="si">#{</span><span class="n">std_dev_col_width</span><span class="si">}</span><span class="s2">s |&quot;</span> <span class="o">%</span> <span class="o">[</span>
+          <span class="n">display_header</span><span class="p">,</span> 
+          <span class="n">count_val</span><span class="p">,</span> <span class="c1"># Display count</span>
+          <span class="n">min_val</span><span class="p">,</span> 
+          <span class="n">max_val</span><span class="p">,</span> 
+          <span class="n">mean_val</span><span class="p">,</span>
+          <span class="p">(</span><span class="n">std_dev_val</span><span class="o">.</span><span class="n">nil?</span> <span class="p">?</span> <span class="s2">&quot;N/A (n&lt;2)&quot;</span> <span class="p">:</span> <span class="s2">&quot;%.3f&quot;</span> <span class="o">%</span> <span class="n">std_dev_val</span><span class="p">)</span>
+        <span class="o">]</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="nb">puts</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="n">total_width</span>
+    <span class="k">unless</span> <span class="n">found_numeric_data_for_table</span>
+        <span class="nb">puts</span> <span class="s2">&quot;No suitable numeric data found among selected fields to calculate statistics.&quot;</span>
+    <span class="k">end</span>
+  <span class="k">elsif</span> <span class="n">calculate_stats</span>
+    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">No weirs were written to the CSV, so no statistics calculated.&quot;</span>
+  <span class="k">end</span>
+
+
+<span class="k">rescue</span> <span class="no">Errno</span><span class="o">::</span><span class="no">EACCES</span> <span class="o">=&gt;</span> <span class="n">e</span>
+  <span class="nb">puts</span> <span class="s2">&quot;FATAL ERROR: Permission denied writing to file &#39;</span><span class="si">#{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&#39;. - </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="k">rescue</span> <span class="no">Errno</span><span class="o">::</span><span class="no">ENOSPC</span> <span class="o">=&gt;</span> <span class="n">e</span>
+  <span class="nb">puts</span> <span class="s2">&quot;FATAL ERROR: No space left on device writing to file &#39;</span><span class="si">#{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&#39;. - </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="k">rescue</span> <span class="no">CSV</span><span class="o">::</span><span class="no">MalformedCSVError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+  <span class="nb">puts</span> <span class="s2">&quot;FATAL ERROR: CSV formatting issue during write to &#39;</span><span class="si">#{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&#39;. - </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+  <span class="nb">puts</span> <span class="s2">&quot;FATAL ERROR: Unexpected failure during SWMM Weir CSV export. - </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">class</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nb">puts</span> <span class="s2">&quot;Backtrace (first 5 lines):</span><span class="se">\n</span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">first</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="k">end</span>
+
+<span class="n">end_time</span> <span class="o">=</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span>
+<span class="n">time_spent</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
+<span class="nb">puts</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Script for SWMM Weir export finished at </span><span class="si">#{</span><span class="n">end_time</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nb">puts</span> <span class="s2">&quot;Total time spent: </span><span class="si">#{</span><span class="s1">&#39;%.2f&#39;</span> <span class="o">%</span> <span class="n">time_spent</span><span class="si">}</span><span class="s2"> seconds&quot;</span>
+
+<span class="n">file_exists_and_has_data</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">weirs_written_count</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+<span class="k">if</span> <span class="n">file_exists_and_has_data</span>
+  <span class="n">summary_layout</span> <span class="o">=</span> <span class="o">[</span>
+    <span class="o">[</span><span class="s1">&#39;Export File Path&#39;</span><span class="p">,</span> <span class="s1">&#39;READONLY&#39;</span><span class="p">,</span> <span class="n">file_path</span><span class="o">]</span><span class="p">,</span>
+    <span class="o">[</span><span class="s1">&#39;Number of Selected SWMM Weirs Written&#39;</span><span class="p">,</span> <span class="s1">&#39;NUMBER&#39;</span><span class="p">,</span> <span class="n">weirs_written_count</span><span class="o">]</span><span class="p">,</span>
+    <span class="o">[</span><span class="s1">&#39;Number of Fields Exported Per Weir&#39;</span><span class="p">,</span> <span class="s1">&#39;NUMBER&#39;</span><span class="p">,</span> <span class="n">selected_fields_config</span><span class="o">.</span><span class="n">count</span><span class="o">]</span>
+  <span class="o">]</span>
+  <span class="no">WSApplication</span><span class="o">.</span><span class="n">prompt</span><span class="p">(</span><span class="s2">&quot;Export Summary (Selected SWMM Weir Objects)&quot;</span><span class="p">,</span> <span class="n">summary_layout</span><span class="p">,</span> <span class="kp">false</span><span class="p">)</span>
+<span class="k">elsif</span> <span class="n">weirs_written_count</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">weirs_iterated_count</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+  <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;No SWMM Weir objects were selected for export.&quot;</span>
+  <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot; The CSV file was not created or was empty (and thus deleted).&quot;</span> <span class="k">if</span> <span class="o">!</span><span class="n">file_path</span><span class="o">.</span><span class="n">empty?</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+  <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s1">&#39;OK&#39;</span><span class="p">,</span><span class="kp">nil</span><span class="p">,</span><span class="kp">false</span><span class="p">)</span>
+<span class="k">else</span>
+  <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span><span class="s2">&quot;Export for SWMM Weirs did not complete as expected. No weirs written. Check console messages. The CSV file may not exist or is empty.&quot;</span><span class="p">,</span> <span class="s1">&#39;Info&#39;</span><span class="p">,</span> <span class="ss">:OK</span><span class="p">,</span> <span class="kp">false</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="nb">puts</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Script execution for SWMM Weir complete.&quot;</span>
+</code></pre></div>
+</td></tr></table></div></section>
+  <footer>Auto-generated &middot; Original file unmodified</footer>
+</div>
+</body>
+</html>

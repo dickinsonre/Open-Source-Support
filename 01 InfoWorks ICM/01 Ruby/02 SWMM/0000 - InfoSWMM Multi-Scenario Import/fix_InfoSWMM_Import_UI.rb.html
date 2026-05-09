@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>fix_InfoSWMM_Import_UI.rb</title>
+<style>
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#0b1220;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8;
+  --accent-2:#f472b6; --good:#22c55e; --warn:#fbbf24;
+  --border:#334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,#0a1226 0%,#0f172a 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+header.hero {
+  border:1px solid var(--border);
+  background: linear-gradient(135deg,rgba(56,189,248,0.10),rgba(244,114,182,0.06));
+  padding:22px 26px; border-radius:14px; margin-bottom:18px;
+}
+header.hero .crumbs { font-size:12px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+header.hero h1 { font-size:22px; margin:0 0 6px 0; color:#fff; word-break:break-word; }
+header.hero .meta { font-size:13px; color:var(--muted); }
+header.hero .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; }
+.badge.rb   { background:rgba(244,114,182,0.10); border:1px solid rgba(244,114,182,0.35); color:#f472b6; }
+.badge.md   { background:rgba(56,189,248,0.10);  border:1px solid rgba(56,189,248,0.35);  color:#38bdf8; }
+.badge.fix  { background:rgba(34,197,94,0.10);   border:1px solid rgba(34,197,94,0.35);   color:#22c55e; }
+.badge.lines{ background:rgba(251,191,36,0.10);  border:1px solid rgba(251,191,36,0.35);  color:#fbbf24; }
+.badge a { color: inherit; text-decoration: none; }
+.badge a:hover { text-decoration: underline; }
+.section {
+  background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding: 6px 22px 22px; margin-top: 18px;
+}
+.section h2 { color:#fff; font-size:18px; margin-top:18px; }
+.section p, .section li { color: var(--text); }
+.section a { color: var(--accent); text-decoration: none; }
+.section a:hover { text-decoration: underline; }
+.section code {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:1px 6px; border-radius:4px; font-size:13px; color:#fbbf24;
+}
+.section ul { padding-left: 22px; }
+.section blockquote {
+  margin:12px 0; padding:8px 16px;
+  border-left:3px solid var(--accent); background:rgba(56,189,248,0.06); color:var(--muted);
+}
+.section table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+.section th, .section td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+.section th { background:var(--panel-2); }
+.section pre {
+  background:var(--panel-2); border:1px solid var(--border);
+  padding:14px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5;
+}
+.section pre code { background:transparent; border:0; padding:0; }
+
+.codewrap {
+  background:#1e1e1e; border:1px solid var(--border); border-radius:10px;
+  overflow:auto; max-height:80vh;
+}
+.codewrap .codehl { font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.55; }
+.codewrap .codehl table { width:100%; border:0; border-collapse:collapse; margin:0; }
+.codewrap .codehl table td { border:0; padding:0; vertical-align:top; }
+.codewrap .codehl .linenos { user-select:none; padding:8px 12px 8px 14px; color:#5d6373; background:#181818; border-right:1px solid #2a2f3a; text-align:right; }
+.codewrap .codehl .code   { padding:8px 14px; }
+.codewrap pre { margin:0; padding:0; background:transparent; border:0; border-radius:0; overflow:visible; max-height:none; }
+
+footer { margin-top:28px; color:var(--muted); font-size:12px; text-align:center; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+.toolbar a { color:var(--accent); text-decoration:none; font-size:13px; padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel-2); }
+.toolbar a:hover { border-color:var(--accent); }
+@media (max-width:720px){ header.hero h1{font-size:18px;} }
+</style>
+<style>pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehl .hll { background-color: #49483e }
+.codehl { background: #272822; color: #f8f8f2 }
+.codehl .c { color: #75715e } /* Comment */
+.codehl .err { color: #960050; background-color: #1e0010 } /* Error */
+.codehl .esc { color: #f8f8f2 } /* Escape */
+.codehl .g { color: #f8f8f2 } /* Generic */
+.codehl .k { color: #66d9ef } /* Keyword */
+.codehl .l { color: #ae81ff } /* Literal */
+.codehl .n { color: #f8f8f2 } /* Name */
+.codehl .o { color: #f92672 } /* Operator */
+.codehl .x { color: #f8f8f2 } /* Other */
+.codehl .p { color: #f8f8f2 } /* Punctuation */
+.codehl .ch { color: #75715e } /* Comment.Hashbang */
+.codehl .cm { color: #75715e } /* Comment.Multiline */
+.codehl .cp { color: #75715e } /* Comment.Preproc */
+.codehl .cpf { color: #75715e } /* Comment.PreprocFile */
+.codehl .c1 { color: #75715e } /* Comment.Single */
+.codehl .cs { color: #75715e } /* Comment.Special */
+.codehl .gd { color: #f92672 } /* Generic.Deleted */
+.codehl .ge { color: #f8f8f2; font-style: italic } /* Generic.Emph */
+.codehl .gr { color: #f8f8f2 } /* Generic.Error */
+.codehl .gh { color: #f8f8f2 } /* Generic.Heading */
+.codehl .gi { color: #a6e22e } /* Generic.Inserted */
+.codehl .go { color: #66d9ef } /* Generic.Output */
+.codehl .gp { color: #f92672; font-weight: bold } /* Generic.Prompt */
+.codehl .gs { color: #f8f8f2; font-weight: bold } /* Generic.Strong */
+.codehl .gu { color: #75715e } /* Generic.Subheading */
+.codehl .gt { color: #f8f8f2 } /* Generic.Traceback */
+.codehl .kc { color: #66d9ef } /* Keyword.Constant */
+.codehl .kd { color: #66d9ef } /* Keyword.Declaration */
+.codehl .kn { color: #f92672 } /* Keyword.Namespace */
+.codehl .kp { color: #66d9ef } /* Keyword.Pseudo */
+.codehl .kr { color: #66d9ef } /* Keyword.Reserved */
+.codehl .kt { color: #66d9ef } /* Keyword.Type */
+.codehl .ld { color: #e6db74 } /* Literal.Date */
+.codehl .m { color: #ae81ff } /* Literal.Number */
+.codehl .s { color: #e6db74 } /* Literal.String */
+.codehl .na { color: #a6e22e } /* Name.Attribute */
+.codehl .nb { color: #f8f8f2 } /* Name.Builtin */
+.codehl .nc { color: #a6e22e } /* Name.Class */
+.codehl .no { color: #66d9ef } /* Name.Constant */
+.codehl .nd { color: #a6e22e } /* Name.Decorator */
+.codehl .ni { color: #f8f8f2 } /* Name.Entity */
+.codehl .ne { color: #a6e22e } /* Name.Exception */
+.codehl .nf { color: #a6e22e } /* Name.Function */
+.codehl .nl { color: #f8f8f2 } /* Name.Label */
+.codehl .nn { color: #f8f8f2 } /* Name.Namespace */
+.codehl .nx { color: #a6e22e } /* Name.Other */
+.codehl .py { color: #f8f8f2 } /* Name.Property */
+.codehl .nt { color: #f92672 } /* Name.Tag */
+.codehl .nv { color: #f8f8f2 } /* Name.Variable */
+.codehl .ow { color: #f92672 } /* Operator.Word */
+.codehl .w { color: #f8f8f2 } /* Text.Whitespace */
+.codehl .mb { color: #ae81ff } /* Literal.Number.Bin */
+.codehl .mf { color: #ae81ff } /* Literal.Number.Float */
+.codehl .mh { color: #ae81ff } /* Literal.Number.Hex */
+.codehl .mi { color: #ae81ff } /* Literal.Number.Integer */
+.codehl .mo { color: #ae81ff } /* Literal.Number.Oct */
+.codehl .sa { color: #e6db74 } /* Literal.String.Affix */
+.codehl .sb { color: #e6db74 } /* Literal.String.Backtick */
+.codehl .sc { color: #e6db74 } /* Literal.String.Char */
+.codehl .dl { color: #e6db74 } /* Literal.String.Delimiter */
+.codehl .sd { color: #e6db74 } /* Literal.String.Doc */
+.codehl .s2 { color: #e6db74 } /* Literal.String.Double */
+.codehl .se { color: #ae81ff } /* Literal.String.Escape */
+.codehl .sh { color: #e6db74 } /* Literal.String.Heredoc */
+.codehl .si { color: #e6db74 } /* Literal.String.Interpol */
+.codehl .sx { color: #e6db74 } /* Literal.String.Other */
+.codehl .sr { color: #e6db74 } /* Literal.String.Regex */
+.codehl .s1 { color: #e6db74 } /* Literal.String.Single */
+.codehl .ss { color: #e6db74 } /* Literal.String.Symbol */
+.codehl .bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
+.codehl .fm { color: #a6e22e } /* Name.Function.Magic */
+.codehl .vc { color: #f8f8f2 } /* Name.Variable.Class */
+.codehl .vg { color: #f8f8f2 } /* Name.Variable.Global */
+.codehl .vi { color: #f8f8f2 } /* Name.Variable.Instance */
+.codehl .vm { color: #f8f8f2 } /* Name.Variable.Magic */
+.codehl .il { color: #ae81ff } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="crumbs">02 SWMM &rsaquo; 0000 - InfoSWMM Multi-Scenario Import</div>
+    <h1>fix_InfoSWMM_Import_UI.rb</h1>
+    <div class="meta">Ruby script &middot; 0000 - InfoSWMM Multi-Scenario Import</div>
+    <div class="badges"><span class="badge rb">Ruby</span><span class="badge fix">fix_ (hardened)</span><span class="badge rb">Original: <a href="InfoSWMM_Import_UI.rb.html">InfoSWMM_Import_UI.rb</a></span><span class="badge lines">514 lines &middot; 15,984 bytes</span></div>
+    <div class="toolbar"><a href="./_Summary.html">&larr; Folder summary</a><a href="../index.html">Master index</a></div>
+  </header>
+  <section class="section"><h2>Source</h2><div class="codewrap"><table class="codehltable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
+<span class="normal">  2</span>
+<span class="normal">  3</span>
+<span class="normal">  4</span>
+<span class="normal">  5</span>
+<span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
+<span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span>
+<span class="normal">439</span>
+<span class="normal">440</span>
+<span class="normal">441</span>
+<span class="normal">442</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
+<span class="normal">446</span>
+<span class="normal">447</span>
+<span class="normal">448</span>
+<span class="normal">449</span>
+<span class="normal">450</span>
+<span class="normal">451</span>
+<span class="normal">452</span>
+<span class="normal">453</span>
+<span class="normal">454</span>
+<span class="normal">455</span>
+<span class="normal">456</span>
+<span class="normal">457</span>
+<span class="normal">458</span>
+<span class="normal">459</span>
+<span class="normal">460</span>
+<span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span>
+<span class="normal">466</span>
+<span class="normal">467</span>
+<span class="normal">468</span>
+<span class="normal">469</span>
+<span class="normal">470</span>
+<span class="normal">471</span>
+<span class="normal">472</span>
+<span class="normal">473</span>
+<span class="normal">474</span>
+<span class="normal">475</span>
+<span class="normal">476</span>
+<span class="normal">477</span>
+<span class="normal">478</span>
+<span class="normal">479</span>
+<span class="normal">480</span>
+<span class="normal">481</span>
+<span class="normal">482</span>
+<span class="normal">483</span>
+<span class="normal">484</span>
+<span class="normal">485</span>
+<span class="normal">486</span>
+<span class="normal">487</span>
+<span class="normal">488</span>
+<span class="normal">489</span>
+<span class="normal">490</span>
+<span class="normal">491</span>
+<span class="normal">492</span>
+<span class="normal">493</span>
+<span class="normal">494</span>
+<span class="normal">495</span>
+<span class="normal">496</span>
+<span class="normal">497</span>
+<span class="normal">498</span>
+<span class="normal">499</span>
+<span class="normal">500</span>
+<span class="normal">501</span>
+<span class="normal">502</span>
+<span class="normal">503</span>
+<span class="normal">504</span>
+<span class="normal">505</span>
+<span class="normal">506</span>
+<span class="normal">507</span>
+<span class="normal">508</span>
+<span class="normal">509</span>
+<span class="normal">510</span>
+<span class="normal">511</span>
+<span class="normal">512</span>
+<span class="normal">513</span>
+<span class="normal">514</span></pre></div></td><td class="code"><div class="codehl"><pre><span></span><code><span class="c1"># frozen_string_literal: true</span>
+<span class="c1"># ============================================================================</span>
+<span class="c1"># InfoSWMM Multi-Scenario Import - UI SCRIPT (HARDENED)</span>
+<span class="c1"># ============================================================================</span>
+<span class="c1">#</span>
+<span class="c1"># DESCRIPTION:</span>
+<span class="c1">#   User interface script for importing multiple InfoSWMM scenarios into ICM.</span>
+<span class="c1">#   Collects user input and launches the Exchange script for processing.</span>
+<span class="c1">#</span>
+<span class="c1"># HARDENING APPLIED:</span>
+<span class="c1">#   - Added frozen_string_literal pragma for immutability</span>
+<span class="c1">#   - Wrapped main logic in begin/rescue/ensure for robust error handling</span>
+<span class="c1">#   - Validates database connection is active before proceeding</span>
+<span class="c1">#   - Checks for user cancellations and exits gracefully</span>
+<span class="c1">#   - Added nil-safety checks on optional return values</span>
+<span class="c1">#   - File handles opened via block form (File.open do |f|)</span>
+<span class="c1">#   - Progress logging with timestamps for long operations</span>
+<span class="c1">#   - Validates config file creation before proceeding</span>
+<span class="c1">#   - Proper cleanup in ensure block even on errors</span>
+<span class="c1">#</span>
+<span class="c1"># USAGE:</span>
+<span class="c1">#   1. Close InfoSWMM (if model is open)</span>
+<span class="c1">#   2. Open ICM database</span>
+<span class="c1">#   3. Network → Run Ruby Script → Select this file</span>
+<span class="c1">#   4. Follow prompts to select .mxd file and scenarios</span>
+<span class="c1">#   5. Wait for completion</span>
+<span class="c1">#</span>
+<span class="c1"># ============================================================================</span>
+
+<span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
+
+<span class="k">begin</span>
+  <span class="c1"># Get the script directory</span>
+  <span class="n">script_dir</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="no">WSApplication</span><span class="o">.</span><span class="n">script_file</span><span class="p">)</span>
+
+  <span class="c1"># ============================================================================</span>
+  <span class="c1"># Main execution with error handling</span>
+  <span class="c1"># ============================================================================</span>
+  <span class="k">begin</span>
+
+    <span class="c1"># Show welcome dialog with instructions</span>
+    <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span>
+      <span class="s2">&quot;InfoSWMM Multi-Scenario Import</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+      <span class="s2">&quot;This script will:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+      <span class="s2">&quot;  * Import each scenario to a separate group</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+      <span class="s2">&quot;  * Clean up empty label lists</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+      <span class="s2">&quot;  * Deduplicate Rainfall Events &amp; Inflows</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+      <span class="s2">&quot;  * Create a merged network with all scenario-variable data</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+      <span class="s2">&quot;  * Set up SWMM runs (partial configuration)</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+      <span class="s2">&quot;You will need to manually configure:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+      <span class="s2">&quot;  [!] Timesteps, Climatology, Time Patterns, Inflows</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+      <span class="s2">&quot;Select your InfoSWMM .mxd file next.&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;Information&quot;</span><span class="p">,</span>
+      <span class="kp">false</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Get InfoSWMM model file from user</span>
+    <span class="n">file_path</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">file_dialog</span><span class="p">(</span>
+      <span class="kp">true</span><span class="p">,</span>
+      <span class="s1">&#39;mxd&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;InfoSWMM Model File&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;&#39;</span><span class="p">,</span>
+      <span class="kp">false</span><span class="p">,</span>
+      <span class="kp">nil</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Check if user cancelled</span>
+    <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">nil?</span> <span class="o">||</span> <span class="n">file_path</span><span class="o">.</span><span class="n">empty?</span>
+      <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Import cancelled - no file selected.&quot;</span>
+      <span class="nb">exit</span> <span class="mi">0</span>
+    <span class="k">end</span>
+
+    <span class="c1"># Validate file exists</span>
+    <span class="k">unless</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+      <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span>
+        <span class="s2">&quot;File not found: </span><span class="si">#{</span><span class="n">file_path</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">Import cancelled.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;!&quot;</span><span class="p">,</span>
+        <span class="kp">false</span>
+      <span class="p">)</span>
+      <span class="nb">exit</span> <span class="mi">1</span>
+    <span class="k">end</span>
+
+    <span class="c1"># Check for InfoSWMM lock files</span>
+    <span class="n">mxd_dir</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+    <span class="n">mxd_basename</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;.mxd&#39;</span><span class="p">)</span>
+    <span class="n">lock_files</span> <span class="o">=</span> <span class="o">[]</span>
+
+    <span class="k">begin</span>
+      <span class="k">if</span> <span class="no">Dir</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">mxd_dir</span><span class="p">)</span>
+        <span class="n">entries</span> <span class="o">=</span> <span class="no">Dir</span><span class="o">.</span><span class="n">entries</span><span class="p">(</span><span class="n">mxd_dir</span><span class="p">)</span>
+        <span class="n">lock_entries</span> <span class="o">=</span> <span class="n">entries</span><span class="o">.</span><span class="n">select</span> <span class="p">{</span> <span class="o">|</span><span class="n">entry</span><span class="o">|</span> <span class="n">entry</span><span class="o">.</span><span class="n">start_with?</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">entry</span> <span class="o">!=</span> <span class="s1">&#39;~&#39;</span> <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">lock_entries</span><span class="o">.</span><span class="n">any?</span>
+          <span class="n">lock_files</span> <span class="o">=</span> <span class="n">lock_entries</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">entry</span><span class="o">|</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mxd_dir</span><span class="p">,</span> <span class="n">entry</span><span class="p">)</span> <span class="p">}</span>
+          <span class="n">lock_files</span> <span class="o">=</span> <span class="n">lock_files</span><span class="o">.</span><span class="n">select</span> <span class="p">{</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="p">}</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+    <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+      <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Warning: Could not check for lock files: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">end</span>
+
+    <span class="c1"># Check ISDB folder for lock files</span>
+    <span class="n">possible_isdb_folders</span> <span class="o">=</span> <span class="o">[</span>
+      <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mxd_dir</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">mxd_basename</span><span class="si">}</span><span class="s2">.ISDB&quot;</span><span class="p">),</span>
+      <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mxd_dir</span><span class="p">,</span> <span class="s2">&quot;ISDB&quot;</span><span class="p">),</span>
+      <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mxd_dir</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">mxd_basename</span><span class="si">}</span><span class="s2">.isdb&quot;</span><span class="p">),</span>
+      <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mxd_dir</span><span class="p">,</span> <span class="s2">&quot;isdb&quot;</span><span class="p">)</span>
+    <span class="o">]</span>
+
+    <span class="n">possible_isdb_folders</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">isdb_path</span><span class="o">|</span>
+      <span class="k">next</span> <span class="k">unless</span> <span class="no">Dir</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">isdb_path</span><span class="p">)</span>
+
+      <span class="k">begin</span>
+        <span class="n">entries</span> <span class="o">=</span> <span class="no">Dir</span><span class="o">.</span><span class="n">entries</span><span class="p">(</span><span class="n">isdb_path</span><span class="p">)</span>
+        <span class="n">lock_entries</span> <span class="o">=</span> <span class="n">entries</span><span class="o">.</span><span class="n">select</span> <span class="p">{</span> <span class="o">|</span><span class="n">entry</span><span class="o">|</span> <span class="n">entry</span><span class="o">.</span><span class="n">start_with?</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">entry</span> <span class="o">!=</span> <span class="s1">&#39;~&#39;</span> <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">lock_entries</span><span class="o">.</span><span class="n">any?</span>
+          <span class="n">isdb_locks</span> <span class="o">=</span> <span class="n">lock_entries</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">entry</span><span class="o">|</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">isdb_path</span><span class="p">,</span> <span class="n">entry</span><span class="p">)</span> <span class="p">}</span>
+          <span class="n">isdb_locks</span> <span class="o">=</span> <span class="n">isdb_locks</span><span class="o">.</span><span class="n">select</span> <span class="p">{</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="p">}</span>
+          <span class="n">lock_files</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">isdb_locks</span><span class="p">)</span>
+        <span class="k">end</span>
+      <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+        <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Warning: Could not check ISDB folder: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="k">if</span> <span class="n">lock_files</span><span class="o">.</span><span class="n">any?</span>
+      <span class="n">lock_file_paths</span> <span class="o">=</span> <span class="n">lock_files</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+      <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span>
+        <span class="s2">&quot;InfoSWMM is open or has a residual lock file.</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+        <span class="s2">&quot;Lock file(s):</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+        <span class="s2">&quot;</span><span class="si">#{</span><span class="n">lock_file_paths</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+        <span class="s2">&quot;Close InfoSWMM or delete the lock file, then run this script again.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;!&quot;</span><span class="p">,</span>
+        <span class="kp">false</span>
+      <span class="p">)</span>
+      <span class="nb">exit</span> <span class="mi">1</span>
+    <span class="k">end</span>
+
+    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span>
+    <span class="nb">puts</span> <span class="s2">&quot; InfoSWMM Multi-Scenario Import - Starting&quot;</span>
+    <span class="nb">puts</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span>
+    <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Model: </span><span class="si">#{</span><span class="no">File</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;.*&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Try to read scenario names from SCENARIO.DBF</span>
+    <span class="n">scenario_names</span> <span class="o">=</span> <span class="o">[]</span>
+    <span class="n">isdb_folder</span> <span class="o">=</span> <span class="kp">nil</span>
+
+    <span class="n">possible_isdb_folders</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">folder</span><span class="o">|</span>
+      <span class="n">folder_name</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+      <span class="k">next</span> <span class="k">if</span> <span class="n">folder_name</span><span class="o">.</span><span class="n">start_with?</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">)</span>
+
+      <span class="k">if</span> <span class="no">Dir</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+        <span class="n">isdb_folder</span> <span class="o">=</span> <span class="n">folder</span>
+        <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Found ISDB folder: </span><span class="si">#{</span><span class="n">isdb_folder</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">break</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="k">if</span> <span class="n">isdb_folder</span>
+      <span class="n">scenario_dbf</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">isdb_folder</span><span class="p">,</span> <span class="s2">&quot;SCENARIO.DBF&quot;</span><span class="p">)</span>
+      <span class="n">scenario_dbf</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">isdb_folder</span><span class="p">,</span> <span class="s2">&quot;Scenario.dbf&quot;</span><span class="p">)</span> <span class="k">unless</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">scenario_dbf</span><span class="p">)</span>
+
+      <span class="k">if</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">scenario_dbf</span><span class="p">)</span>
+        <span class="k">begin</span>
+          <span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">scenario_dbf</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">file</span><span class="o">|</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="s2">&quot;File is empty or unreadable&quot;</span> <span class="k">if</span> <span class="n">version</span><span class="o">.</span><span class="n">nil?</span>
+
+            <span class="n">last_update</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+            <span class="n">num_records_bytes</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+            <span class="n">header_length_bytes</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">record_length_bytes</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+            <span class="k">raise</span> <span class="s2">&quot;DBF header is incomplete&quot;</span> <span class="k">if</span> <span class="n">num_records_bytes</span><span class="o">.</span><span class="n">nil?</span> <span class="o">||</span> <span class="n">header_length_bytes</span><span class="o">.</span><span class="n">nil?</span> <span class="o">||</span> <span class="n">record_length_bytes</span><span class="o">.</span><span class="n">nil?</span>
+
+            <span class="n">num_records</span> <span class="o">=</span> <span class="n">num_records_bytes</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;V&#39;</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+            <span class="n">header_length</span> <span class="o">=</span> <span class="n">header_length_bytes</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+            <span class="n">record_length</span> <span class="o">=</span> <span class="n">record_length_bytes</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+
+            <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+
+            <span class="n">fields</span> <span class="o">=</span> <span class="o">[]</span>
+            <span class="n">field_offset</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="kp">loop</span> <span class="k">do</span>
+              <span class="n">field_name_bytes</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>
+              <span class="k">break</span> <span class="k">if</span> <span class="n">field_name_bytes</span><span class="o">.</span><span class="n">nil?</span> <span class="o">||</span> <span class="n">field_name_bytes</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="n">field_name_bytes</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="se">\x0D</span><span class="s2">&quot;</span>
+
+              <span class="n">field_name</span> <span class="o">=</span> <span class="n">field_name_bytes</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;Z11&#39;</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+              <span class="k">break</span> <span class="k">if</span> <span class="n">field_name</span><span class="o">.</span><span class="n">nil?</span> <span class="o">||</span> <span class="n">field_name</span><span class="o">.</span><span class="n">empty?</span>
+
+              <span class="n">field_type</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+              <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+              <span class="n">field_length</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+              <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+
+              <span class="n">fields</span> <span class="o">&lt;&lt;</span> <span class="p">{</span>
+                <span class="nb">name</span><span class="p">:</span> <span class="n">field_name</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+                <span class="ss">type</span><span class="p">:</span> <span class="n">field_type</span><span class="p">,</span>
+                <span class="ss">offset</span><span class="p">:</span> <span class="n">field_offset</span><span class="p">,</span>
+                <span class="ss">length</span><span class="p">:</span> <span class="n">field_length</span>
+              <span class="p">}</span>
+
+              <span class="n">field_offset</span> <span class="o">+=</span> <span class="n">field_length</span>
+            <span class="k">end</span>
+
+            <span class="n">id_field</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">find</span> <span class="p">{</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="o">[</span><span class="s1">&#39;ID&#39;</span><span class="p">,</span> <span class="s1">&#39;SCEN_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;SCENID&#39;</span><span class="o">].</span><span class="n">include?</span><span class="p">(</span><span class="n">f</span><span class="o">[</span><span class="ss">:name</span><span class="o">].</span><span class="n">upcase</span><span class="p">)</span> <span class="p">}</span>
+
+            <span class="k">if</span> <span class="n">id_field</span><span class="o">.</span><span class="n">nil?</span>
+              <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Warning: Could not find ID field in SCENARIO.DBF&quot;</span>
+            <span class="k">else</span>
+              <span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">header_length</span><span class="p">)</span>
+
+              <span class="n">num_records</span><span class="o">.</span><span class="n">times</span> <span class="k">do</span>
+                <span class="n">record</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">record_length</span><span class="p">)</span>
+                <span class="k">next</span> <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">nil?</span> <span class="o">||</span> <span class="n">record</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">==</span> <span class="s1">&#39;*&#39;</span>
+
+                <span class="n">id_value</span> <span class="o">=</span> <span class="n">record</span><span class="o">[</span><span class="n">id_field</span><span class="o">[</span><span class="ss">:offset</span><span class="o">]</span><span class="p">,</span> <span class="n">id_field</span><span class="o">[</span><span class="ss">:length</span><span class="o">]].</span><span class="n">strip</span>
+                <span class="n">scenario_names</span> <span class="o">&lt;&lt;</span> <span class="n">id_value</span> <span class="k">unless</span> <span class="n">id_value</span><span class="o">.</span><span class="n">empty?</span>
+              <span class="k">end</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+
+          <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Found </span><span class="si">#{</span><span class="n">scenario_names</span><span class="o">.</span><span class="n">length</span><span class="si">}</span><span class="s2"> scenario(s) in model&quot;</span> <span class="k">if</span> <span class="n">scenario_names</span><span class="o">.</span><span class="n">any?</span>
+
+        <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+          <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Warning: Could not auto-detect scenarios (</span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">)&quot;</span>
+          <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span>
+            <span class="s2">&quot;Could not read SCENARIO.DBF file.</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+            <span class="s2">&quot;Error: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+            <span class="s2">&quot;Will use manual entry instead.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;!&quot;</span><span class="p">,</span>
+            <span class="kp">false</span>
+          <span class="p">)</span>
+        <span class="k">end</span>
+      <span class="k">else</span>
+        <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Warning: SCENARIO.DBF not found&quot;</span>
+      <span class="k">end</span>
+    <span class="k">else</span>
+      <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Warning: ISDB folder not found&quot;</span>
+    <span class="k">end</span>
+
+    <span class="c1"># Prompt for scenario selection</span>
+    <span class="k">if</span> <span class="n">scenario_names</span><span class="o">.</span><span class="n">any?</span>
+      <span class="n">base_scenario</span> <span class="o">=</span> <span class="n">scenario_names</span><span class="o">.</span><span class="n">find</span> <span class="p">{</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span> <span class="n">s</span><span class="o">.</span><span class="n">upcase</span> <span class="o">==</span> <span class="s1">&#39;BASE&#39;</span> <span class="p">}</span>
+      <span class="n">other_scenarios</span> <span class="o">=</span> <span class="n">scenario_names</span><span class="o">.</span><span class="n">reject</span> <span class="p">{</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span> <span class="n">s</span><span class="o">.</span><span class="n">upcase</span> <span class="o">==</span> <span class="s1">&#39;BASE&#39;</span> <span class="p">}</span>
+
+      <span class="n">layout</span> <span class="o">=</span> <span class="o">[</span>
+        <span class="o">[</span><span class="s1">&#39;BASE imported automatically&#39;</span><span class="p">,</span> <span class="s1">&#39;READONLY&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="o">]</span><span class="p">,</span>
+        <span class="o">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;READONLY&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="o">]</span><span class="p">,</span>
+        <span class="o">[</span><span class="s1">&#39;Select additional scenarios:&#39;</span><span class="p">,</span> <span class="s1">&#39;READONLY&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="o">]</span><span class="p">,</span>
+        <span class="o">[</span><span class="s1">&#39;Select All&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOLEAN&#39;</span><span class="p">,</span> <span class="kp">false</span><span class="o">]</span>
+      <span class="o">]</span>
+
+      <span class="n">other_scenarios</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">scenario</span><span class="o">|</span>
+        <span class="n">layout</span> <span class="o">&lt;&lt;</span> <span class="o">[</span><span class="n">scenario</span><span class="p">,</span> <span class="s1">&#39;BOOLEAN&#39;</span><span class="p">,</span> <span class="kp">false</span><span class="o">]</span>
+      <span class="k">end</span>
+
+      <span class="n">result</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">prompt</span><span class="p">(</span>
+        <span class="s1">&#39;Select Scenarios to Import&#39;</span><span class="p">,</span>
+        <span class="n">layout</span><span class="p">,</span>
+        <span class="kp">false</span>
+      <span class="p">)</span>
+
+      <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">nil?</span>
+        <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Import cancelled - no scenarios selected.&quot;</span>
+        <span class="nb">exit</span> <span class="mi">0</span>
+      <span class="k">end</span>
+
+      <span class="n">select_all</span> <span class="o">=</span> <span class="n">result</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span>
+
+      <span class="n">selected_scenarios</span> <span class="o">=</span> <span class="o">[]</span>
+      <span class="n">other_scenarios</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">scenario</span><span class="p">,</span> <span class="n">index</span><span class="o">|</span>
+        <span class="k">if</span> <span class="n">select_all</span> <span class="o">||</span> <span class="n">result</span><span class="o">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">4</span><span class="o">]</span>
+          <span class="n">selected_scenarios</span> <span class="o">&lt;&lt;</span> <span class="n">scenario</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+
+      <span class="k">if</span> <span class="n">base_scenario</span>
+        <span class="n">selected_scenarios</span><span class="o">.</span><span class="n">unshift</span><span class="p">(</span><span class="n">base_scenario</span><span class="p">)</span>
+        <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] BASE will be imported automatically&quot;</span>
+      <span class="k">else</span>
+        <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] WARNING: No BASE scenario found in model&quot;</span>
+      <span class="k">end</span>
+
+      <span class="k">if</span> <span class="n">selected_scenarios</span><span class="o">.</span><span class="n">length</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">selected_scenarios</span><span class="o">.</span><span class="n">first</span><span class="o">&amp;.</span><span class="n">upcase</span> <span class="o">==</span> <span class="s1">&#39;BASE&#39;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span>
+          <span class="s2">&quot;Only BASE Scenario Selected</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+          <span class="s2">&quot;You haven&#39;t selected any additional scenarios.</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+          <span class="s2">&quot;Continue with only BASE?&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;YesNo&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;?&quot;</span><span class="p">,</span>
+          <span class="kp">false</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;No&quot;</span>
+          <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Import cancelled by user&quot;</span>
+          <span class="nb">exit</span> <span class="mi">0</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+
+      <span class="n">scenario_input</span> <span class="o">=</span> <span class="n">selected_scenarios</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+      <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Importing </span><span class="si">#{</span><span class="n">selected_scenarios</span><span class="o">.</span><span class="n">length</span><span class="si">}</span><span class="s2"> scenario(s)&quot;</span>
+
+    <span class="k">else</span>
+      <span class="n">layout</span> <span class="o">=</span> <span class="o">[</span>
+        <span class="o">[</span><span class="s1">&#39;Could not auto-detect scenarios.&#39;</span><span class="p">,</span> <span class="s1">&#39;READONLY&#39;</span><span class="p">,</span> <span class="s1">&#39;Enter scenario names manually&#39;</span><span class="o">]</span><span class="p">,</span>
+        <span class="o">[</span><span class="s1">&#39;Scenarios&#39;</span><span class="p">,</span> <span class="s1">&#39;STRING&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="kp">nil</span><span class="o">]</span>
+      <span class="o">]</span>
+
+      <span class="n">result</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">prompt</span><span class="p">(</span>
+        <span class="s1">&#39;Enter Scenarios Manually&#39;</span><span class="p">,</span>
+        <span class="n">layout</span><span class="p">,</span>
+        <span class="kp">false</span>
+      <span class="p">)</span>
+
+      <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">nil?</span>
+        <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Import cancelled - no scenarios entered.&quot;</span>
+        <span class="nb">exit</span> <span class="mi">0</span>
+      <span class="k">end</span>
+
+      <span class="n">scenario_input</span> <span class="o">=</span> <span class="n">result</span><span class="o">[</span><span class="mi">1</span><span class="o">].</span><span class="n">strip</span>
+
+      <span class="k">if</span> <span class="n">scenario_input</span><span class="o">.</span><span class="n">empty?</span>
+        <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] No scenarios entered&quot;</span>
+        <span class="nb">exit</span> <span class="mi">0</span>
+      <span class="k">end</span>
+
+      <span class="n">scenario_count</span> <span class="o">=</span> <span class="n">scenario_input</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">length</span>
+      <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Importing </span><span class="si">#{</span><span class="n">scenario_count</span><span class="si">}</span><span class="s2"> scenario(s)&quot;</span>
+    <span class="k">end</span>
+
+    <span class="nb">puts</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span>
+
+    <span class="c1"># Verify BASE scenario is included</span>
+    <span class="n">scenarios_list</span> <span class="o">=</span> <span class="n">scenario_input</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:strip</span><span class="p">)</span>
+    <span class="k">unless</span> <span class="n">scenarios_list</span><span class="o">.</span><span class="n">any?</span> <span class="p">{</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span> <span class="n">s</span><span class="o">.</span><span class="n">upcase</span> <span class="o">==</span> <span class="s1">&#39;BASE&#39;</span> <span class="p">}</span>
+      <span class="n">result</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span>
+        <span class="s2">&quot;WARNING: No BASE Scenario Found</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+        <span class="s2">&quot;The merged network needs a BASE scenario</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+        <span class="s2">&quot;to use as the master network.</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+        <span class="s2">&quot;Continue anyway?&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;YesNo&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;!&quot;</span><span class="p">,</span>
+        <span class="kp">false</span>
+      <span class="p">)</span>
+
+      <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;No&quot;</span>
+        <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Import cancelled - BASE scenario required&quot;</span>
+        <span class="nb">exit</span> <span class="mi">1</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="c1"># Get database connection info</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="no">WSApplication</span><span class="o">.</span><span class="n">current_database</span>
+    <span class="k">if</span> <span class="n">db</span><span class="o">.</span><span class="n">nil?</span>
+      <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] ERROR: No database is open&quot;</span>
+      <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span>
+        <span class="s2">&quot;No database is currently open.</span><span class="se">\n\n</span><span class="s2">Please open an InfoWorks ICM database first.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;!&quot;</span><span class="p">,</span>
+        <span class="kp">false</span>
+      <span class="p">)</span>
+      <span class="nb">exit</span> <span class="mi">1</span>
+    <span class="k">end</span>
+
+    <span class="n">db_guid</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">guid</span>
+
+    <span class="n">db_path</span> <span class="o">=</span> <span class="kp">nil</span>
+    <span class="k">begin</span>
+      <span class="n">db_path</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">path</span> <span class="k">if</span> <span class="n">db</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:path</span><span class="p">)</span>
+      <span class="n">db_path</span> <span class="o">||=</span> <span class="n">db</span><span class="o">.</span><span class="n">database_path</span> <span class="k">if</span> <span class="n">db</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:database_path</span><span class="p">)</span>
+      <span class="n">db_path</span> <span class="o">||=</span> <span class="n">db</span><span class="o">.</span><span class="n">location</span> <span class="k">if</span> <span class="n">db</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:location</span><span class="p">)</span>
+      <span class="n">db_path</span> <span class="o">||=</span> <span class="n">db</span><span class="o">.</span><span class="n">file_path</span> <span class="k">if</span> <span class="n">db</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:file_path</span><span class="p">)</span>
+    <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+      <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Warning: Could not get database path: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">end</span>
+
+    <span class="c1"># Save configuration for Exchange script</span>
+    <span class="n">model_dir</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+    <span class="n">config_folder</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="s2">&quot;ICM Import Log Files&quot;</span><span class="p">)</span>
+    <span class="no">Dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">config_folder</span><span class="p">)</span> <span class="k">unless</span> <span class="no">Dir</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">config_folder</span><span class="p">)</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="s1">&#39;file_path&#39;</span> <span class="o">=&gt;</span> <span class="n">file_path</span><span class="p">,</span>
+      <span class="s1">&#39;scenarios&#39;</span> <span class="o">=&gt;</span> <span class="n">scenario_input</span><span class="p">,</span>
+      <span class="s1">&#39;database_guid&#39;</span> <span class="o">=&gt;</span> <span class="n">db_guid</span><span class="p">,</span>
+      <span class="s1">&#39;database_path&#39;</span> <span class="o">=&gt;</span> <span class="n">db_path</span><span class="p">,</span>
+      <span class="s1">&#39;timestamp&#39;</span> <span class="o">=&gt;</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">to_s</span><span class="p">,</span>
+      <span class="s1">&#39;merge_scenarios&#39;</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span>
+      <span class="s1">&#39;cleanup_empty_label_lists&#39;</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span>
+      <span class="s1">&#39;copy_swmm_runs&#39;</span> <span class="o">=&gt;</span> <span class="kp">true</span>
+    <span class="p">}</span>
+
+    <span class="n">config_file</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config_folder</span><span class="p">,</span> <span class="s1">&#39;import_config.json&#39;</span><span class="p">)</span>
+    <span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="no">JSON</span><span class="o">.</span><span class="n">pretty_generate</span><span class="p">(</span><span class="n">config</span><span class="p">))</span> <span class="p">}</span>
+
+    <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Configuration saved to: </span><span class="si">#{</span><span class="n">config_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Launch Exchange script</span>
+    <span class="n">exchange_script</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">script_dir</span><span class="p">,</span> <span class="s1">&#39;InfoSWMM_Import_Exchange.rb&#39;</span><span class="p">)</span>
+
+    <span class="k">unless</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">exchange_script</span><span class="p">)</span>
+      <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] ERROR: Exchange script not found: </span><span class="si">#{</span><span class="n">exchange_script</span><span class="si">}</span><span class="s2">&quot;</span>
+      <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span>
+        <span class="s2">&quot;Cannot find Exchange script.</span><span class="se">\n\n</span><span class="si">#{</span><span class="n">exchange_script</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;!&quot;</span><span class="p">,</span>
+        <span class="kp">false</span>
+      <span class="p">)</span>
+      <span class="nb">exit</span> <span class="mi">1</span>
+    <span class="k">end</span>
+
+    <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;ICM_IMPORT_CONFIG&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="n">config_file</span>
+
+    <span class="c1"># Find ICMExchange.exe</span>
+    <span class="n">icm_exchange</span> <span class="o">=</span> <span class="kp">nil</span>
+    <span class="o">[</span>
+      <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Program Files</span><span class="se">\\</span><span class="s2">Autodesk</span><span class="se">\\</span><span class="s2">InfoWorks ICM Ultimate 2027</span><span class="se">\\</span><span class="s2">ICMExchange.exe&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Program Files</span><span class="se">\\</span><span class="s2">Autodesk</span><span class="se">\\</span><span class="s2">InfoWorks ICM Sewer 2027</span><span class="se">\\</span><span class="s2">ICMExchange.exe&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Program Files</span><span class="se">\\</span><span class="s2">Autodesk</span><span class="se">\\</span><span class="s2">InfoWorks ICM Flood 2027</span><span class="se">\\</span><span class="s2">ICMExchange.exe&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Program Files</span><span class="se">\\</span><span class="s2">Autodesk</span><span class="se">\\</span><span class="s2">InfoWorks ICM 2027</span><span class="se">\\</span><span class="s2">ICMExchange.exe&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Program Files</span><span class="se">\\</span><span class="s2">Autodesk</span><span class="se">\\</span><span class="s2">InfoWorks ICM Ultimate 2026</span><span class="se">\\</span><span class="s2">ICMExchange.exe&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Program Files</span><span class="se">\\</span><span class="s2">Autodesk</span><span class="se">\\</span><span class="s2">InfoWorks ICM Sewer 2026</span><span class="se">\\</span><span class="s2">ICMExchange.exe&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Program Files</span><span class="se">\\</span><span class="s2">Autodesk</span><span class="se">\\</span><span class="s2">InfoWorks ICM Flood 2026</span><span class="se">\\</span><span class="s2">ICMExchange.exe&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Program Files</span><span class="se">\\</span><span class="s2">Autodesk</span><span class="se">\\</span><span class="s2">InfoWorks ICM 2026</span><span class="se">\\</span><span class="s2">ICMExchange.exe&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Program Files</span><span class="se">\\</span><span class="s2">Autodesk</span><span class="se">\\</span><span class="s2">InfoWorks ICM Ultimate 2025.2</span><span class="se">\\</span><span class="s2">ICMExchange.exe&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Program Files</span><span class="se">\\</span><span class="s2">Autodesk</span><span class="se">\\</span><span class="s2">InfoWorks ICM 2025.2</span><span class="se">\\</span><span class="s2">ICMExchange.exe&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Program Files</span><span class="se">\\</span><span class="s2">Autodesk</span><span class="se">\\</span><span class="s2">InfoWorks ICM Ultimate 2025</span><span class="se">\\</span><span class="s2">ICMExchange.exe&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Program Files</span><span class="se">\\</span><span class="s2">Autodesk</span><span class="se">\\</span><span class="s2">InfoWorks ICM 2025</span><span class="se">\\</span><span class="s2">ICMExchange.exe&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Program Files</span><span class="se">\\</span><span class="s2">Autodesk</span><span class="se">\\</span><span class="s2">InfoWorks ICM Ultimate 2024.2</span><span class="se">\\</span><span class="s2">ICMExchange.exe&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Program Files</span><span class="se">\\</span><span class="s2">Autodesk</span><span class="se">\\</span><span class="s2">InfoWorks ICM 2024.2</span><span class="se">\\</span><span class="s2">ICMExchange.exe&quot;</span>
+    <span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">path</span><span class="o">|</span>
+      <span class="k">if</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">icm_exchange</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="k">break</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="k">if</span> <span class="n">icm_exchange</span><span class="o">.</span><span class="n">nil?</span>
+      <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] ERROR: ICMExchange.exe not found&quot;</span>
+      <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span>
+        <span class="s2">&quot;ERROR: ICMExchange.exe Not Found</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+        <span class="s2">&quot;This script requires ICMExchange.exe to run.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;!&quot;</span><span class="p">,</span>
+        <span class="kp">false</span>
+      <span class="p">)</span>
+      <span class="nb">exit</span> <span class="mi">1</span>
+    <span class="k">end</span>
+
+    <span class="c1"># Launch Exchange script</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="si">#{</span><span class="n">icm_exchange</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2"> </span><span class="se">\&quot;</span><span class="si">#{</span><span class="n">exchange_script</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2"> /ICM&quot;</span>
+
+    <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Launching Exchange script...&quot;</span>
+    <span class="nb">require</span> <span class="s1">&#39;open3&#39;</span>
+    <span class="n">output</span><span class="p">,</span> <span class="n">status</span> <span class="o">=</span> <span class="no">Open3</span><span class="o">.</span><span class="n">capture2</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+    <span class="n">success</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">success?</span>
+
+    <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Exchange script completed with status: </span><span class="si">#{</span><span class="n">status</span><span class="o">.</span><span class="n">exitstatus</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Display summary</span>
+    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span>
+    <span class="nb">puts</span> <span class="s2">&quot; IMPORT SUMMARY&quot;</span>
+    <span class="nb">puts</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span>
+    <span class="nb">puts</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">success</span>
+      <span class="n">summary</span> <span class="o">=</span> <span class="s2">&quot;Import Complete!</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+      <span class="n">summary</span> <span class="o">+=</span> <span class="s2">&quot;Scenarios imported: </span><span class="si">#{</span><span class="n">selected_scenarios</span><span class="o">.</span><span class="n">length</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+      <span class="n">summary</span> <span class="o">+=</span> <span class="s2">&quot;See Ruby output window for full details.</span><span class="se">\n</span><span class="s2">&quot;</span>
+      <span class="n">summary</span> <span class="o">+=</span> <span class="s2">&quot;Logs: ICM Import Log Files folder&quot;</span>
+
+      <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span><span class="n">summary</span><span class="p">,</span> <span class="s2">&quot;OK&quot;</span><span class="p">,</span> <span class="s2">&quot;Information&quot;</span><span class="p">,</span> <span class="kp">false</span><span class="p">)</span>
+    <span class="k">else</span>
+      <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span>
+        <span class="s2">&quot;Import Failed</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+        <span class="s2">&quot;Check the Ruby output window for details.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Warning&quot;</span><span class="p">,</span>
+        <span class="kp">false</span>
+      <span class="p">)</span>
+    <span class="k">end</span>
+
+  <span class="k">rescue</span> <span class="no">SystemExit</span><span class="p">,</span> <span class="no">Interrupt</span>
+    <span class="k">raise</span>
+  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span>
+    <span class="nb">puts</span> <span class="s2">&quot;FATAL ERROR&quot;</span>
+    <span class="nb">puts</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span>
+    <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Error: </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">class</span><span class="si">}</span><span class="s2"> - </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nb">puts</span> <span class="s2">&quot;Stack trace:&quot;</span>
+    <span class="nb">puts</span> <span class="n">e</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">first</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">puts</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span>
+
+    <span class="no">WSApplication</span><span class="o">.</span><span class="n">message_box</span><span class="p">(</span>
+      <span class="s2">&quot;An unexpected error occurred:</span><span class="se">\n\n</span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+      <span class="s2">&quot;Check the Ruby output window for details.&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;!&quot;</span><span class="p">,</span>
+      <span class="kp">false</span>
+    <span class="p">)</span>
+    <span class="nb">exit</span> <span class="mi">1</span>
+  <span class="k">end</span>
+
+<span class="k">ensure</span>
+  <span class="nb">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">] Script execution ended&quot;</span>
+<span class="k">end</span>
+</code></pre></div>
+</td></tr></table></div></section>
+  <footer>Auto-generated &middot; Original file unmodified</footer>
+</div>
+</body>
+</html>

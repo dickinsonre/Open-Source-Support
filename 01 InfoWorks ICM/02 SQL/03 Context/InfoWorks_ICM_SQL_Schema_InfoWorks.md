@@ -1,12 +1,16 @@
 # InfoWorks ICM SQL Schema — InfoWorks Networks
 
-**Last Updated:** March 20, 2026
+**Last Updated:** July 7, 2026
 
 **Load Priority:** LOOKUP — Load for any InfoWorks network SQL query requiring field names
 **Load Condition:** CONDITIONAL — When user asks about InfoWorks fields, schemas, or object inventory
 
 **Related Files:**
-- `InfoWorks_ICM_SQL_Schema_Common.md` — Common fields (`user_text_*`, `user_number_*`), results schema (`sim.*`, `tsr.*`), relationship paths, Autodesk Help workflow
+- `Instructions.md` — loading priorities and network-type policy
+- `InfoWorks_ICM_SQL_Schema_Common.md` — Common fields (`user_text_*`, `user_number_*`), results schema (`sim.*`, `tsr.*`), relationship paths
+- `InfoWorks_ICM_Database_Fields_Guide.md` — MCP Help lookup when field not in schema files
+- `InfoWorks_ICM_SQL_Schema_SWMM.md` — SWMM network field names (separate file; do NOT mix with InfoWorks fields)
+- `InfoWorks_ICM_SQL_Lessons_Learned.md` — Read FIRST — Critical field name gotchas
 - `InfoWorks_ICM_SQL_Schema_SWMM.md` — SWMM network field names (separate file; do NOT mix with InfoWorks fields)
 - `InfoWorks_ICM_SQL_Lessons_Learned.md` — Read FIRST — Critical field name gotchas
 
@@ -15,26 +19,31 @@
 This file is the **authoritative field-name and object-manifest reference for InfoWorks networks**.
 
 Use it when:
-- A user is working with an InfoWorks network (default when `(SWMM)` is not specified)
+- A user is working with an InfoWorks network (default when network type is not specified)
 - The query involves field names from `hw_*` tables
 - An object manifest or coverage check is needed for InfoWorks objects
 
+See `Instructions.md` for full network-type policy.
 **SWMM fields are in `InfoWorks_ICM_SQL_Schema_SWMM.md`. Do not mix field sets.**
 
 ## Retrieval Rules for LLMs
 
-1. Confirm the network type is **InfoWorks** before using this file.
-2. Match the **object type** (Node, Conduit, Subcatchment, etc.).
-3. Use exact strings from the `Database Field` column.
-4. If a user gives a UI label, check the `UI Label` column.
-5. If a field is not listed here, check `InfoWorks_ICM_SQL_Schema_Common.md` for common/results fields.
-6. Do not invent field names.
+1. Load when network type is **InfoWorks** (default when unspecified) or the user explicitly requests InfoWorks fields.
+2. Always load with `InfoWorks_ICM_SQL_Schema_Common.md` (see `Instructions.md`).
+3. Match the **object type** (Node, Conduit, Subcatchment, etc.).
+4. Use exact strings from the `Database Field` column.
+5. If a user gives a UI label, check the `UI Label` column.
+6. If a field is not listed here, check `InfoWorks_ICM_SQL_Schema_Common.md` for common/results fields.
+7. Do not invent field names.
 
 ## Critical SQL Reminders
 
-InfoWorks ICM SQL is **not standard ANSI SQL**. Even if `Lessons_Learned.md` was not loaded, these rules are mandatory:
+InfoWorks ICM SQL is **not standard ANSI SQL**. Even if `InfoWorks_ICM_SQL_Lessons_Learned.md` was not loaded, these rules are mandatory:
 
-- **No CASE WHEN** — use `IIF(condition, true_val, false_val)` or `IF condition; ... ELSEIF ...; ELSE; ... ENDIF;`
+- **No CASE WHEN** — use `IIF()` for field conditionals; `IF`/`WHILE` conditions: scalars (`$x`) only
+- **No JOINs** — use dot-notation navigation (e.g., `us_node.ground_level`, `ds_links.width`)
+- **Semicolons required** after every statement, including control flow (`IF;`, `ELSE;`, `ENDIF;`, `WEND;`)
+- **LIKE uses `?` and `*`** — not `%` and `_` (e.g., `LIKE 'MH*'` not `LIKE 'MH%'`)
 - **No JOINs** — use dot-notation navigation (e.g., `us_node.ground_level`, `ds_links.width`)
 - **Semicolons required** after every statement, including control flow (`IF;`, `ELSE;`, `ENDIF;`, `WEND;`)
 - **LIKE uses `?` and `*`** — not `%` and `_` (e.g., `LIKE 'MH*'` not `LIKE 'MH%'`)
@@ -161,7 +170,7 @@ Source: Autodesk Help `Network Data Fields` index page.
 
 ## InfoWorks Field Tables
 
-All InfoWorks field tables are indexed here. For common fields (`user_text_*`, `user_number_*`, `hyperlinks`, `notes`) and results fields (`sim.*`, `tsr.*`) see `InfoWorks_ICM_SQL_Schema_Common.md`.
+All InfoWorks field tables are indexed here. For common fields (`user_text_*`, `user_number_*`, `hyperlinks`, `notes`) and results rules/metadata, see `InfoWorks_ICM_SQL_Schema_Common.md`. Object-specific `sim.*`/`tsr.*` field tables are in this file.
 
 ### Nodes
 
@@ -182,7 +191,7 @@ All InfoWorks field tables are indexed here. For common fields (`user_text_*`, `
 | Ground Level | `ground_level` | scalar | |
 | Flood Level | `flood_level` | scalar | surcharge/flood engagement level |
 | Chamber Roof | `chamber_roof` | scalar | soffit level of chamber |
-| Chamber Floor Level | `chamber_floor_level` | scalar | Node invert level |
+| Chamber Floor Level | `chamber_floor_level` | scalar | Node invert level (UI label "Chamber Floor Level") |
 | Chamber Area | `chamber_area` | scalar |  |
 | Shaft Area | `shaft_area` | scalar | Cross-sectional area of shaft |
 | Shaft Area Additional | `shaft_area_additional` | scalar | extra shaft area above node |
@@ -233,7 +242,7 @@ All InfoWorks field tables are indexed here. For common fields (`user_text_*`, `
 | Area of Voids | `area_of_voids` | scalar |  |
 | Half Road Width | `half_road_width` | scalar | gully/inlet node |
 
-> Common data fields (`user_text_1`–`10`, `user_number_1`–`10`, `notes`, `hyperlinks`) apply to this object — see `Schema_Common.md`.
+> Common data fields (`user_text_1`–`10`, `user_number_1`–`10`, `notes`, `hyperlinks`) apply to this object — see `InfoWorks_ICM_SQL_Schema_Common.md`.
 
 ### Links
 
@@ -315,7 +324,7 @@ All InfoWorks field tables are indexed here. For common fields (`user_text_*`, `
 | DS Ki | `ds_ki` | scalar |  |
 | DS Ko | `ds_ko` | scalar |  |
 
-> Common data fields (`user_text_1`–`10`, `user_number_1`–`10`, `notes`, `hyperlinks`) apply to this object — see `Schema_Common.md`.
+> Common data fields (`user_text_1`–`10`, `user_number_1`–`10`, `notes`, `hyperlinks`) apply to this object — see `InfoWorks_ICM_SQL_Schema_Common.md`.
 
 #### Pump (`hw_pump`)
 
@@ -888,7 +897,7 @@ All InfoWorks field tables are indexed here. For common fields (`user_text_*`, `
 | SWMM Coverage | `swmm_coverage` | blob | Sub-fields: `.land_use`, `.area` |
 | Boundary Array | `boundary_array` | blob | Subcatchment polygon geometry |
 
-> Common data fields (`user_text_1`–`10`, `user_number_1`–`10`, `notes`, `hyperlinks`) apply to this object — see `Schema_Common.md`.
+> Common data fields (`user_text_1`–`10`, `user_number_1`–`10`, `notes`, `hyperlinks`) apply to this object — see `InfoWorks_ICM_SQL_Schema_Common.md`.
 
 #### Subcatchment SuDS Controls (`hw_suds_control`)
 
@@ -1347,7 +1356,7 @@ The `sim.*` prefix returns summary results at the current timestep or maximum. N
 | Maximum Surcharge | `sim.max_Surcharge` | result | Case-sensitive as shown |
 | Peak Catchment Flow | `sim.max_qcatch` | result | InfoWorks subcatchment |
 
-**Do not assume a `sim.*` suffix from one network type will work in the other.** SWMM-specific `sim.*` fields are in `Schema_SWMM.md`.
+**Do not assume a `sim.*` suffix from one network type will work in the other.** SWMM-specific `sim.*` fields are in `InfoWorks_ICM_SQL_Schema_SWMM.md`.
 
 ---
 
@@ -1454,7 +1463,12 @@ The same directional prefix pattern applies to `MF*`, `PF*`, and `SEDDEP` fields
 | Max flood depth | `tsr.Max_FloodDepth` | result | Summary |
 | Max flood volume | `tsr.Max_FloodVolume` | result | Summary |
 | Max flood volume (cumulative) | `tsr.MAX_FLVOL` | result | Summary |
+| Max flood depth | `tsr.Max_FloodDepth` | result | Summary |
+| Max flood volume | `tsr.Max_FloodVolume` | result | Summary |
 | Flood volume (cumulative) | `tsr.FLVOL` | result | Summary |
+| Max stored volume | `tsr.MAX_VOLUME` | result | Summary |
+| Cumulative flow | `tsr.QCUM` | result | Summary |
+| Cumulative inflow | `tsr.QINCUM` | result | Summary |
 | Max stored volume | `tsr.MAX_VOLUME` | result | Summary |
 | Cumulative flow | `tsr.QCUM` | result | Summary |
 | Cumulative inflow | `tsr.QINCUM` | result | Summary |
@@ -1485,6 +1499,10 @@ The same directional prefix pattern applies to `MF*`, `PF*`, and `SEDDEP` fields
 | Depth at node | `tsr.DEPNOD` | result | Time-varying |
 | Flood depth | `tsr.FloodDepth` | result | Time-varying |
 | Flood volume | `tsr.FloodVolume` | result | Time-varying |
+| Volume lost | `tsr.FLVOL` | result | Time-varying; cumulative lost at lost nodes |
+| Flow | `tsr.FLOW` | result | Time-varying |
+| Gully flow | `tsr.GLLYFLOW` | result | Time-varying; gully nodes |
+| Gutter spread | `tsr.GTTRSPRD` | result | Time-varying; gully nodes |
 | Flow | `tsr.FLOW` | result | Time-varying |
 | Gully flow | `tsr.GLLYFLOW` | result | Time-varying; gully nodes |
 | Gutter spread | `tsr.GTTRSPRD` | result | Time-varying; gully nodes |

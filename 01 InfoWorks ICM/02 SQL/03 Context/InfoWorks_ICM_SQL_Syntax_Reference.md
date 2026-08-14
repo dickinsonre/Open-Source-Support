@@ -1,7 +1,7 @@
 # InfoWorks ICM SQL Syntax & Language Reference for LLM Agents
 
 **Source:** SQL Combined Help Documentation
-**Last Updated:** March 18, 2026
+**Last Updated:** July 7, 2026
 
 **Load Priority:** CORE - Load for syntax questions, data type behavior, and join navigation
 **Load Condition:** CONDITIONAL - When query involves syntax details, data types, implicit joins, operators, or advanced clause structure
@@ -19,13 +19,20 @@ This guide provides **language syntax and data model reference** for InfoWorks I
 - Understand bare array field vs. aggregate function interaction rules
 - Reference SELECT clause types (explicit, GROUP BY, implicit GROUP BY)
 
-**Prerequisite:** Read `Lessons_Learned.md` FIRST to avoid critical mistakes
+**Prerequisite:** Read `InfoWorks_ICM_SQL_Lessons_Learned.md` FIRST to avoid critical mistakes
 
 **Related Files:**
 - `InfoWorks_ICM_SQL_Lessons_Learned.md` - Read FIRST - Critical gotchas
 - `InfoWorks_ICM_SQL_Function_Reference.md` - Function signatures and aggregates
 - `InfoWorks_ICM_SQL_Pattern_Reference.md` - Working code templates
-- `InfoWorks_ICM_SQL_Schema_Common.md` - Database field name lookups, IW vs SWMM differences, Autodesk Help workflow
+- `InfoWorks_ICM_SQL_Lessons_Learned.md` - Read FIRST - Critical gotchas
+- `InfoWorks_ICM_SQL_Function_Reference.md` - Function signatures and aggregates
+- `InfoWorks_ICM_SQL_Pattern_Reference.md` - Working code templates
+- `InfoWorks_ICM_SQL_Schema_InfoWorks.md` - InfoWorks network field tables (with `InfoWorks_ICM_SQL_Schema_Common.md`)
+- `InfoWorks_ICM_SQL_Schema_SWMM.md` - SWMM network field tables (with `InfoWorks_ICM_SQL_Schema_Common.md`)
+- `InfoWorks_ICM_SQL_Schema_Common.md` - Common fields, results rules, IW vs SWMM differences
+- `InfoWorks_ICM_Database_Fields_Guide.md` - MCP Help lookup when field not in schema files
+- `InfoWorks_ICM_SQL_Error_Reference.md` - Error message diagnosis
 - `InfoWorks_ICM_SQL_Error_Reference.md` - Error message diagnosis
 
 ---
@@ -402,7 +409,7 @@ Required ordering within a clause:
 - WHERE must come before GROUP BY
 - HAVING must come after GROUP BY
 - ORDER BY always last
-- INTO FILE comes before ORDER BY but after WHERE
+- INTO FILE comes after FROM and before WHERE; ORDER BY is last
 - TOP/BOTTOM comes after SELECT keyword
 
 ---

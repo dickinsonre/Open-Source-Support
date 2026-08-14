@@ -3,7 +3,6 @@
 # Each selected object gets one graph with all non-zero result fields overlaid.
 # When 2+ objects of the same type are selected, a comparison graph is added.
 require 'date'
- 
 catch(:stop) do
  
 net = WSApplication.current_network

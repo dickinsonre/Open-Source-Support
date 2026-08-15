@@ -100,7 +100,7 @@ def find_icm_exchange
   WSApplication.message_box(
     "ICMExchange.exe Not Found Automatically\n\n" +
     "Please locate ICMExchange.exe in the InfoWorks ICM installation directory.",
-    "OK", "Warning", false
+    "OK", "!", false
   )
   
   user_path = WSApplication.file_dialog(true, 'exe', 'Locate ICMExchange.exe', 'ICMExchange.exe', false, nil)
@@ -135,65 +135,85 @@ result = WSApplication.message_box(
 exit if result == "No"
 
 # ----------------------------------------------------------------------------
-# STEP 2: Select import mode using checkboxes
+# STEP 2 + 3: Select import mode AND the source file/folder in ONE dialog
 # ----------------------------------------------------------------------------
-layout = [
-  ['Select Import Mode (check ONE):', 'READONLY', ''],
-  ['1. Single File', 'BOOLEAN', true],
-  ['2. Batch - Directory Only', 'BOOLEAN', false],
-  ['3. Batch - Include Subdirectories', 'BOOLEAN', false]
+# A dropdown (STRING + 'LIST') is genuinely mutually exclusive - separate
+# BOOLEAN checkboxes let the user tick several modes at once, which then had to
+# be resolved by an arbitrary "first tick wins" rule.
+#
+# Both browse buttons live on this same dialog: 'FILE' for the single .inp and
+# 'FOLDER' for the batch directory. Only the row matching the chosen mode needs
+# filling in - the other is ignored.
+import_modes = [
+  '1. Single File',
+  '2. Batch - Directory Only',
+  '3. Batch - Include Subdirectories'
 ]
 
-result = WSApplication.prompt(
-  'Import Mode Selection',
-  layout,
-  false
-)
+layout = [
+  ['Import Mode:', 'STRING', import_modes[0], nil, 'LIST', import_modes],
+  ['Mode 1 - SWMM5 .inp file:', 'STRING', nil, nil, 'FILE', true, 'inp', 'SWMM5 Input File', false],
+  ['Modes 2/3 - folder to scan:', 'STRING', nil, nil, 'FOLDER', 'Select Folder']
+]
+
+result = WSApplication.prompt('SWMM5 Import - Source Selection', layout, false)
 if result.nil?
   puts "Import cancelled by user"
   exit
 end
 
-# The result array contains the selected index for CHOICE inputs.
-mode_index = result[0]
-import_mode_label = import_modes[mode_index]
+# The dropdown returns the selected STRING, not an index.
+mode_index = import_modes.index(result[0]) || 0
+import_mode_label = import_modes[mode_index].sub(/\A\d+\.\s*/, '')
+selected_file   = result[1].to_s.strip
+selected_folder = result[2].to_s.strip
 
 puts "\n" + "="*70
 puts " SWMM5 Import to ICM - V3.1"
 puts "="*70
 puts "Import Mode: #{import_mode_label}"
 
-# ----------------------------------------------------------------------------
-# STEP 3: Get File(s) or Directory
-# ----------------------------------------------------------------------------
 file_paths = []
 base_directory = nil
 
 case mode_index
 when 0 # Single File
-  file_path = WSApplication.file_dialog(true, 'inp', 'SWMM5 Input File', '', false, nil)
-  exit if file_path.nil?
-  
-  normalized_path = file_path.gsub('\\', '/')
+  if selected_file.empty?
+    WSApplication.message_box(
+      "No .inp file selected.\n\nMode 1 (Single File) needs the 'SWMM5 .inp file' row filled in.",
+      "OK", "!", false
+    )
+    exit
+  end
+
+  normalized_path = selected_file.gsub('\\', '/')
+  unless File.file?(normalized_path)
+    WSApplication.message_box("Not a valid file:\n\n#{normalized_path}", "OK", "!", false)
+    exit
+  end
+
   file_paths << normalized_path
   base_directory = File.dirname(normalized_path)
 
 when 1, 2 # Batch Modes
-  WSApplication.message_box(
-    "Select Target Directory\n\n" +
-    "In the next dialog, navigate to the target directory and select ANY FILE within it.\n\n" +
-    "The script will scan this directory.",
-    "OK", "Information", false
-  )
-  
-  sample_file = WSApplication.file_dialog(true, '*', 'Select any file in the target directory', '', false, nil)
-  exit if sample_file.nil?
-  
-  base_directory = File.dirname(sample_file).gsub('\\', '/')
+  if selected_folder.empty?
+    WSApplication.message_box(
+      "No folder selected.\n\nModes 2 and 3 need the 'folder to scan' row filled in.",
+      "OK", "!", false
+    )
+    exit
+  end
+
+  base_directory = selected_folder.gsub('\\', '/')
+  unless File.directory?(base_directory)
+    WSApplication.message_box("Not a valid folder:\n\n#{base_directory}", "OK", "!", false)
+    exit
+  end
+
   is_recursive = (mode_index == 2)
-  
+
   file_paths = find_inp_files(base_directory, is_recursive)
-  
+
   if file_paths.empty?
     WSApplication.message_box("No .inp files found in the selected directory.", "OK", "!", false)
     exit
@@ -216,16 +236,32 @@ end
 # ----------------------------------------------------------------------------
 total_size_mb = file_paths.sum { |file| File.exist?(file) ? File.size(file) : 0 } / (1024.0 * 1024.0)
 
-# Heuristic: 30s per file overhead + 1 min per 25MB
-estimated_time_minutes = (file_paths.length * 0.5) + (total_size_mb / 25.0)
-estimated_time_str = "#{estimated_time_minutes.ceil} minutes"
+# Timing model calibrated against a real batch run (2026-08-14):
+#   86 files, 45.8 MB  ->  134s wall clock (~8.7s of that is ICMExchange startup)
+#   per-file import: mean 1.46s, median 0.57s
+# The old heuristic assumed 30s PER FILE, which over-predicted by ~20x (it
+# quoted ~45 min for a batch that finished in 2.2 min).
+EXCHANGE_STARTUP_S = 10.0   # one-off ICMExchange launch cost
+PER_FILE_S         = 0.6    # fixed cost per .inp regardless of size
+PER_MB_S           = 2.0    # size-driven parse/commit cost
+
+estimated_seconds = EXCHANGE_STARTUP_S +
+                    (file_paths.length * PER_FILE_S) +
+                    (total_size_mb * PER_MB_S)
+estimated_time_minutes = estimated_seconds / 60.0
+
+estimated_time_str = if estimated_seconds < 90
+                       "#{estimated_seconds.round} seconds"
+                     else
+                       "#{estimated_time_minutes.round(1)} minutes"
+                     end
 
 puts "Total size: #{total_size_mb.round(2)} MB. Estimated time: ~#{estimated_time_str}"
 
 if estimated_time_minutes > 10
   result = WSApplication.message_box(
     "Large Import Warning\n\nEstimated time: ~#{estimated_time_str}\n\nContinue?",
-    "YesNo", "Warning", false
+    "YesNo", "!", false
   )
   exit if result == "No"
 end
@@ -238,10 +274,11 @@ network_names = []
 if mode_index == 0 # Single File
   default_name = File.basename(file_paths.first, '.inp')
 
-  # FIX: Using robust 4-element format: [Label, Type, Attributes (nil), Default Value]
+  # ICM prompt rows are [Label, Type, DefaultValue] - a 4th element after a
+  # BOOLEAN raises "parameters other than default value following BOOLEAN type".
   layout = [
-    ['Network Name:', 'STRING', nil, default_name],
-    ['Add timestamp?', 'BOOLEAN', nil, false]
+    ['Network Name:', 'STRING', default_name],
+    ['Add timestamp?', 'BOOLEAN', false]
   ]
   result = WSApplication.prompt('Import Settings', layout, false)
   exit if result.nil?
@@ -262,11 +299,12 @@ else # Batch Modes
         '3. Relative Path (e.g., Sub_Dir_File)'
     ]
 
-    # FIX: Using robust 4-element format for all types.
+    # A dropdown in ICM is STRING + a 'LIST' attribute, and it returns the
+    # selected STRING - not an index.
     layout = [
-        ['Naming Convention:', 'CHOICE', naming_options, 0],
-        ['Prefix (optional):', 'STRING', nil, 'SWMM_Import_'],
-        ['Add timestamp (recommended)?', 'BOOLEAN', nil, true] # Default true for batch
+        ['Naming Convention:', 'STRING', naming_options[0], nil, 'LIST', naming_options],
+        ['Prefix (optional):', 'STRING', 'SWMM_Import_'],
+        ['Add timestamp (recommended)?', 'BOOLEAN', true] # Default true for batch
     ]
   
     result = WSApplication.prompt('Batch Naming Settings', layout, false)
@@ -288,12 +326,12 @@ else # Batch Modes
         filename = File.basename(file_path, File.extname(file_path))
         
         case naming_choice
-        when 0 # Filename Only
+        when naming_options[0] # Filename Only
             name = filename
-        when 1 # Directory + Filename
+        when naming_options[1] # Directory + Filename
             parent_dir = File.basename(File.dirname(file_path))
             name = "#{parent_dir}_#{filename}"
-        when 2 # Relative Path
+        when naming_options[2] # Relative Path
             relative_path = file_path.sub(base_dir_normalized, '')
             
             # IMPROVEMENT: Robustly handle files in the root directory
@@ -303,6 +341,9 @@ else # Batch Modes
                 # Construct name from relative path components, replacing separators with underscores
                 name = File.join(File.dirname(relative_path), filename).gsub('/', '_')
             end
+        else
+            # Unrecognised selection - never leave `name` nil for the loop below.
+            name = filename
         end
         
         name = "#{name_prefix}#{name}" unless name_prefix.empty?
@@ -330,13 +371,23 @@ end
 # STEP 6: Pre-Validation (Check for Duplicates in DB)
 # ----------------------------------------------------------------------------
 puts "\nValidating network names against database..."
-duplicates = []
-network_names.each do |name|
-  # Check if an object of the target type with this name already exists
-  if db.find_model_object(TARGET_NETWORK_TYPE, name)
-    duplicates << name
-  end
+
+# WSDatabase has no #find_model_object method. Instead, walk the database tree
+# (breadth-first, including nested Model Groups) and collect the names of every
+# existing object whose type matches TARGET_NETWORK_TYPE, then compare against
+# the proposed names. See "0025 - Recursively find model network" for the same
+# root_model_objects / children / type traversal pattern.
+existing_names = {}
+to_process = []
+db.root_model_objects.each { |o| to_process << o }
+
+until to_process.empty?
+  obj = to_process.shift
+  existing_names[obj.name] = true if obj.type == TARGET_NETWORK_TYPE
+  obj.children.each { |child| to_process << child }
 end
+
+duplicates = network_names.select { |name| existing_names[name] }
 
 if duplicates.any?
   puts "ERROR: Duplicate network names found in the database."
@@ -371,8 +422,14 @@ config = {
   'base_directory' => base_directory,
   'file_configs' => file_configs,
   # Flags for the exchange script
-  'cleanup_empty_label_lists' => true, 
-  'validate_after_import' => true
+  'cleanup_empty_label_lists' => true,
+  'validate_after_import' => true,
+  # Run ICM's own net.validate('Base') and only commit networks that pass.
+  # Networks with validation ERRORS are left imported but uncommitted.
+  'run_icm_validation' => true,
+  # Set true to commit invalid networks anyway via commit_bypassing_validation,
+  # so nothing is left uncommitted. They are still reported as invalid.
+  'commit_even_if_invalid' => false
 }
 
 config_file = File.join(config_folder, 'import_config.yaml')
@@ -468,9 +525,11 @@ dialog_title = "Import Complete"
 icon = "Information"
 summary_msg = ""
 
-if stats['files_failed'] > 0
+if stats['files_failed'] > 0 || stats['files_invalid'] > 0
   dialog_title = "Import Completed with Failures"
-  icon = (stats['files_successful'] > 0) ? "Warning" : "!"
+  # ICM accepts only '!', '?' and 'Information' as icons - 'Warning' raises
+  # RuntimeError: invalid icon. Use '!' for both partial and total failure.
+  icon = "!"
 end
 
 # IMPROVEMENT: Format duration nicely
@@ -482,11 +541,18 @@ end
 if file_paths.length > 1
   summary_msg += "Batch Results:\n"
   summary_msg += "  Processed: #{stats['files_processed']}\n"
-  summary_msg += "  Successful: #{stats['files_successful']}\n"
-  summary_msg += "  Failed: #{stats['files_failed']}\n\n"
+  summary_msg += "  Committed: #{stats['files_successful']}\n"
+  summary_msg += "  Failed: #{stats['files_failed']}\n"
+  if stats['files_invalid'] > 0
+    summary_msg += "  Not committed (validation errors): #{stats['files_invalid']}\n"
+  end
+  summary_msg += "\n"
 else
     if stats['files_successful'] == 1
         summary_msg += "Network Created: #{network_names.first}\n\n"
+    elsif stats['files_invalid'] > 0
+        summary_msg += "Status: IMPORTED BUT NOT COMMITTED\n" +
+                       "Validation reported errors - see the validation report.\n\n"
     else
         summary_msg += "Status: FAILED\n\n"
     end
@@ -500,6 +566,9 @@ if stats['files_successful'] > 0
   # The Exchange script writes the 'total_labels_cleaned' key
   if stats['total_labels_cleaned'] > 0
     summary_msg += "Cleaned: #{stats['total_labels_cleaned']} empty visualization labels\n\n"
+  end
+  if stats['total_warnings'] > 0
+    summary_msg += "Validation warnings (committed anyway): #{stats['total_warnings']}\n\n"
   end
 end
 

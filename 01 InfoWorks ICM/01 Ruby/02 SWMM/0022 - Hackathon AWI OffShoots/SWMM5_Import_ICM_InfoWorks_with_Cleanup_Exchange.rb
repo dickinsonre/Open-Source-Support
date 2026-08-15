@@ -38,7 +38,11 @@ $aggregate_stats = {
   total_subcatchments: 0,
   total_labels_cleaned: 0,
   total_import_time: 0.0,
-  failed_files: []
+  failed_files: [],
+  # Imported but not committed because ICM validation reported errors
+  files_invalid: 0,
+  invalid_files: [],
+  total_warnings: 0
 }
 
 # Dual logging: Console (simple) and File (structured)
@@ -102,38 +106,34 @@ def initialize_script
 end
 
 # ----------------------------------------------------------------------------
+# Find or create a root-level Model Group to hold the imported networks.
+# Networks cannot live directly at the database root, so all imports go here.
+# ----------------------------------------------------------------------------
+def find_or_create_model_group(db, group_name)
+  db.root_model_objects.each do |o|
+    return o if o.type == 'Model Group' && o.name == group_name
+  end
+  db.new_model_object('Model Group', group_name)
+end
+
+# ----------------------------------------------------------------------------
 # Phase 1: Import File
 # ----------------------------------------------------------------------------
-def import_file(db, file_path, network_name, log_dir)
+def import_file(parent_group, file_path, network_name, log_dir)
   log "PHASE 1: Importing SWMM5 data"
-  network = nil
 
-  # 1. Create Network Object
-  begin
-    # Explicitly creating 'SWMM network' type
-    network = db.new_model_object('SWMM network', network_name)
-    log "  Network object created (ID: #{network.id})"
-  rescue => e
-    # Handle duplicate names robustly
-    if e.message.include?("already exists") || e.message.include?("Name is not unique")
-      raise "Network '#{network_name}' already exists (Duplicate name)"
-    else
-      raise "Failed to create network object: #{e.message}"
-    end
-  end
-
-  # 2. Import Data
+  # A SWMM5 .inp is imported at the Model Group level with
+  # import_all_sw_model_objects: it parses the file and CREATES the SWMM network
+  # (plus any related objects) inside the group. You do NOT pre-create an empty
+  # network and import into it - WSOpenNetwork has no #import_ex method.
   import_log_path = File.join(log_dir, "#{File.basename(file_path, '.inp')}_ImportLog_#{Time.now.strftime('%Y%m%d_%H%M%S')}.txt")
-  net = network.open
-  
-  import_success = false
+
+  imported_objects = nil
   import_time = time_it do
-    # Import using the "inp" driver for SWMM5 into SWMM networks
-    # Ensuring path format is compatible (ICM API often prefers Windows paths)
-    import_success = net.import_ex(
-        file_path.gsub('/', '\\'), 
-        "inp", 
-        nil, 
+    imported_objects = parent_group.import_all_sw_model_objects(
+        file_path.gsub('/', '\\'),        # SWMM5 .inp (Windows path)
+        'inp',                            # format for SWMM5 INP files
+        '',                               # scenario name (unused for INP)
         import_log_path.gsub('/', '\\')
     )
   end
@@ -141,10 +141,9 @@ def import_file(db, file_path, network_name, log_dir)
   $aggregate_stats[:total_import_time] += import_time
   log "  Import duration: #{sprintf('%.2f', import_time)}s"
 
-  # 3. Handle Failure
-  unless import_success
+  # Handle failure - nothing imported
+  if imported_objects.nil? || imported_objects.empty?
     log "  Import process reported failure. Check log: #{import_log_path}", :error
-    # Dump import log contents to main log
     if File.exist?(import_log_path)
         log "  --- Import Log Contents (First 100 lines) ---", :warn
         File.foreach(import_log_path).with_index do |line, i|
@@ -155,6 +154,26 @@ def import_file(db, file_path, network_name, log_dir)
     end
     raise "Import failed"
   end
+
+  # Locate the SWMM network the import created (there should be exactly one).
+  network = nil
+  imported_objects.each { |o| network = o if o.type == 'SWMM network' }
+  raise "Import produced no SWMM network object" if network.nil?
+
+  log "  Imported #{imported_objects.length} object(s); network '#{network.name}' (ID: #{network.id})"
+
+  # The import names the network after the .inp file - rename it to the name the
+  # user configured. Non-fatal: keep the imported name if the rename is rejected.
+  if network_name && !network_name.empty? && network.name != network_name
+    begin
+      network.name = network_name
+      log "  Renamed network to '#{network_name}'"
+    rescue => e
+      log "  WARNING: Could not rename network to '#{network_name}': #{e.message}", :warn
+    end
+  end
+
+  net = network.open
 
   log "  SUCCESS: Import completed."
   { net: net, network_obj: network }
@@ -168,13 +187,27 @@ def cleanup_visualization_labels(net)
   
   # In SWMM networks, visualization labels are stored in 'sw_label'.
   table_name = 'sw_label'
-  
-  unless net.table_exists?(table_name)
+
+  # WSOpenNetwork has no #table_exists?, but it does expose #table_names.
+  # Use that when available, and still guard the read itself.
+  begin
+    names = net.table_names
+    if names && !names.map(&:to_s).include?(table_name)
+      log "  No '#{table_name}' table in this network - nothing to clean."
+      return 0
+    end
+  rescue
+    # table_names unavailable - fall through and let the read decide
+  end
+
+  labels = begin
+    net.row_objects(table_name)
+  rescue => e
+    log "  Skipping label cleanup (table '#{table_name}' unavailable: #{e.message})", :warn
     return 0
   end
-  
-  labels = net.row_objects(table_name)
-  if labels.empty?
+
+  if labels.nil? || labels.empty?
     return 0
   end
   
@@ -185,9 +218,19 @@ def cleanup_visualization_labels(net)
   net.transaction_begin
   begin
     labels.each do |label|
-      # Check the 'label' field content
-      content = label.label
-      if content.nil? || content.strip.empty?
+      # Check the label text. Field access varies by ICM version, so try the
+      # hash-style field first and fall back to the accessor.
+      content = begin
+        label['text'] || label['label']
+      rescue
+        begin
+          label.label
+        rescue
+          nil
+        end
+      end
+
+      if content.nil? || content.to_s.strip.empty?
         label.delete
         deleted_count += 1
       end
@@ -291,6 +334,12 @@ def main_process_loop(init_data)
   log "BATCH PROCESSING STARTING"
   log "="*70
 
+  # Networks must be created inside a Model Group, not at the database root.
+  # Reuse (or create) a single root-level group to hold every imported network.
+  import_group_name = config['import_group_name'] || 'SWMM5 Imports'
+  import_group = find_or_create_model_group(db, import_group_name)
+  log "Target Model Group: '#{import_group.name}' (ID: #{import_group.id})"
+
   file_configs.each_with_index do |file_config, index|
     file_basename = file_config['file_basename']
     file_path = file_config['file_path']
@@ -302,43 +351,131 @@ def main_process_loop(init_data)
 
     $aggregate_stats[:files_processed] += 1
     network_obj = nil
+    import_succeeded = false
 
     begin
       # Input Validation
       raise "File not found" unless File.exist?(file_path)
 
       # Phase 1: Import
-      import_result = import_file(db, file_path, network_name, log_dir)
+      import_result = import_file(import_group, file_path, network_name, log_dir)
       net = import_result[:net]
       network_obj = import_result[:network_obj]
+      import_succeeded = true
 
-      # Phase 2: Cleanup
+      # Phase 2: Cleanup (optional - never fail a good import over cosmetics)
       labels_cleaned = 0
       if config['cleanup_empty_label_lists']
-        labels_cleaned = cleanup_visualization_labels(net)
+        begin
+          labels_cleaned = cleanup_visualization_labels(net)
+        rescue => e
+          log "  WARNING: Label cleanup skipped: #{e.message}", :warn
+          labels_cleaned = 0
+        end
       end
 
-      # Phase 3: Validation
+      # Phase 3: Validation (optional - reporting only, must not fail the import)
       import_stats = {}
       if config['validate_after_import']
-        import_stats = validate_and_report(net)
+        begin
+          import_stats = validate_and_report(net)
+        rescue => e
+          log "  WARNING: Post-import validation skipped: #{e.message}", :warn
+          import_stats = {}
+        end
       end
 
-      # Finalize: Commit
-      commit_message = "Imported SWMM5: #{file_basename}."
-      commit_message += " (Cleaned #{labels_cleaned} empty labels)" if labels_cleaned > 0
-      
-      net.commit(commit_message)
-      log "Network committed."
+      # Phase 4: ICM network validation (net.validate) - gates the commit.
+      # Returns a collection exposing .error_count / .warning_count / .length,
+      # with .message on each entry.
+      icm_errors   = 0
+      icm_warnings = 0
+      validation_ran = false
 
-      # Update Stats on Success
-      $aggregate_stats[:files_successful] += 1
-      $aggregate_stats[:total_nodes] += import_stats[:nodes] || 0
-      $aggregate_stats[:total_links] += import_stats[:links] || 0
-      $aggregate_stats[:total_subcatchments] += import_stats[:subcatchments] || 0
-      $aggregate_stats[:total_labels_cleaned] += labels_cleaned
+      if config['run_icm_validation']
+        begin
+          scenarios = ['Base']
+          log "PHASE 4: ICM validation (scenario: #{scenarios.join(', ')})"
+          validations = net.validate(scenarios)
 
-      log "SUCCESS: #{file_basename}"
+          icm_errors   = validations.error_count
+          icm_warnings = validations.warning_count
+          validation_ran = true
+
+          log "  Validation: #{icm_errors} error(s), #{icm_warnings} warning(s)"
+
+          # Record the messages so failures are diagnosable after the run.
+          if validations.length > 0
+            val_report = File.join(log_dir, "#{File.basename(file_path, '.inp')}_Validation.txt")
+            File.open(val_report, 'w') do |f|
+              f.puts "Validation for #{file_basename} (network: #{network_name})"
+              f.puts "Errors: #{icm_errors}  Warnings: #{icm_warnings}"
+              f.puts "-" * 60
+              validations.each { |v| f.puts v.message }
+            end
+            log "  Validation messages written to: #{File.basename(val_report)}"
+
+            validations.each_with_index do |v, i|
+              log "    #{v.message}", (icm_errors > 0 ? :warn : :info)
+              break if i >= 9   # keep the main log readable
+            end
+          end
+        rescue => e
+          log "  WARNING: ICM validation could not run: #{e.message}", :warn
+          validation_ran = false
+        end
+      end
+
+      # Finalize: Commit - only if validation did not report errors.
+      if validation_ran && icm_errors > 0
+        $aggregate_stats[:files_invalid] += 1
+        $aggregate_stats[:invalid_files] << {
+          file: file_basename, network: network_name, errors: icm_errors, warnings: icm_warnings
+        }
+
+        if config['commit_even_if_invalid']
+          # WSOpenNetwork#commit_bypassing_validation exists precisely for this:
+          # keep the data in version control even though ICM flags errors.
+          begin
+            net.commit_bypassing_validation(
+              "Imported SWMM5: #{file_basename}. COMMITTED WITH #{icm_errors} VALIDATION ERROR(S)")
+            log "COMMITTED DESPITE #{icm_errors} validation error(s): #{file_basename}", :warn
+            $aggregate_stats[:total_nodes] += import_stats[:nodes] || 0
+            $aggregate_stats[:total_links] += import_stats[:links] || 0
+            $aggregate_stats[:total_subcatchments] += import_stats[:subcatchments] || 0
+            $aggregate_stats[:total_labels_cleaned] += labels_cleaned
+          rescue => e
+            log "  Bypass commit failed: #{e.message}", :error
+          end
+        else
+          log "SKIPPED COMMIT: #{file_basename} - #{icm_errors} validation error(s)", :warn
+          # Leave the network in place (uncommitted) so it can be inspected/fixed.
+        end
+      else
+        commit_message = "Imported SWMM5: #{file_basename}."
+        commit_message += " (Cleaned #{labels_cleaned} empty labels)" if labels_cleaned > 0
+        commit_message += " (#{icm_warnings} validation warning(s))" if icm_warnings > 0
+
+        net.commit(commit_message)
+        log "Network committed."
+
+        $aggregate_stats[:files_successful] += 1
+        $aggregate_stats[:total_nodes] += import_stats[:nodes] || 0
+        $aggregate_stats[:total_links] += import_stats[:links] || 0
+        $aggregate_stats[:total_subcatchments] += import_stats[:subcatchments] || 0
+        $aggregate_stats[:total_labels_cleaned] += labels_cleaned
+        $aggregate_stats[:total_warnings] += icm_warnings
+
+        log "SUCCESS: #{file_basename}"
+      end
+
+      # Release the network handle. Also gives the database a clean close for
+      # every import, rather than leaving handles open until the process exits.
+      begin
+        net.close
+      rescue => e
+        log "  (Could not close network handle: #{e.message})", :warn
+      end
 
     rescue => e
       # Error Handling
@@ -348,11 +485,27 @@ def main_process_loop(init_data)
       $aggregate_stats[:files_failed] += 1
       $aggregate_stats[:failed_files] << { file: file_basename, reason: e.message }
 
-      # Cleanup partial import if network object exists
-      if network_obj
+      # Only discard the network if the IMPORT itself failed. Once Phase 1 has
+      # succeeded the data is good, and a later (optional) phase blowing up must
+      # never delete a network the user just successfully imported.
+      if network_obj && !import_succeeded
         begin
-          # Check if the object still exists (by name, as ID might be unreliable if creation failed partially)
-          if db.find_model_object('SWMM network', network_name)
+          # WSDatabase has no #find_model_object. Walk the database tree to confirm
+          # the partially-created network still exists before attempting to delete
+          # it (by name, as the ID may be unreliable if creation failed partially).
+          exists = false
+          queue = []
+          db.root_model_objects.each { |o| queue << o }
+          until queue.empty?
+            obj = queue.shift
+            if obj.type == 'SWMM network' && obj.name == network_name
+              exists = true
+              break
+            end
+            obj.children.each { |child| queue << child }
+          end
+
+          if exists
             log "Attempting to delete partially processed network '#{network_name}'..."
             network_obj.delete
             log "Successfully deleted network object."
@@ -378,6 +531,14 @@ def generate_summary(init_data, duration)
   log "Files processed: #{$aggregate_stats[:files_processed]}"
   log "Successful: #{$aggregate_stats[:files_successful]}"
   log "Failed: #{$aggregate_stats[:files_failed]}"
+  log "Imported but NOT committed (validation errors): #{$aggregate_stats[:files_invalid]}"
+
+  if $aggregate_stats[:files_invalid] > 0
+    log "\nNetworks left uncommitted (fix and commit manually):"
+    $aggregate_stats[:invalid_files].each do |v|
+      log "  * #{v[:network]} - #{v[:errors]} error(s), #{v[:warnings]} warning(s)  [#{v[:file]}]", :warn
+    end
+  end
 
   if $aggregate_stats[:files_successful] > 0
     log "\nAggregate Statistics:"
@@ -410,6 +571,8 @@ def generate_summary(init_data, duration)
         f.puts "total_links=#{$aggregate_stats[:total_links]}"
         f.puts "total_subcatchments=#{$aggregate_stats[:total_subcatchments]}"
         f.puts "total_labels_cleaned=#{$aggregate_stats[:total_labels_cleaned]}"
+        f.puts "files_invalid=#{$aggregate_stats[:files_invalid]}"
+        f.puts "total_warnings=#{$aggregate_stats[:total_warnings]}"
         f.puts "total_duration=#{sprintf('%.2f', duration)}"
     end
   rescue => e

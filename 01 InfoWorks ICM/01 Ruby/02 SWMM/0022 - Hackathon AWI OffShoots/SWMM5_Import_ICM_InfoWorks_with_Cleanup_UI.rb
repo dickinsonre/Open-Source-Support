@@ -36,6 +36,24 @@ EXCHANGE_SCRIPT_NAME = 'SWMM5_Import_ICM_InfoWorks_with_Cleanup_Exchange.rb'
 LOG_FOLDER_NAME = "ICM Import Log Files"
 TARGET_NETWORK_TYPE = 'SWMM network'
 
+# Networks cannot live at the database root, so every import goes into this
+# root-level Model Group. The Exchange script reuses it if it already exists,
+# and creates it otherwise. Shown on the confirmation dialogs so it is never a
+# surprise where the networks landed.
+# Fallback only. The real target is the Model Group of the network open on the
+# GeoPlan, worked out in STEP 1 below.
+TARGET_MODEL_GROUP = 'SWMM5 Imports'
+
+# Create an empty InfoWorks network beside each imported SWMM network, in the
+# same group, named <swmm name> + SHELL_NAME_SUFFIX. A distinct name is
+# deliberate (Bob's preference - they ARE different networks), and it sidesteps
+# ICM's ghost problem: deleted networks hold their exact names forever, so
+# reusing the SWMM name breaks after any delete/reimport cycle. Trade-off: the
+# manual conversion dialog only pre-pairs identical names, so pairing is two
+# clicks per model. Set the suffix to '' to go back to same-name shells.
+CREATE_INFOWORKS_SHELLS = true
+SHELL_NAME_SUFFIX = ''
+
 # ----------------------------------------------------------------------------
 # Helper: Efficient File Finder
 # ----------------------------------------------------------------------------
@@ -121,6 +139,45 @@ if db.nil?
   exit
 end
 
+# ----------------------------------------------------------------------------
+# Import target = the Model Group holding the network currently open on the
+# GeoPlan.
+#
+# A UI script cannot run without an open network, so that network always
+# exists and its group is the obvious destination. It also matches what ICM
+# actually does: imported networks land beside the open network regardless of
+# which group import_all_sw_model_objects was called on, which is why a
+# hard-coded group name was being ignored.
+# ----------------------------------------------------------------------------
+target_group_name = nil
+target_group_id   = nil
+
+begin
+  cur_net = WSApplication.current_network
+  cur_mo  = cur_net ? cur_net.model_object : nil
+  if cur_mo
+    parent_group = db.model_object_from_type_and_id(cur_mo.parent_type, cur_mo.parent_id)
+    if parent_group
+      target_group_name = parent_group.name
+      target_group_id   = parent_group.id
+      puts "Open network : #{cur_mo.name} (#{cur_mo.type})"
+      puts "Import target: Model Group '#{target_group_name}' (id #{target_group_id})"
+    end
+  end
+rescue => e
+  puts "Could not determine the open network's group: #{e.message}"
+end
+
+if target_group_name.nil?
+  WSApplication.message_box(
+    "No open network found.\n\n" +
+    "Open a network on the GeoPlan first - imported networks go into that " +
+    "network's Model Group.",
+    "OK", "!", false
+  )
+  exit
+end
+
 result = WSApplication.message_box(
   "SWMM5 Import to ICM (SWMM Networks) - V3.1\n\n" +
   "Features:\n" +
@@ -151,7 +208,9 @@ import_modes = [
 ]
 
 layout = [
-  ['Import Mode:', 'STRING', import_modes[0], nil, 'LIST', import_modes],
+  # Default to batch on a folder - that is the normal case; single file is the
+  # exception.
+  ['Import Mode:', 'STRING', import_modes[1], nil, 'LIST', import_modes],
   ['Mode 1 - SWMM5 .inp file:', 'STRING', nil, nil, 'FILE', true, 'inp', 'SWMM5 Input File', false],
   ['Modes 2/3 - folder to scan:', 'STRING', nil, nil, 'FOLDER', 'Select Folder']
 ]
@@ -225,7 +284,13 @@ when 1, 2 # Batch Modes
   file_list += "\n  ... and #{file_paths.length - max_display} more" if file_paths.length > max_display
   
   result = WSApplication.message_box(
-    "Found #{file_paths.length} File(s)\n\n#{file_list}\n\nContinue?",
+    "Found #{file_paths.length} File(s)\n\n#{file_list}\n\n" +
+    "Source folder:\n  #{base_directory}\n\n" +
+    "Model Group (from the open network):\n  #{target_group_name}  (id #{target_group_id})\n\n" +
+    (CREATE_INFOWORKS_SHELLS ?
+      "A blank InfoWorks network named <file>#{SHELL_NAME_SUFFIX} will also be\n" +
+      "created for each file, ready for the manual SWMM->InfoWorks conversion.\n\n" : '') +
+    "Continue?",
     "YesNo", "?", false
   )
   exit if result == "No"
@@ -283,7 +348,8 @@ if mode_index == 0 # Single File
   result = WSApplication.prompt('Import Settings', layout, false)
   exit if result.nil?
   
-  network_name = result[0].strip
+  # An emptied STRING field comes back as nil, not '' - hence to_s.
+  network_name = result[0].to_s.strip
   network_name = default_name if network_name.empty?
 
   # result[1] holds the boolean value of the checkbox
@@ -303,8 +369,11 @@ else # Batch Modes
     # selected STRING - not an index.
     layout = [
         ['Naming Convention:', 'STRING', naming_options[0], nil, 'LIST', naming_options],
-        ['Prefix (optional):', 'STRING', 'SWMM_Import_'],
-        ['Add timestamp (recommended)?', 'BOOLEAN', true] # Default true for batch
+        # No prefix and no timestamp by default, so the network name matches the
+        # .inp filename exactly. That keeps the audit tools' name matching
+        # working and lets the InfoWorks shells pair by name.
+        ['Prefix (optional):', 'STRING', ''],
+        ['Add timestamp?', 'BOOLEAN', false]
     ]
   
     result = WSApplication.prompt('Batch Naming Settings', layout, false)
@@ -312,7 +381,8 @@ else # Batch Modes
 
     # Retrieve results
     naming_choice = result[0]
-    name_prefix = result[1].strip
+    # An emptied STRING field comes back as nil, not '' - hence to_s.
+    name_prefix = result[1].to_s.strip
     add_timestamp = result[2]
   
     # Generate names
@@ -372,36 +442,117 @@ end
 # ----------------------------------------------------------------------------
 puts "\nValidating network names against database..."
 
-# WSDatabase has no #find_model_object method. Instead, walk the database tree
-# (breadth-first, including nested Model Groups) and collect the names of every
-# existing object whose type matches TARGET_NETWORK_TYPE, then compare against
-# the proposed names. See "0025 - Recursively find model network" for the same
-# root_model_objects / children / type traversal pattern.
+# Network names are unique DATABASE-WIDE per network type - proven empirically
+# by Probe 8 (16 Aug 2026): a virgin name created in one group is refused in
+# another ("name already in use"), while the same name across different TYPES
+# coexists fine. So the conflict scan must cover the whole tree, not just the
+# target group. (An earlier version scoped this to the group - that was wrong.)
+#
+# Caveat the scan cannot see: DELETED Model Networks still hold their names as
+# ghosts. A name can pass this check and still be refused by ICM at creation.
 existing_names = {}
-to_process = []
-db.root_model_objects.each { |o| to_process << o }
-
-until to_process.empty?
-  obj = to_process.shift
+scan = []
+db.root_model_objects.each { |o| scan << o }
+until scan.empty?
+  obj = scan.shift
   existing_names[obj.name] = true if obj.type == TARGET_NETWORK_TYPE
-  obj.children.each { |child| to_process << child }
+  begin
+    obj.children.each { |c| scan << c }
+  rescue
+  end
 end
+puts "  #{existing_names.size} existing #{TARGET_NETWORK_TYPE}(s) database-wide"
 
 duplicates = network_names.select { |name| existing_names[name] }
 
 if duplicates.any?
-  puts "ERROR: Duplicate network names found in the database."
-  WSApplication.message_box(
-    "ERROR: Duplicate Network Names Exist\n\n" +
-    "The following network names already exist in the database:\n\n" +
-    duplicates.first(15).map { |d| "  * #{d}" }.join("\n") +
-    (duplicates.length > 15 ? "\n  ..." : "") +
-    "\n\nImport cancelled. Please adjust naming settings and try again.",
-    "OK", "!", false
+  puts "#{duplicates.length} duplicate network name(s) found in the database."
+
+  # A single existing name should NOT cancel the whole batch. Offer to skip just
+  # the clashing files, or auto-rename them, and only cancel if asked to.
+  dup_actions = [
+    "1. Skip the #{duplicates.length} duplicate(s), import the other #{network_names.length - duplicates.length}",
+    '2. Auto-rename duplicates (append _2, _3, ...)',
+    '3. Cancel the whole import'
+  ]
+
+  choice = WSApplication.prompt(
+    'Duplicate Network Names',
+    [
+      ['Name(s) already in use (database-wide):', 'READONLY', duplicates.first(6).join(', ') +
+        (duplicates.length > 6 ? " (+#{duplicates.length - 6} more)" : '')],
+      ['Importing into:', 'READONLY', "#{target_group_name} (id #{target_group_id})"],
+      ['What would you like to do?', 'STRING', dup_actions[0], nil, 'LIST', dup_actions]
+    ],
+    false
   )
-  exit
+  exit if choice.nil?
+
+  # choice[0] and choice[1] are the two READONLY rows; the dropdown is [2].
+  action = dup_actions.index(choice[2]) || 0
+
+  case action
+  when 2
+    puts 'Import cancelled by user (duplicates).'
+    exit
+
+  when 0   # skip the duplicates
+    keep = (0...network_names.length).reject { |i| existing_names[network_names[i]] }
+    if keep.empty?
+      WSApplication.message_box(
+        "Every file clashes with an existing network name.\n\nImport cancelled.",
+        "OK", "!", false
+      )
+      exit
+    end
+    skipped_names = (0...network_names.length).reject { |i| keep.include?(i) }
+                                              .map { |i| network_names[i] }
+    file_paths    = keep.map { |i| file_paths[i] }
+    network_names = keep.map { |i| network_names[i] }
+    puts "Skipping #{skipped_names.length}: #{skipped_names.join(', ')}"
+    puts "Continuing with #{file_paths.length} file(s)."
+
+  when 1   # auto-rename
+    taken = {}
+    existing_names.each_key { |k| taken[k] = true }
+    renamed = 0
+    network_names.each_with_index do |nm, i|
+      # Claim the name if it is free, otherwise find a free variant. Prefer
+      # ICM's own generator (db.new_network_name, signature proven by Probe 8:
+      # type, base, integer, bool -> e.g. "exam1_1") because it also sees the
+      # names DELETED networks still hold, which our tree walk cannot.
+      unless taken[nm]
+        taken[nm] = true
+        next
+      end
+
+      candidate = begin
+        db.new_network_name(TARGET_NETWORK_TYPE, nm, 1, true)
+      rescue
+        nil
+      end
+
+      # Fall back to manual _n suffixing if the generator is unavailable, and
+      # guard against the generator handing out a name this batch already took.
+      if candidate.nil? || candidate.to_s.strip.empty? || taken[candidate]
+        n = 2
+        candidate = "#{nm}_#{n}"
+        while taken[candidate]
+          n += 1
+          candidate = "#{nm}_#{n}"
+        end
+      end
+
+      puts "  renamed '#{nm}' -> '#{candidate}'"
+      network_names[i] = candidate
+      taken[candidate] = true
+      renamed += 1
+    end
+    puts "Renamed #{renamed} network(s)."
+  end
+else
+  puts "Validation complete. No conflicts found."
 end
-puts "Validation complete. No conflicts found."
 
 # ----------------------------------------------------------------------------
 # STEP 7: Prepare Configuration File
@@ -421,6 +572,12 @@ config = {
   'import_mode' => import_mode_label,
   'base_directory' => base_directory,
   'file_configs' => file_configs,
+  # Root-level Model Group that will hold the imported networks. The Exchange
+  # script reads this key and falls back to 'SWMM5 Imports' if it is absent.
+  # Target the Model Group of the network open on the GeoPlan. The id is
+  # authoritative; the name is a readable fallback if the id cannot be resolved.
+  'import_group_id'   => target_group_id,
+  'import_group_name' => target_group_name,
   # Flags for the exchange script
   'cleanup_empty_label_lists' => true,
   'validate_after_import' => true,
@@ -429,7 +586,11 @@ config = {
   'run_icm_validation' => true,
   # Set true to commit invalid networks anyway via commit_bypassing_validation,
   # so nothing is left uncommitted. They are still reported as invalid.
-  'commit_even_if_invalid' => false
+  'commit_even_if_invalid' => false,
+  # Also create an empty InfoWorks network beside each import, named
+  # <swmm name> + suffix, ready for the manual conversion step.
+  'create_infoworks_shells' => CREATE_INFOWORKS_SHELLS,
+  'shell_name_suffix' => SHELL_NAME_SUFFIX
 }
 
 config_file = File.join(config_folder, 'import_config.yaml')
@@ -503,14 +664,22 @@ summary_file = File.join(config_folder, "batch_summary.txt")
 
 # Initialize stats. Use a Hash that defaults numeric values to 0.
 stats = Hash.new { |h, k| h[k] = 0 }
+# Actual destination group(s) reported by the Exchange script, as [path, count]
+landed_groups = []
 
 if File.exist?(summary_file)
   begin
     File.readlines(summary_file).each do |line|
-      if line.include?('=')
-        key, value = line.strip.split('=')
-        # IMPROVEMENT: Handle duration as float (to_f) for accuracy, others as integer (to_i)
-        stats[key] = (key == 'total_duration') ? value.to_f : value.to_i
+      next unless line.include?('=')
+      key, value = line.strip.split('=', 2)
+      if key == 'landed_group'
+        # "path|count" - where ICM actually put the networks
+        path, n = value.to_s.split('|')
+        landed_groups << [path.to_s, n.to_i]
+      elsif key == 'total_duration'
+        stats[key] = value.to_f
+      else
+        stats[key] = value.to_i
       end
     end
   rescue
@@ -570,6 +739,23 @@ if stats['files_successful'] > 0
   if stats['total_warnings'] > 0
     summary_msg += "Validation warnings (committed anyway): #{stats['total_warnings']}\n\n"
   end
+end
+
+if stats['shells_created'] > 0 || stats['shells_skipped'] > 0 || stats['shells_failed'] > 0
+  summary_msg += "Blank InfoWorks networks: #{stats['shells_created']} created"
+  summary_msg += ", #{stats['shells_skipped']} already existed" if stats['shells_skipped'] > 0
+  summary_msg += ", #{stats['shells_failed']} failed" if stats['shells_failed'] > 0
+  summary_msg += "\n  (use Network > Import > Model > from SWMM network on each)\n\n"
+end
+
+unless landed_groups.empty?
+  summary_msg += "Networks were placed in:\n"
+  landed_groups.each { |path, n| summary_msg += "  #{path}  (#{n})\n" }
+  if stats['wrong_group'] > 0
+    summary_msg += "\nNOTE: ICM ignored the requested group '#{target_group_name}'\n" +
+                   "for #{stats['wrong_group']} network(s) and used the location above.\n"
+  end
+  summary_msg += "\n"
 end
 
 summary_msg += "Detailed logs available in the Ruby output window and:\n#{config_folder}"

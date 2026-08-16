@@ -29,6 +29,8 @@ require 'set'
 # ----------------------------------------------------------------------------
 
 $script_logger = nil
+# One entry per .inp processed, used to build the HTML report
+$file_records = []
 $aggregate_stats = {
   files_processed: 0,
   files_successful: 0,
@@ -39,10 +41,18 @@ $aggregate_stats = {
   total_labels_cleaned: 0,
   total_import_time: 0.0,
   failed_files: [],
+  # Networks ICM placed somewhere other than the requested Model Group
+  wrong_group: 0,
+  # Actual parent path -> count, so the summary can report where they landed
+  landed: {},
   # Imported but not committed because ICM validation reported errors
   files_invalid: 0,
   invalid_files: [],
-  total_warnings: 0
+  total_warnings: 0,
+  # Blank InfoWorks networks created beside each imported SWMM network
+  shells_created: 0,
+  shells_skipped: 0,
+  shells_failed: 0
 }
 
 # Dual logging: Console (simple) and File (structured)
@@ -106,6 +116,163 @@ def initialize_script
 end
 
 # ----------------------------------------------------------------------------
+# Object-bearing sections of a SWMM5 .inp, counted for the report so you can
+# see what each source file actually contained.
+# ----------------------------------------------------------------------------
+INP_SECTIONS = %w[
+  RAINGAGES SUBCATCHMENTS SUBAREAS INFILTRATION
+  AQUIFERS GROUNDWATER SNOWPACKS
+  LID_CONTROLS LID_USAGE
+  JUNCTIONS OUTFALLS DIVIDERS STORAGE
+  CONDUITS PUMPS ORIFICES WEIRS OUTLETS
+  XSECTIONS TRANSECTS LOSSES CONTROLS
+  POLLUTANTS LANDUSES COVERAGES LOADINGS BUILDUP WASHOFF TREATMENT
+  INFLOWS DWF RDII HYDROGRAPHS
+  CURVES TIMESERIES PATTERNS
+  COORDINATES VERTICES POLYGONS TAGS
+]
+
+def swmm_inp_sections(path)
+  counts = {}
+  cur = nil
+  begin
+    File.foreach(path) do |raw|
+      line = raw.to_s.scrub('').split(';').first.to_s.strip
+      next if line.empty?
+      if line.start_with?('[')
+        name = line.gsub(/[\[\]]/, '').strip.upcase
+        cur = INP_SECTIONS.include?(name) ? name : nil
+        next
+      end
+      next unless cur
+      counts[cur] = (counts[cur] || 0) + 1
+    end
+  rescue => e
+    return {}
+  end
+  counts
+end
+
+# ----------------------------------------------------------------------------
+# Property statistics (n / min / mean / max / total)
+#
+# Generalises the pattern in "0008 - Database Field Tools / hw_UI_Script Stats
+# for ICM Network Tables.rb" (totals of length/area/volume per table): here
+# EVERY numeric field of every populated sw_* table is accumulated, and the
+# same is done for the known numeric columns of each .inp section, so the two
+# sides can be compared per file (e.g. total conduit length in the .inp vs
+# total sw_conduit.length in ICM).
+# ----------------------------------------------------------------------------
+
+# .inp numeric columns per section (0-based, object name = column 0)
+INP_PROP_COLS = {
+  'JUNCTIONS'     => { 'invert' => 1, 'max_depth' => 2, 'init_depth' => 3,
+                       'sur_depth' => 4, 'ponded_area' => 5 },
+  'OUTFALLS'      => { 'invert' => 1 },
+  'STORAGE'       => { 'invert' => 1, 'max_depth' => 2, 'init_depth' => 3 },
+  'CONDUITS'      => { 'length' => 3, 'roughness' => 4, 'in_offset' => 5,
+                       'out_offset' => 6, 'init_flow' => 7, 'max_flow' => 8 },
+  'PUMPS'         => { 'startup_depth' => 5, 'shutoff_depth' => 6 },
+  'ORIFICES'      => { 'offset' => 4, 'discharge_coeff' => 5 },
+  'WEIRS'         => { 'crest_height' => 4, 'discharge_coeff' => 5 },
+  'SUBCATCHMENTS' => { 'area' => 3, 'percent_imperv' => 4, 'width' => 5,
+                       'slope' => 6 },
+  'XSECTIONS'     => { 'geom1' => 2, 'geom2' => 3, 'geom3' => 4, 'geom4' => 5,
+                       'barrels' => 6 }
+}
+
+NUMERIC_RE = /\A[-+]?(\d+\.?\d*|\.\d+)([eE][-+]?\d+)?\z/
+
+def acc_stat(bucket, key, num)
+  a = bucket[key] ||= { n: 0, min: num, max: num, sum: 0.0 }
+  a[:n]   += 1
+  a[:sum] += num
+  a[:min]  = num if num < a[:min]
+  a[:max]  = num if num > a[:max]
+end
+
+# { "SECTION.property" => {n:, min:, max:, sum:} } from the source .inp.
+# Non-numeric tokens (e.g. a transect name in an IRREGULAR Geom1) are skipped.
+def swmm_inp_prop_stats(path)
+  out = {}
+  cur = nil
+  begin
+    File.foreach(path) do |raw|
+      line = raw.to_s.scrub('').split(';').first.to_s.strip
+      next if line.empty?
+      if line.start_with?('[')
+        name = line.gsub(/[\[\]]/, '').strip.upcase
+        cur = INP_PROP_COLS.key?(name) ? name : nil
+        next
+      end
+      next unless cur
+      tok = line.split(/\s+/)
+      next if tok.length < 2
+      INP_PROP_COLS[cur].each do |prop, i|
+        s = tok[i].to_s
+        next unless s =~ NUMERIC_RE
+        acc_stat(out, "#{cur}.#{prop}", s.to_f)
+      end
+    end
+  rescue
+    return {}
+  end
+  out
+end
+
+# { "sw_table" => { "field" => {n:, min:, max:, sum:} } } for every numeric
+# field of every populated sw_* table. Flag and user fields are noise here.
+def sw_table_field_stats(net)
+  stats = {}
+  begin
+    net.table_names.each do |t|
+      tn = t.to_s
+      next unless tn.start_with?('sw_')
+      rows = begin net.row_objects(tn) rescue nil end
+      next if rows.nil? || rows.length == 0
+
+      sample = nil
+      begin
+        rows.each { |r| sample = r; break }
+      rescue
+      end
+      next if sample.nil?
+
+      fields = begin sample.field_names.map(&:to_s) rescue [] end
+      fields = fields.reject { |f| f.end_with?('_flag') || f.start_with?('user_') || f == 'notes' }
+      next if fields.empty?
+
+      acc = {}
+      rows.each do |r|
+        fields.each do |f|
+          v = begin r[f] rescue nil end
+          next unless v.is_a?(Numeric)
+          acc_stat(acc, f, v.to_f)
+        end
+      end
+      stats[tn] = acc unless acc.empty?
+    end
+  rescue
+  end
+  stats
+end
+
+# Row counts for every populated sw_* table in the imported network.
+def sw_table_counts(net)
+  out = {}
+  begin
+    net.table_names.each do |t|
+      tn = t.to_s
+      next unless tn.start_with?('sw_')
+      n = begin net.row_objects(tn).length rescue nil end
+      out[tn] = n if n && n > 0
+    end
+  rescue
+  end
+  out
+end
+
+# ----------------------------------------------------------------------------
 # Find or create a root-level Model Group to hold the imported networks.
 # Networks cannot live directly at the database root, so all imports go here.
 # ----------------------------------------------------------------------------
@@ -114,6 +281,85 @@ def find_or_create_model_group(db, group_name)
     return o if o.type == 'Model Group' && o.name == group_name
   end
   db.new_model_object('Model Group', group_name)
+end
+
+# ----------------------------------------------------------------------------
+# Create an empty InfoWorks (Model Network) alongside an imported SWMM network,
+# with the SAME NAME in the SAME parent group. That name match is what makes
+# Network > Import > Model > from SWMM network pre-select the right pair.
+#
+# Returns [model_object, nil] on success, or [nil, reason] when skipped.
+# ----------------------------------------------------------------------------
+def create_infoworks_shell(db, swmm_obj, suffix = '')
+  parent = begin
+    db.model_object_from_type_and_id(swmm_obj.parent_type, swmm_obj.parent_id)
+  rescue => e
+    return [nil, "cannot resolve parent group (#{e.message})"]
+  end
+  return [nil, 'no parent group'] if parent.nil?
+
+  # A distinct suffix (default '_IW') keeps the shell clear of the SWMM name -
+  # and of the ghosts deleted networks leave on it.
+  name = "#{swmm_obj.name}#{suffix}"
+
+  # Only an existing Model Network of this name is a reason to skip. The import
+  # deliberately creates a SWMM network, SWMM run, Inflow, Label List, Selection
+  # List and IWSW Climatology all sharing this name - ICM allows that, and
+  # treating any of them as a clash skips every shell.
+  exists = false
+  begin
+    parent.children.each do |c|
+      exists = true if c.type == 'Model Network' && c.name == name
+    end
+  rescue
+    # if children cannot be listed, fall through and let creation decide
+  end
+  return [nil, "a Model Network named '#{name}' already exists in #{parent.name}"] if exists
+
+  hw = begin
+    parent.new_model_object('Model Network', name)
+  rescue => e
+    # Probe 8 (16 Aug 2026): network names are unique DATABASE-WIDE per type,
+    # and DELETED Model Networks still hold their names invisibly. When the
+    # exact name is refused, ask ICM's own generator for the nearest free one
+    # (db.new_network_name(type, base, 1, true) -> e.g. "exam1_1") so the shell
+    # still gets created - with a loud note, because a renamed shell will NOT
+    # be pre-paired by name in the manual conversion dialog.
+    alt = begin
+      db.new_network_name('Model Network', name, 1, true)
+    rescue
+      nil
+    end
+
+    if alt && !alt.to_s.strip.empty? && alt != name
+      begin
+        h2 = parent.new_model_object('Model Network', alt)
+        log "  NOTE: '#{name}' is held (deleted networks keep their names); " \
+            "shell created as '#{alt}' instead. It will NOT auto-pair in the " \
+            "SWMM->InfoWorks conversion dialog.", :warn
+        h2
+      rescue => e2
+        return [nil, "ICM refused '#{name}' and fallback '#{alt}': #{e2.message}"]
+      end
+    else
+      return [nil, "ICM refused to create '#{name}': #{e.message}"]
+    end
+  end
+
+  # Commit it empty so it is a valid version-controlled object and can carry a
+  # run. Non-fatal - an uncommitted shell still works for the conversion.
+  begin
+    n = hw.open
+    n.commit('Empty InfoWorks network created to receive a SWMM import')
+    begin
+      n.close
+    rescue
+    end
+  rescue => e
+    # keep the shell even if the empty commit is refused
+  end
+
+  [hw, nil]
 end
 
 # ----------------------------------------------------------------------------
@@ -162,6 +408,29 @@ def import_file(parent_group, file_path, network_name, log_dir)
 
   log "  Imported #{imported_objects.length} object(s); network '#{network.name}' (ID: #{network.id})"
 
+  # Where did it ACTUALLY land? import_all_sw_model_objects is called on a Model
+  # Group, but ICM does not necessarily place the network inside that group -
+  # observed landing in the last group used instead. Report the truth rather
+  # than assuming the receiver was honoured.
+  begin
+    actual_parent_id = network.parent_id
+    log "  Actual location: #{network.path}"
+
+    # Record the containing group (the path minus the network itself) so the
+    # final summary can state plainly where the networks ended up.
+    holder = network.path.to_s.split('>')[0..-2].join('>')
+    holder = '(root)' if holder.empty?
+    $aggregate_stats[:landed][holder] = ($aggregate_stats[:landed][holder] || 0) + 1
+
+    if actual_parent_id != parent_group.id
+      log "  NOTE: ICM placed this network in parent id #{actual_parent_id}, " \
+          "not the requested group '#{parent_group.name}' (id #{parent_group.id}).", :warn
+      $aggregate_stats[:wrong_group] += 1
+    end
+  rescue => e
+    log "  (could not determine actual location: #{e.message})", :warn
+  end
+
   # The import names the network after the .inp file - rename it to the name the
   # user configured. Non-fatal: keep the imported name if the rename is rejected.
   if network_name && !network_name.empty? && network.name != network_name
@@ -173,10 +442,29 @@ def import_file(parent_group, file_path, network_name, log_dir)
     end
   end
 
+  # Surface the importer's SUBSTANTIVE messages - silent data alterations like
+  # "Outfalls of type Stage-Flow ... reassigned to type Free" or "[TEMPERATURE]
+  # has no matching [TIMESERIES]. Unable to create." - which otherwise sit
+  # unread in the per-file import log whenever the import "succeeds". The
+  # boilerplate "section is empty ... safely ignore" advisories are dropped.
+  import_notes = []
+  begin
+    if File.exist?(import_log_path)
+      File.foreach(import_log_path) do |ln|
+        t = ln.to_s.scrub('').strip
+        next if t.empty?
+        next if t =~ /section is empty/i
+        next if t =~ /\AImport (log|from)/i
+        import_notes << t
+      end
+    end
+  rescue
+  end
+
   net = network.open
 
   log "  SUCCESS: Import completed."
-  { net: net, network_obj: network }
+  { net: net, network_obj: network, import_notes: import_notes }
 end
 
 # ----------------------------------------------------------------------------
@@ -335,9 +623,25 @@ def main_process_loop(init_data)
   log "="*70
 
   # Networks must be created inside a Model Group, not at the database root.
-  # Reuse (or create) a single root-level group to hold every imported network.
-  import_group_name = config['import_group_name'] || 'SWMM5 Imports'
-  import_group = find_or_create_model_group(db, import_group_name)
+  # The UI script sends the group of the network open on the GeoPlan - prefer
+  # its id (unambiguous), fall back to the name, then to a created group.
+  import_group = nil
+
+  if (gid = config['import_group_id'])
+    begin
+      import_group = db.model_object_from_type_and_id('Model Group', gid)
+      log "Target Model Group by id #{gid}: '#{import_group.name}'" if import_group
+    rescue => e
+      log "Could not resolve group id #{gid}: #{e.message}", :warn
+    end
+  end
+
+  if import_group.nil?
+    import_group_name = config['import_group_name'] || 'SWMM5 Imports'
+    import_group = find_or_create_model_group(db, import_group_name)
+    log "Target Model Group by name: '#{import_group.name}'"
+  end
+
   log "Target Model Group: '#{import_group.name}' (ID: #{import_group.id})"
 
   file_configs.each_with_index do |file_config, index|
@@ -350,6 +654,20 @@ def main_process_loop(init_data)
     log "-"*70
 
     $aggregate_stats[:files_processed] += 1
+
+    # Per-file record for the HTML report. Filled in as the phases run, and
+    # pushed once at the end whatever happens, so failures appear too.
+    rec = {
+      file: file_basename, network: network_name, status: 'UNKNOWN',
+      nodes: 0, links: 0, subs: 0, labels: 0,
+      errors: 0, warnings: 0, shell: '', location: '', reason: '',
+      seconds: 0.0,
+      sections: {},   # SWMM5 .inp section -> row count
+      tables: {},     # ICM sw_* table    -> row count
+      inp_stats: {},  # "SECTION.prop"    -> {n,min,max,sum}   (.inp values)
+      tbl_stats: {}   # "sw_table"        -> {field => {n,min,max,sum}}
+    }
+    file_started = Time.now
     network_obj = nil
     import_succeeded = false
 
@@ -360,6 +678,21 @@ def main_process_loop(init_data)
       # Phase 1: Import
       import_result = import_file(import_group, file_path, network_name, log_dir)
       net = import_result[:net]
+
+      # Two sides of the same story for the report: what the .inp declared,
+      # and what ICM ended up holding, table by table.
+      rec[:sections]  = swmm_inp_sections(file_path)
+      rec[:tables]    = sw_table_counts(net)
+      # Property-level statistics for both sides (n/min/mean/max/total)
+      rec[:inp_stats] = swmm_inp_prop_stats(file_path)
+      rec[:tbl_stats] = sw_table_field_stats(net)
+
+      # Importer messages that changed or dropped data go into the report row.
+      notes = import_result[:import_notes] || []
+      unless notes.empty?
+        notes.first(4).each { |t| log "  importer: #{t}", :warn }
+        rec[:reason] = notes.join(' | ')[0, 400]
+      end
       network_obj = import_result[:network_obj]
       import_succeeded = true
 
@@ -384,6 +717,11 @@ def main_process_loop(init_data)
           import_stats = {}
         end
       end
+
+      rec[:nodes]  = import_stats[:nodes] || 0
+      rec[:links]  = import_stats[:links] || 0
+      rec[:subs]   = import_stats[:subcatchments] || 0
+      rec[:labels] = labels_cleaned
 
       # Phase 4: ICM network validation (net.validate) - gates the commit.
       # Returns a collection exposing .error_count / .warning_count / .length,
@@ -426,6 +764,9 @@ def main_process_loop(init_data)
         end
       end
 
+      rec[:errors]   = icm_errors
+      rec[:warnings] = icm_warnings
+
       # Finalize: Commit - only if validation did not report errors.
       if validation_ran && icm_errors > 0
         $aggregate_stats[:files_invalid] += 1
@@ -440,6 +781,7 @@ def main_process_loop(init_data)
             net.commit_bypassing_validation(
               "Imported SWMM5: #{file_basename}. COMMITTED WITH #{icm_errors} VALIDATION ERROR(S)")
             log "COMMITTED DESPITE #{icm_errors} validation error(s): #{file_basename}", :warn
+            rec[:status] = 'COMMITTED (invalid)'
             $aggregate_stats[:total_nodes] += import_stats[:nodes] || 0
             $aggregate_stats[:total_links] += import_stats[:links] || 0
             $aggregate_stats[:total_subcatchments] += import_stats[:subcatchments] || 0
@@ -449,6 +791,7 @@ def main_process_loop(init_data)
           end
         else
           log "SKIPPED COMMIT: #{file_basename} - #{icm_errors} validation error(s)", :warn
+          rec[:status] = 'NOT COMMITTED'
           # Leave the network in place (uncommitted) so it can be inspected/fixed.
         end
       else
@@ -466,7 +809,28 @@ def main_process_loop(init_data)
         $aggregate_stats[:total_labels_cleaned] += labels_cleaned
         $aggregate_stats[:total_warnings] += icm_warnings
 
+        rec[:status] = 'COMMITTED'
         log "SUCCESS: #{file_basename}"
+      end
+
+      # Phase 5: blank InfoWorks shell beside the imported SWMM network, so the
+      # manual "Import > Model > from SWMM network" dialog pre-pairs them by
+      # name. Non-fatal: a shell failure must never spoil a good import.
+      if config['create_infoworks_shells'] && network_obj
+        begin
+          hw, why = create_infoworks_shell(db, network_obj, config['shell_name_suffix'].to_s)
+          if hw
+            log "  InfoWorks shell created: '#{hw.name}' (id #{hw.id})"
+            rec[:shell] = hw.name.to_s
+            $aggregate_stats[:shells_created] += 1
+          else
+            log "  InfoWorks shell skipped: #{why}"
+            $aggregate_stats[:shells_skipped] += 1
+          end
+        rescue => e
+          log "  InfoWorks shell failed: #{e.message}", :warn
+          $aggregate_stats[:shells_failed] += 1
+        end
       end
 
       # Release the network handle. Also gives the database a clean close for
@@ -482,6 +846,8 @@ def main_process_loop(init_data)
       log "FAILURE: Failed to process #{file_basename}. Reason: #{e.message}", :error
       $script_logger.error("Backtrace:\n#{e.backtrace.join("\n")}") if $script_logger
       
+      rec[:status] = 'FAILED'
+      rec[:reason] = e.message.to_s
       $aggregate_stats[:files_failed] += 1
       $aggregate_stats[:failed_files] << { file: file_basename, reason: e.message }
 
@@ -515,6 +881,321 @@ def main_process_loop(init_data)
         end
       end
     end
+
+    # One row per file in the HTML report, successes and failures alike.
+    rec[:seconds] = (Time.now - file_started).round(2)
+    $file_records << rec
+  end
+end
+
+# ----------------------------------------------------------------------------
+# HTML report - one row per .inp, written next to the log files
+# ----------------------------------------------------------------------------
+def html_escape(s)
+  s.to_s.gsub('&', '&amp;').gsub('<', '&lt;').gsub('>', '&gt;').gsub('"', '&quot;')
+end
+
+def generate_html_report(log_dir, duration)
+  path = File.join(log_dir, "SWMM5_Import_Report_#{Time.now.strftime('%Y%m%d_%H%M%S')}.html")
+
+  cls_for = lambda do |st|
+    case st
+    when 'COMMITTED'           then 'ok'
+    when 'COMMITTED (invalid)' then 'mid'
+    when 'NOT COMMITTED'       then 'mid'
+    when 'FAILED'              then 'bad'
+    else 'warn'
+    end
+  end
+
+  rows = ''
+  $file_records.each do |r|
+    c = cls_for.call(r[:status])
+    rows += '<tr class="' + c + '">'
+    rows += '<td class="name">' + html_escape(r[:file]) + '</td>'
+    rows += '<td class="name">' + html_escape(r[:network]) + '</td>'
+    rows += '<td><span class="pill ' + c + '">' + html_escape(r[:status]) + '</span></td>'
+    rows += '<td class="num">' + r[:nodes].to_s + '</td>'
+    rows += '<td class="num">' + r[:links].to_s + '</td>'
+    rows += '<td class="num">' + r[:subs].to_s + '</td>'
+    rows += '<td class="num' + (r[:errors].to_i > 0 ? ' delta' : ' muted') + '">' + r[:errors].to_s + '</td>'
+    rows += '<td class="num muted">' + r[:warnings].to_s + '</td>'
+    rows += '<td class="num muted">' + r[:labels].to_s + '</td>'
+    rows += '<td class="muted">' + html_escape(r[:shell]) + '</td>'
+    rows += '<td class="num muted">' + r[:seconds].to_s + '</td>'
+    rows += '<td class="notes">' + html_escape(r[:reason]) + '</td>'
+    rows += "</tr>\n"
+  end
+
+  landed = $aggregate_stats[:landed].map { |p, n| "#{html_escape(p)} (#{n})" }.join('<br>')
+  landed = '<span class="muted">n/a</span>' if landed.empty?
+
+  # --- matrix builder: rows = files, columns = whatever keys were seen -------
+  # Footer carries MIN / MEAN / MAX / TOTAL per column. Min, mean and max are
+  # computed over the files that actually CONTAIN the section or table - a file
+  # without [PUMPS] says nothing about pump counts, so it is excluded rather
+  # than dragged in as a zero.
+  build_matrix = lambda do |key, label_strip|
+    colvals = {}
+    $file_records.each do |r|
+      (r[key] || {}).each { |k, v| (colvals[k] ||= []) << v.to_i }
+    end
+    return ['', 0] if colvals.empty?
+
+    totals = {}
+    colvals.each { |k, a| totals[k] = a.inject(0) { |s, v| s + v } }
+    ordered = colvals.keys.sort_by { |k| [-totals[k], k] }
+
+    head = '<tr><th>File</th>'
+    ordered.each { |k| head += '<th class="num">' + html_escape(k.to_s.sub(label_strip, '')) + '</th>' }
+    head += '<th class="num">total</th></tr>'
+
+    body = ''
+    $file_records.each do |r|
+      vals = r[key] || {}
+      next if vals.empty?
+      rowtot = vals.values.inject(0) { |a, v| a + v.to_i }
+      body += '<tr><td class="name">' + html_escape(r[:file]) + '</td>'
+      ordered.each do |k|
+        v = vals[k]
+        body += v ? '<td class="num">' + v.to_s + '</td>' : '<td class="num zero">.</td>'
+      end
+      body += '<td class="num tot">' + rowtot.to_s + '</td></tr>' + "\n"
+    end
+
+    stat_row = lambda do |label, cls|
+      row = '<tr class="' + cls + '"><td class="name">' + label + '</td>'
+      ordered.each do |k|
+        a = colvals[k]
+        v = case label
+            when 'MIN'   then a.min
+            when 'MAX'   then a.max
+            when 'MEAN'  then (totals[k].to_f / a.length).round(1)
+            when 'TOTAL' then totals[k]
+            end
+        row += '<td class="num">' + v.to_s + '</td>'
+      end
+      row += label == 'TOTAL' ?
+        '<td class="num tot">' + totals.values.inject(0) { |s, v| s + v }.to_s + '</td>' :
+        '<td class="num zero"></td>'
+      row + '</tr>' + "\n"
+    end
+
+    foot = stat_row.call('MIN', 'stats') + stat_row.call('MEAN', 'stats') +
+           stat_row.call('MAX', 'stats') + stat_row.call('TOTAL', 'totals')
+
+    ['<table><thead>' + head + '</thead><tbody>' + body + foot + '</tbody></table>', ordered.length]
+  end
+
+  inp_matrix, inp_cols = build_matrix.call(:sections, '')
+  icm_matrix, icm_cols = build_matrix.call(:tables, 'sw_')
+  inp_matrix = '<div class="muted">no data</div>' if inp_matrix.empty?
+  icm_matrix = '<div class="muted">no data</div>' if icm_matrix.empty?
+
+  # --- per-file property statistics (n / min / mean / max / total) -----------
+  fmt = lambda do |v|
+    return '-' if v.nil?
+    r = v.round(4)
+    r == r.to_i ? r.to_i.to_s : r.to_s
+  end
+
+  stat_table = lambda do |title, pairs|
+    # pairs: [[label, {n:,min:,max:,sum:}], ...]
+    return '' if pairs.empty?
+    h = '<div class="stath">' + html_escape(title) + '</div>'
+    h += '<table><thead><tr><th>property</th><th class="num">n</th>' \
+         '<th class="num">min</th><th class="num">mean</th>' \
+         '<th class="num">max</th><th class="num">total</th></tr></thead><tbody>'
+    pairs.each do |label, a|
+      mean = a[:n] > 0 ? a[:sum] / a[:n] : nil
+      h += '<tr><td class="fldname">' + html_escape(label) + '</td>'
+      h += '<td class="num muted">' + a[:n].to_s + '</td>'
+      h += '<td class="num">' + fmt.call(a[:min]) + '</td>'
+      h += '<td class="num">' + fmt.call(mean) + '</td>'
+      h += '<td class="num">' + fmt.call(a[:max]) + '</td>'
+      h += '<td class="num tot">' + fmt.call(a[:sum]) + '</td></tr>'
+    end
+    h + '</tbody></table>'
+  end
+
+  prop_blocks = ''
+  $file_records.each do |r|
+    next if r[:inp_stats].empty? && r[:tbl_stats].empty?
+
+    inner = ''
+    unless r[:inp_stats].empty?
+      inner += stat_table.call('SWMM5 .inp properties',
+                               r[:inp_stats].sort_by { |k, _| k })
+    end
+    r[:tbl_stats].sort_by { |t, _| t }.each do |tbl, fields|
+      inner += stat_table.call("ICM #{tbl} (#{fields.length} numeric fields)",
+                               fields.sort_by { |k, _| k })
+    end
+
+    prop_blocks += '<details class="pf"><summary>' + html_escape(r[:file]) +
+                   ' <span class="muted">- ' + r[:inp_stats].length.to_s +
+                   ' .inp properties, ' + r[:tbl_stats].length.to_s +
+                   ' sw table(s)</span></summary><div class="pfbody">' +
+                   inner + '</div></details>' + "\n"
+  end
+  prop_blocks = '<div class="muted">no data</div>' if prop_blocks.empty?
+
+  html = <<HTMLDOC
+<!doctype html>
+<html lang="en" data-theme="dark"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SWMM5 Import Report</title>
+<style>
+:root{--bg:#0f172a;--panel:#1e293b;--line:#334155;--text:#e2e8f0;--muted:#94a3b8;
+  --ok:#22c55e;--bad:#f87171;--mid:#fb923c;--warn:#fbbf24}
+html[data-theme="light"]{--bg:#f8fafc;--panel:#fff;--line:#e2e8f0;--text:#0f172a;--muted:#64748b;
+  --ok:#15803d;--bad:#b91c1c;--mid:#c2410c;--warn:#a16207}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1400px;margin:0 auto;padding:28px 20px 80px}
+h1{font-size:22px;margin:0 0 4px} h2{font-size:16px;margin:28px 0 10px}
+.meta{color:var(--muted);font-size:13px;margin-bottom:20px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.card .v{font-size:24px;font-weight:600}
+.card .k{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.card.ok .v{color:var(--ok)} .card.bad .v{color:var(--bad)} .card.mid .v{color:var(--mid)}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+button,input{background:var(--panel);color:var(--text);border:1px solid var(--line);
+  border-radius:8px;padding:8px 12px;font-size:13px;cursor:pointer}
+input{cursor:text;min-width:220px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{position:sticky;top:0;background:var(--panel);font-size:12px;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--muted);cursor:pointer}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+td.delta{color:var(--bad);font-weight:600}
+.muted,td.muted{color:var(--muted)}
+td.name{white-space:normal;min-width:200px}
+td.notes{white-space:normal;color:var(--muted);min-width:200px}
+tr.ok td:first-child{box-shadow:inset 3px 0 0 var(--ok)}
+tr.bad td:first-child{box-shadow:inset 3px 0 0 var(--bad)}
+tr.mid td:first-child{box-shadow:inset 3px 0 0 var(--mid)}
+.pill{padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;border:1px solid}
+.pill.ok{color:var(--ok);border-color:var(--ok)}
+.pill.bad{color:var(--bad);border-color:var(--bad)}
+.pill.mid{color:var(--mid);border-color:var(--mid)}
+.pill.warn{color:var(--warn);border-color:var(--warn)}
+.where{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.sub{color:var(--muted);font-size:12px;margin-bottom:8px}
+td.zero{color:#475569}
+html[data-theme="light"] td.zero{color:#cbd5e1}
+td.tot{font-weight:600}
+tr.totals td{border-top:2px solid var(--line);font-weight:600;background:rgba(148,163,184,.08)}
+tr.stats td{color:var(--muted);font-size:12px;background:rgba(148,163,184,.04)}
+tr.stats td.name{font-weight:600}
+details.pf{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  margin-bottom:8px;overflow:hidden}
+details.pf summary{padding:10px 14px;cursor:pointer;font-weight:600;font-size:13px}
+details.pf summary:hover{background:rgba(148,163,184,.08)}
+.pfbody{padding:0 14px 12px;overflow-x:auto}
+.pfbody table{margin-bottom:12px;font-size:12px}
+.stath{font-weight:600;font-size:12px;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.05em;margin:10px 0 6px}
+td.fldname{font-family:ui-monospace,Consolas,monospace;font-size:12px}
+</style></head><body><div class="wrap">
+
+<h1>SWMM5 Import Report</h1>
+<div class="meta">#{Time.now.strftime('%Y-%m-%d %H:%M')} &middot;
+ #{$file_records.length} file(s) &middot; #{sprintf('%.1f', duration)}s total</div>
+
+<div class="cards">
+  <div class="card ok"><div class="k">Committed</div><div class="v">#{$aggregate_stats[:files_successful]}</div></div>
+  <div class="card bad"><div class="k">Failed</div><div class="v">#{$aggregate_stats[:files_failed]}</div></div>
+  <div class="card mid"><div class="k">Not committed</div><div class="v">#{$aggregate_stats[:files_invalid]}</div></div>
+  <div class="card"><div class="k">Nodes</div><div class="v">#{$aggregate_stats[:total_nodes]}</div></div>
+  <div class="card"><div class="k">Links</div><div class="v">#{$aggregate_stats[:total_links]}</div></div>
+  <div class="card"><div class="k">Subcatchments</div><div class="v">#{$aggregate_stats[:total_subcatchments]}</div></div>
+  <div class="card"><div class="k">InfoWorks shells</div><div class="v">#{$aggregate_stats[:shells_created]}</div></div>
+  <div class="card mid"><div class="k">Warnings</div><div class="v">#{$aggregate_stats[:total_warnings]}</div></div>
+</div>
+
+<div class="controls">
+  <button id="only">Show problems only</button>
+  <button id="theme">Light / dark</button>
+  <input id="q" placeholder="Filter...">
+  <span class="muted" id="count"></span>
+</div>
+
+<div class="tablewrap">
+<table id="t"><thead><tr>
+<th>File</th><th>Network</th><th>Status</th>
+<th class="num">Nodes</th><th class="num">Links</th><th class="num">Subs</th>
+<th class="num">Val err</th><th class="num">Val warn</th><th class="num">Labels</th>
+<th>IW shell</th><th class="num">Secs</th><th>Importer notes / reason</th>
+</tr></thead><tbody>
+#{rows}
+</tbody></table>
+</div>
+
+<h2>SWMM5 source - objects per section, per file</h2>
+<div class="sub">Counted straight from each .inp. #{inp_cols} section(s) present, busiest first. A dot means the section is absent or empty.
+MIN / MEAN / MAX are computed over the files that contain the section; TOTAL is across all files.</div>
+<div class="tablewrap">#{inp_matrix}</div>
+
+<h2>ICM result - rows per sw_* table, per file</h2>
+<div class="sub">Read back from each imported network via table_names. #{icm_cols} table(s) populated.
+MIN / MEAN / MAX are computed over the files whose network has the table; TOTAL is across all files.</div>
+<div class="tablewrap">#{icm_matrix}</div>
+
+<h2>Property statistics per file</h2>
+<div class="sub">n / min / mean / max / total for the numeric columns of each .inp section, and for
+every numeric field of every populated sw_* table in the imported network (flag and user fields excluded).
+Click a file to expand. Compare e.g. CONDUITS.length (total) against sw_conduit length (total).</div>
+#{prop_blocks}
+
+<h2>Where the networks were placed</h2>
+<div class="where">#{landed}</div>
+
+<script>
+var only=false;
+function rowsOf(){return Array.prototype.slice.call(document.querySelectorAll('#t tbody tr'));}
+function apply(){
+  var q=document.getElementById('q').value.toLowerCase(), n=0;
+  rowsOf().forEach(function(tr){
+    var bad = tr.className.indexOf('ok') < 0;
+    var vis = (!only || bad) && tr.textContent.toLowerCase().indexOf(q)>=0;
+    tr.style.display = vis?'':'none'; if(vis)n++;
+  });
+  document.getElementById('count').textContent=n+' shown';
+}
+document.getElementById('only').onclick=function(){only=!only;
+  this.textContent=only?'Show all':'Show problems only';apply();};
+document.getElementById('q').oninput=apply;
+document.getElementById('theme').onclick=function(){var h=document.documentElement;
+  h.setAttribute('data-theme',h.getAttribute('data-theme')==='light'?'dark':'light');};
+document.querySelectorAll('#t thead th').forEach(function(th,i){
+  var asc=true;
+  th.onclick=function(){
+    var tb=document.querySelector('#t tbody'), rs=rowsOf();
+    rs.sort(function(a,b){
+      var x=a.children[i].textContent.trim(), y=b.children[i].textContent.trim();
+      var nx=parseFloat(x), ny=parseFloat(y);
+      if(!isNaN(nx)&&!isNaN(ny)) return asc?nx-ny:ny-nx;
+      return asc?x.localeCompare(y):y.localeCompare(x);
+    });
+    asc=!asc; rs.forEach(function(r){tb.appendChild(r);});
+  };
+});
+apply();
+</script>
+</div></body></html>
+HTMLDOC
+
+  begin
+    File.open(path, 'w') { |f| f.write(html) }
+    log "HTML report: #{path}"
+    path
+  rescue => e
+    log "Could not write HTML report: #{e.message}", :warn
+    nil
   end
 end
 
@@ -532,6 +1213,11 @@ def generate_summary(init_data, duration)
   log "Successful: #{$aggregate_stats[:files_successful]}"
   log "Failed: #{$aggregate_stats[:files_failed]}"
   log "Imported but NOT committed (validation errors): #{$aggregate_stats[:files_invalid]}"
+  if $aggregate_stats[:shells_created] > 0 || $aggregate_stats[:shells_skipped] > 0 ||
+     $aggregate_stats[:shells_failed] > 0
+    log "Blank InfoWorks shells: #{$aggregate_stats[:shells_created]} created, " \
+        "#{$aggregate_stats[:shells_skipped]} skipped, #{$aggregate_stats[:shells_failed]} failed"
+  end
 
   if $aggregate_stats[:files_invalid] > 0
     log "\nNetworks left uncommitted (fix and commit manually):"
@@ -560,6 +1246,8 @@ def generate_summary(init_data, duration)
   end
 
   # Write summary file for UI script
+  html_path = generate_html_report(log_dir, duration)
+
   summary_file = File.join(log_dir, "batch_summary.txt")
   begin
     File.open(summary_file, 'w') do |f|
@@ -573,6 +1261,13 @@ def generate_summary(init_data, duration)
         f.puts "total_labels_cleaned=#{$aggregate_stats[:total_labels_cleaned]}"
         f.puts "files_invalid=#{$aggregate_stats[:files_invalid]}"
         f.puts "total_warnings=#{$aggregate_stats[:total_warnings]}"
+        f.puts "wrong_group=#{$aggregate_stats[:wrong_group]}"
+        f.puts "shells_created=#{$aggregate_stats[:shells_created]}"
+        f.puts "shells_skipped=#{$aggregate_stats[:shells_skipped]}"
+        f.puts "shells_failed=#{$aggregate_stats[:shells_failed]}"
+        f.puts "html_report=#{html_path}" if html_path
+        # Where the networks actually ended up (one line each, name|count)
+        $aggregate_stats[:landed].each { |path, n| f.puts "landed_group=#{path}|#{n}" }
         f.puts "total_duration=#{sprintf('%.2f', duration)}"
     end
   rescue => e
